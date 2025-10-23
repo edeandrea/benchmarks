@@ -10,17 +10,9 @@ permissions:
   pull-requests: write
 
 jobs:
-  dump-gh-context:
-    runs-on: ubuntu-latest
-    env:
-      GITHUB_CONTEXT: ${{ toJson(github) }}
-    steps:
-      - name: Dump GitHub context
-        run: echo "$GITHUB_CONTEXT"
-
   automerge:
     runs-on: ubuntu-latest
-    if: (github.actor == 'quarkusbot[bot]') && startsWith(github.event.pull_request.title, 'Adding results from perf lab')
+    if: (github.actor == 'quarkusbot') && startsWith(github.head_ref, 'upload-results-')
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       PR_URL: ${{ github.event.pull_request.html_url }}
