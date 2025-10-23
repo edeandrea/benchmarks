@@ -1,0 +1,22 @@
+name: perf-job-pr-automerge.yml
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  automerge:
+    runs-on: ubuntu-latest
+    if: (github.actor == 'quarkusbot[bot]') && startsWith(github.event.pull_request.title, 'Adding results from perf lab')
+    env:
+      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      PR_URL: ${{ github.event.pull_request.html_url }}
+    steps:
+      - name: Automerge PR
+        run: echo "Going to automerge pr $PR_URL"
+#        run: gh pr merge --merge --admin --delete-branch "$PR_URL"
