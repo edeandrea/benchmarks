@@ -17,6 +17,11 @@ jobs:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       PR_URL: ${{ github.event.pull_request.html_url }}
     steps:
+      - name: Dump GitHub context
+        env:
+          GITHUB_CONTEXT: ${{ toJson(github) }}
+        run: echo "$GITHUB_CONTEXT"
+    
       - name: Automerge PR
         run: echo "Going to automerge pr $PR_URL"
 #        run: gh pr merge --merge --admin --delete-branch "$PR_URL"
