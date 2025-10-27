@@ -1,4 +1,4 @@
-package org.acme.model;
+package io.quarkus.infra.performance.graphics.model;
 
 public record Result(
         Build build,

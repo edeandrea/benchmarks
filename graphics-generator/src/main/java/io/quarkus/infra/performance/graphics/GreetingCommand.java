@@ -1,7 +1,7 @@
-package org.acme;
+package io.quarkus.infra.performance.graphics;
 
+import io.quarkus.infra.performance.graphics.model.BenchmarkData;
 import jakarta.inject.Inject;
-import org.acme.model.BenchmarkData;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 

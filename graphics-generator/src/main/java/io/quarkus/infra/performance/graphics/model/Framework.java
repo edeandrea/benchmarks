@@ -1,4 +1,4 @@
-package org.acme.model;
+package io.quarkus.infra.performance.graphics.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonValue;
@@ -14,7 +14,7 @@ public enum Framework {
     SPRING3_JVM_AOT("spring3-jvm-aot"),
     SPRING3_NATIVE("spring3-native");
 
-    private String name;
+    private final String name;
     private static final Map<String, Framework> ENUM_MAP;
 
     Framework(String name) {
@@ -29,7 +29,7 @@ public enum Framework {
     // Build an immutable map of String name to enum pairs.
 
     static {
-        Map<String, Framework> map = new ConcurrentHashMap<String, Framework>();
+        Map<String, Framework> map = new ConcurrentHashMap<>();
         for (Framework instance : Framework.values()) {
             map.put(instance.getName().toLowerCase(), instance);
         }

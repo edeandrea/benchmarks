@@ -1,4 +1,4 @@
-package org.acme.model;
+package io.quarkus.infra.performance.graphics.model;
 
 import io.quarkus.bootstrap.runner.Timing;
 

@@ -1,4 +1,4 @@
-package org.acme;
+package io.quarkus.infra.performance.graphics;
 
 import io.quarkus.test.junit.main.Launch;
 import io.quarkus.test.junit.main.LaunchResult;
@@ -45,7 +45,7 @@ public class GreetingCommandTest {
 
         LaunchResult result = launcher.launch();
         assertTrue(result.getOutput().contains("latest.json"), result.getOutput());
-        assertEquals(result.exitCode(), 1);
+        assertEquals(1, result.exitCode());
     }
 
     @Test

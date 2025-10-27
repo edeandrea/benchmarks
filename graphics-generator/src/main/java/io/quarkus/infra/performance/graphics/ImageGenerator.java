@@ -1,7 +1,7 @@
-package org.acme;
+package io.quarkus.infra.performance.graphics;
 
+import io.quarkus.infra.performance.graphics.model.BenchmarkData;
 import jakarta.enterprise.context.ApplicationScoped;
-import org.acme.model.BenchmarkData;
 import org.apache.batik.anim.dom.SVGDOMImplementation;
 import org.apache.batik.dom.util.DOMUtilities;
 import org.w3c.dom.DOMImplementation;

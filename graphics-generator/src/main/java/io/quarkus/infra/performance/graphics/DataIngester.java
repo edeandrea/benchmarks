@@ -1,9 +1,9 @@
-package org.acme;
+package io.quarkus.infra.performance.graphics;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.quarkus.infra.performance.graphics.model.BenchmarkData;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
-import org.acme.model.BenchmarkData;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,8 +17,7 @@ public class DataIngester {
     public BenchmarkData ingest(File file) {
         System.out.printf("Ingesting: %s\n", file);
         try {
-            BenchmarkData obj = mapper.readValue(file, BenchmarkData.class);
-            return obj;
+            return mapper.readValue(file, BenchmarkData.class);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
