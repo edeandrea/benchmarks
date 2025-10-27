@@ -25,5 +25,5 @@ jobs:
           distribution: temurin
           java-version: 21
       - name: Build
-        run: |
-          ./mvnw -B install
+        working-directory: graphics-generator
+        run: ./mvnw -B install
