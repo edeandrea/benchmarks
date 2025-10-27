@@ -7,6 +7,7 @@ import jakarta.inject.Inject;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
+import java.time.Instant;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -37,9 +38,13 @@ class DataIngesterTest {
         assertEquals("14G", data.config().cgroup().memMax());
 
         // Results
-
         assertEquals(27586.713333333333, data.results().framework(Framework.QUARKUS3_JVM).load().avThroughput());
         assertEquals(6.496666666666667, data.results().framework(Framework.SPRING3_NATIVE).build().avNativeRSS());
+
+        // Timing
+        assertEquals(Instant.parse("2025-10-20T16:05:51Z"), data.timing().start());
+        assertEquals(Instant.parse("2025-10-20T17:34:02Z"), data.timing().stop());
+
     }
 
 }

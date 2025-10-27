@@ -1,7 +1,5 @@
 package io.quarkus.infra.performance.graphics.model;
 
-import io.quarkus.bootstrap.runner.Timing;
-
 public record BenchmarkData(
         Timing timing, Results results, Config config) {
 
