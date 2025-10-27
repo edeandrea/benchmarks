@@ -1,10 +1,14 @@
 name: Generate graphics
 on:
   push:
+    branches:
+      - main
     paths:
       - graphics-generator
       - results
   pull_request:
+    branches:
+      - main
     types: [assigned, opened, synchronize, reopened, ready_for_review, edited]
     paths:
       - graphics-generator
