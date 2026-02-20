@@ -4,6 +4,7 @@ import java.util.Random;
 import java.util.function.Function;
 
 import io.quarkus.infra.performance.graphics.PlotDefinition;
+import io.quarkus.infra.performance.graphics.SingleSeriesPlotDefinition;
 import io.quarkus.infra.performance.graphics.Theme;
 import io.quarkus.infra.performance.graphics.model.BenchmarkData;
 import io.quarkus.infra.performance.graphics.model.Config;
@@ -165,7 +166,7 @@ public abstract class ChartTest extends ElasticElementTest {
 
     protected PlotDefinition createPlotDefinition() {
         Function<Result, ? extends DimensionalNumber> fun = framework -> framework.load().avThroughput();
-        PlotDefinition plotDefinition = new PlotDefinition("test plot", "some subtitle", fun);
+        PlotDefinition plotDefinition = new SingleSeriesPlotDefinition("test plot", "some subtitle", fun);
         return plotDefinition;
     }
 

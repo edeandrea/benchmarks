@@ -59,7 +59,7 @@ class ImageGeneratorTest {
             addDatapoint(data, Framework.SPRING3_JVM, 267.87);
             addConfig(data);
             Function<Result, ? extends DimensionalNumber> fun = framework -> framework.load().avThroughput();
-            PlotDefinition plotDefinition = new PlotDefinition("test plot", "some subtitle", fun);
+            PlotDefinition plotDefinition = new SingleSeriesPlotDefinition("test plot", "some subtitle", fun);
             imageGenerator.generate(BarChart::new, data, plotDefinition, new File("target/images/test1.svg"),
                     Theme.LIGHT);
             image = new File("target/images/test1.svg");

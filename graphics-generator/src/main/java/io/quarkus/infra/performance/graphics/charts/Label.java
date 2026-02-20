@@ -60,7 +60,7 @@ public class Label {
             case BOTTOM -> y;
             case MIDDLE -> y - textBlockHeight / 2 + fontMetrics.getAscent();
         };
-
+        
         for (int i = 0; i < strings.length; i++) {
 
             String string = strings[i];

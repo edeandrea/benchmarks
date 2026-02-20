@@ -11,8 +11,9 @@ import io.quarkus.infra.performance.graphics.Theme;
 import io.quarkus.infra.performance.graphics.model.BenchmarkData;
 
 import static io.quarkus.infra.performance.graphics.charts.Cubes.MAXIMUM_CUBE_SIZE;
+import static java.util.Collections.emptyList;
 
-public class CubeChart extends Chart {
+public class CubeChart extends SingleSeriesChart {
 
     //    The ideal ratio between space for cubes and space for labels
     private static final int TARGET_CUBE_LABEL_RATIO = 4;
@@ -20,16 +21,25 @@ public class CubeChart extends Chart {
 
     // These graphs can go quite wide, and we want to cap that on the preferred size
     private static final int MAXIMUM_NATURAL_WIDTH = 2048;
-    private final FinePrint fineprint;
+    private final Optional<FinePrint> fineprint;
     private final List<Cubes> cubes = new ArrayList<>();
     private final Optional<Cubes> tallestCube;
     private final CubeGroup cubeGroup;
 
-    public CubeChart(PlotDefinition plotDefinition, List<Datapoint> data, BenchmarkData bmData) {
-        super(plotDefinition, data, bmData);
+    public CubeChart(PlotDefinition plotDefinition, BenchmarkData bmData) {
+        this(plotDefinition, bmData, false);
 
-        this.fineprint = new FinePrint(bmData);
-        children.add(fineprint);
+    }
+
+    public CubeChart(PlotDefinition plotDefinition, BenchmarkData bmData, boolean isEmbedded) {
+        super(plotDefinition, bmData);
+
+        if (! isEmbedded) {
+            this.fineprint = Optional.of(new FinePrint(bmData));
+            children.add(fineprint.get());
+        } else {
+            fineprint = Optional.empty();
+        }
 
         cubeGroup = new CubeGroup();
         cubeGroup.setNumCubesPerColumn(16);
@@ -49,17 +59,17 @@ public class CubeChart extends Chart {
 
     @Override
     public int getMaximumHorizontalSize() {
-        return Math.max(Math.max(fineprint.getMaximumHorizontalSize(), cubes.stream().mapToInt(ElasticElement::getMaximumHorizontalSize).sum()), title.getMaximumHorizontalSize()) + 2 * xmargins;
+        return Math.max(Math.max(fineprint.map(ElasticElement::getMaximumHorizontalSize).orElse(0), cubes.stream().mapToInt(ElasticElement::getMaximumHorizontalSize).sum()), title.getMaximumHorizontalSize()) + 2 * xmargins;
     }
 
     @Override
     public int getMinimumHorizontalSize() {
-        return Math.max(Math.max(fineprint.getMinimumHorizontalSize(), cubes.stream().mapToInt(ElasticElement::getMinimumHorizontalSize).sum()), title.getMinimumHorizontalSize()) + 2 * xmargins;
+        return Math.max(Math.max(fineprint.map(ElasticElement::getMinimumHorizontalSize).orElse(0), cubes.stream().mapToInt(ElasticElement::getMinimumHorizontalSize).sum()), title.getMinimumHorizontalSize()) + 2 * xmargins;
     }
 
     @Override
     public int getPreferredHorizontalSize() {
-        int naturalWidth = Math.max(Math.max(fineprint.getPreferredHorizontalSize(), cubes.stream().mapToInt(ElasticElement::getPreferredHorizontalSize).sum()), title.getPreferredHorizontalSize()) + 2 * xmargins;
+        int naturalWidth = Math.max(Math.max(fineprint.map(ElasticElement::getPreferredHorizontalSize).orElse(0), cubes.stream().mapToInt(ElasticElement::getPreferredHorizontalSize).sum()), title.getPreferredHorizontalSize()) + 2 * xmargins;
         if (naturalWidth > MAXIMUM_NATURAL_WIDTH) {
             return Math.max(getMinimumHorizontalSize(), MAXIMUM_NATURAL_WIDTH);
         } else {
@@ -73,7 +83,8 @@ public class CubeChart extends Chart {
         return getPreferredVerticalSize(getPreferredHorizontalSize());
     }
 
-    private int getPreferredVerticalSize(int horizontalSize) {
+    @Override
+    public int getPreferredVerticalSize(int horizontalSize) {
         int defaultPreferred = super.getPreferredVerticalSize();
         if (tallestCube.isPresent()) {
             // Calibrate the cube sizes to the given width, assuming a big (but not infinite) height (the height parameter shouldn't matter except in rare cases)
@@ -92,7 +103,7 @@ public class CubeChart extends Chart {
         canvasWithMargins.setPaint(theme.text());
 
         // Start by assuming we can have the preferred size for title and fine print
-        int finePrintHeight = fineprint.getPreferredVerticalSize();
+        int finePrintHeight = fineprint.isPresent() ? fineprint.get().getPreferredVerticalSize():0;
         int titleHeight = title.getPreferredVerticalSize();
 
         // ... but then check if that actually fits
@@ -103,8 +114,12 @@ public class CubeChart extends Chart {
         // If it doesn't fit, shrink the fine print and title so the actual plot has the minimum it needs
         if (plotHeight < minimumCubesSize) {
             int delta = minimumCubesSize - plotHeight;
-            finePrintHeight -= delta / 2;
-            titleHeight -= delta / 2;
+            if (fineprint.isPresent()) {
+                finePrintHeight -= delta / 2;
+                titleHeight -= delta / 2;
+            } else {
+                titleHeight -= delta;
+            }
             plotHeight = canvasWithMargins.getHeight() - titleHeight - finePrintHeight;
         }
 
@@ -126,6 +141,7 @@ public class CubeChart extends Chart {
         for (Cubes c : cubes) {
             int width = c.getActualHorizontalSize();
             Subcanvas dataArea = new Subcanvas(plotArea, width, plotArea.getHeight(), x, 0);
+
             c.draw(dataArea, theme);
             x += dataArea.getWidth() + gutterSize;
         }
@@ -160,8 +176,7 @@ public class CubeChart extends Chart {
         }
 
         // Now make sure all the cubes fit horizontally
-        int cubeWithPaddingSize = MAXIMUM_CUBE_SIZE;
-        cubeGroup.setTotalCubeSize(cubeWithPaddingSize);
+        cubeGroup.setTotalCubeSize(MAXIMUM_CUBE_SIZE);
         int totalWidth = cubes.stream().mapToInt(Cubes::getActualHorizontalSize).sum();
 
         while (totalWidth > availableWidth) {
@@ -209,6 +224,11 @@ public class CubeChart extends Chart {
 
     @Override
     public Collection<InlinedSVG> getInlinedSVGs() {
-        return fineprint.getInlinedSVGs();
+        if (fineprint.isPresent()) {
+            return fineprint.get().getInlinedSVGs();
+        } else {
+            return emptyList();
+        }
     }
+
 }

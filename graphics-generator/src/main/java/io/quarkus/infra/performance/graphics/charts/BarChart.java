@@ -3,6 +3,7 @@ package io.quarkus.infra.performance.graphics.charts;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import io.quarkus.infra.performance.graphics.PlotDefinition;
@@ -10,18 +11,28 @@ import io.quarkus.infra.performance.graphics.Theme;
 import io.quarkus.infra.performance.graphics.model.BenchmarkData;
 import io.quarkus.infra.performance.graphics.model.Category;
 
-public class BarChart extends Chart {
+import static java.util.Collections.emptyList;
+
+public class BarChart extends SingleSeriesChart {
 
     private static final int MINIMUM_PARTITION_SIZE = 2;
-    private final FinePrint fineprint;
+    private final Optional<FinePrint> fineprint;
     private final List<Bar> bars = new ArrayList<>();
     private final List<ElasticElement> barsAndPartitions = new ArrayList<>();
 
-    public BarChart(PlotDefinition plotDefinition, List<Datapoint> data, BenchmarkData bmData) {
-        super(plotDefinition, data, bmData);
+    public BarChart(PlotDefinition plotDefinition, BenchmarkData bmData) {
+        this(plotDefinition, bmData, false);
+    }
 
-        this.fineprint = new FinePrint(bmData);
-        children.add(fineprint);
+    public BarChart(PlotDefinition plotDefinition, BenchmarkData bmData, boolean isEmbedded) {
+        super(plotDefinition, bmData);
+
+        if (! isEmbedded) {
+            this.fineprint = Optional.of(new FinePrint(bmData));
+            children.add(fineprint.get());
+        } else {
+            fineprint = Optional.empty();
+        }
 
         Category previousCategory = null;
         int partitions = countPartitions(data) + 1;
@@ -63,7 +74,7 @@ public class BarChart extends Chart {
 
     @Override
     protected void drawNoCheck(Subcanvas canvasWithMargins, Theme theme) {
-        int finePrintHeight = fineprint.getPreferredVerticalSize();
+        int finePrintHeight = fineprint.isPresent() ? fineprint.get().getPreferredVerticalSize():0;
         int titleHeight = title.getPreferredVerticalSize();
 
 
@@ -75,9 +86,12 @@ public class BarChart extends Chart {
         // If it doesn't fit, shrink the fine print and title so the actual plot has the minimum it needs
         if (barHeight < requiredBarHeight) {
             int delta = requiredBarHeight - barHeight;
-            finePrintHeight -= delta / 2;
-            titleHeight -= delta / 2;
-
+            if (fineprint.isPresent()) {
+                finePrintHeight -= delta / 2;
+                titleHeight -= delta / 2;
+            } else {
+                titleHeight -= delta;
+            }
             barHeight = canvasWithMargins.getHeight() - titleHeight - finePrintHeight;
         }
 
@@ -109,7 +123,7 @@ public class BarChart extends Chart {
         }
 
         int extraVerticalSpace = barArea.getHeight() - barsAndPartitions.stream().mapToInt(ElasticElement::getMinimumVerticalSize).sum();
-        int padding = barsAndPartitions.size() > 0 ? extraVerticalSpace / barsAndPartitions.size():0;
+        int padding = barsAndPartitions.isEmpty() ? 0:extraVerticalSpace / barsAndPartitions.size();
 
         for (ElasticElement bar : barsAndPartitions) {
             Subcanvas individualBarArea = new Subcanvas(barArea, barArea.getWidth(), bar.getMinimumVerticalSize() + padding, 0, y);
@@ -124,7 +138,11 @@ public class BarChart extends Chart {
 
     @Override
     public Collection<InlinedSVG> getInlinedSVGs() {
-        return fineprint.getInlinedSVGs();
+        if (fineprint.isPresent()) {
+            return fineprint.get().getInlinedSVGs();
+        } else {
+            return emptyList();
+        }
     }
 
 }

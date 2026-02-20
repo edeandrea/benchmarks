@@ -51,7 +51,7 @@ public class Cubes implements ElasticElement {
 
     @Override
     public int getMinimumVerticalSize() {
-        return (int) Math.min(cubeGroup.getNumCubesPerColumn(), d.value().getValue()) * MINIMUM_CUBE_SIZE + valueLabel.getTargetHeight()
+        return (int) Math.min(cubeGroup.getNumCubesPerColumn(), d.value().getValue()/cubeGroup.getUnitsPerCube()) * MINIMUM_CUBE_SIZE + valueLabel.getTargetHeight()
                 + frameworkLabel.getTargetHeight();
     }
 

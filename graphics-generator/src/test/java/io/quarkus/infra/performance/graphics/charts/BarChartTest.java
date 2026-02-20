@@ -7,7 +7,7 @@ public class BarChartTest extends ChartTest {
 
     @Override
     protected BarChart createChart(PlotDefinition plotDefinition, BenchmarkData data) {
-        return new BarChart(plotDefinition, data.results().getDatasets(plotDefinition.fun()), data);
+        return new BarChart(plotDefinition, data);
     }
 
 

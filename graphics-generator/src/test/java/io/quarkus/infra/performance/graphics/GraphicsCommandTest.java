@@ -122,6 +122,11 @@ public class GraphicsCommandTest {
         image = new File("target/test-output/filename/data-tuned-throughput-for-main-comparison-light.svg");
         assertTrue(image.exists());
 
+        // Check composite
+
+        image = new File("target/test-output/filename/data-tuned-composite-for-main-comparison-light.svg");
+        assertTrue(image.exists());
+
     }
 
     @Test

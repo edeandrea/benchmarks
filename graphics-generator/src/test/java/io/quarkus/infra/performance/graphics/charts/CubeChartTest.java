@@ -7,6 +7,6 @@ public class CubeChartTest extends ChartTest {
 
     @Override
     protected CubeChart createChart(PlotDefinition plotDefinition, BenchmarkData data) {
-        return new CubeChart(plotDefinition, data.results().getDatasets(plotDefinition.fun()), data);
+        return new CubeChart(plotDefinition, data);
     }
 }

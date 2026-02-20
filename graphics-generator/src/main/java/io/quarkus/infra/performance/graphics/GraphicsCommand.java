@@ -8,13 +8,15 @@ import java.nio.file.SimpleFileVisitor;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 import java.util.Optional;
+import java.util.function.BiFunction;
 import jakarta.inject.Inject;
 
 import io.quarkus.infra.performance.graphics.charts.BarChart;
 import io.quarkus.infra.performance.graphics.charts.Chart;
+import io.quarkus.infra.performance.graphics.charts.CompositeChart;
 import io.quarkus.infra.performance.graphics.charts.CubeChart;
-import io.quarkus.infra.performance.graphics.charts.Datapoint;
 import io.quarkus.infra.performance.graphics.model.BenchmarkData;
+import io.quarkus.infra.performance.graphics.model.CompositePlotDefinition;
 import io.quarkus.infra.performance.graphics.model.Config;
 import io.quarkus.infra.performance.graphics.model.Group;
 import io.quarkus.infra.performance.graphics.model.Repo;
@@ -23,10 +25,11 @@ import picocli.CommandLine.Parameters;
 
 @Command(name = "graphics", mixinStandardHelpOptions = true)
 public class GraphicsCommand implements Runnable {
-    private static final PlotDefinition THROUGHPUT = new PlotDefinition("Throughput", "(Higher is better)", framework -> framework.load().avThroughput());
-    private static final PlotDefinition RSS = new PlotDefinition("Memory (RSS after first request)", "memory-rss", "(Smaller is better)", framework -> framework.rss().avFirstRequestRss());
-    private static final PlotDefinition TIME_TO_FIRST_REQUEST = new PlotDefinition("Boot + First Response Time", "(Lower is better)", framework -> framework.startup().avStartTime());
-    private static final PlotDefinition BUILD_TIME = new PlotDefinition("Build Duration", "(Shorter is better)", framework -> framework.build().avBuildTime());
+    private static final PlotDefinition THROUGHPUT = new SingleSeriesPlotDefinition("Throughput", "(Higher is better)", framework -> framework.load().avThroughput());
+    private static final PlotDefinition RSS = new SingleSeriesPlotDefinition("Memory (RSS after first request)", "memory-rss", "(Smaller is better)", framework -> framework.rss().avFirstRequestRss());
+    private static final PlotDefinition TIME_TO_FIRST_REQUEST = new SingleSeriesPlotDefinition("Boot + First Response Time", "(Lower is better)", framework -> framework.startup().avStartTime());
+    private static final PlotDefinition BUILD_TIME = new SingleSeriesPlotDefinition("Build Duration", "(Shorter is better)", framework -> framework.build().avBuildTime());
+    private static final PlotDefinition FRONT_PAGE = new CompositePlotDefinition("composite", List.of(THROUGHPUT, TIME_TO_FIRST_REQUEST, RSS));
 
     @Parameters(paramLabel = "<filename>", defaultValue = "latest.json", description = "A filename of json-formatted data, or a directory. For directories, .json files in the directory will be processed recursively.")
     Path filename;
@@ -104,10 +107,11 @@ public class GraphicsCommand implements Runnable {
             generate(file, qualifiedOutputDir, BarChart::new, data, TIME_TO_FIRST_REQUEST);
             generate(file, qualifiedOutputDir, BarChart::new, data, THROUGHPUT);
             generate(file, qualifiedOutputDir, BarChart::new, data, BUILD_TIME);
+            generate(file, qualifiedOutputDir, CompositeChart::new, data, FRONT_PAGE);
         }
     }
 
-    private void generate(Path file, Path qualifiedOutputDir, TriFunction<PlotDefinition, List<Datapoint>, BenchmarkData, Chart> chartConstructor, BenchmarkData allData, PlotDefinition plotDefinition) {
+    private void generate(Path file, Path qualifiedOutputDir, BiFunction<PlotDefinition, BenchmarkData, Chart> chartConstructor, BenchmarkData allData, PlotDefinition plotDefinition) {
         for (Group group : Group.values()) {
             BenchmarkData data = allData.subgroup(group);
             if (data.results() != null && data.results().size() > 0) {
