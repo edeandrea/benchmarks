@@ -15,8 +15,8 @@ public record Theme(String name, Color background, Color text, Color divider, Co
     public static final Color SPRING_GREEN = decode("#6ab443");
     public static final Color SPRING_LIGHT_GREEN = decode("#c3e1b4");
 
-    public static final Color LIGHT_DIVIDER = decode("#C7C7C7");
-    public static final Color DARK_DIVIDER = decode("#797979");
+    public static final Color LIGHT_DIVIDER = decode("#aaa");
+    public static final Color DARK_DIVIDER = decode("#555555");
 
     public static final Color BARELY_GREY = decode("#F9FBFB");
     public static final Color OFF_BLACK = decode("#212121");
@@ -46,8 +46,8 @@ public record Theme(String name, Color background, Color text, Color divider, Co
             Map.entry(Framework.SPRING_JVM_AOT, SPRING_LIGHT_GREEN),
             Map.entry(Framework.SPRING_VIRTUAL, SPRING_LIGHT_GREEN));
 
-    public static final Theme LIGHT = new Theme("light", Color.WHITE, Color.BLACK, LIGHT_DIVIDER, BARELY_GREY);
-    public static final Theme DARK = new Theme("dark", Color.BLACK, Color.WHITE, DARK_DIVIDER, OFF_BLACK);
+    public static final Theme LIGHT = new Theme("light", Color.WHITE, decode("#121212"), LIGHT_DIVIDER, BARELY_GREY);
+    public static final Theme DARK = new Theme("dark", decode("#121212"), decode("#B5B5B5"), DARK_DIVIDER, OFF_BLACK);
 
     public Theme(String name, Color background, Color text, Color divider, Color finePrint) {
         this(name, background, text, divider, finePrint, DEFAULT_CHART_ELEMENTS);
