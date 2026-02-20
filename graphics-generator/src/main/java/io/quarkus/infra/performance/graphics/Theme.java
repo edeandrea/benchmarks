@@ -46,8 +46,8 @@ public record Theme(String name, Color background, Color text, Color divider, Co
             Map.entry(Framework.SPRING_JVM_AOT, SPRING_LIGHT_GREEN),
             Map.entry(Framework.SPRING_VIRTUAL, SPRING_LIGHT_GREEN));
 
-    public static final Theme LIGHT = new Theme("light", Color.WHITE, Color.BLACK, LIGHT_DIVIDER, BARELY_GREY);
-    public static final Theme DARK = new Theme("dark", Color.BLACK, Color.WHITE, DARK_DIVIDER, OFF_BLACK);
+    public static final Theme LIGHT = new Theme("light", Color.WHITE, decode("#121212"), LIGHT_DIVIDER, BARELY_GREY);
+    public static final Theme DARK = new Theme("dark", decode("#121212"), decode("#B5B5B5"), DARK_DIVIDER, OFF_BLACK);
 
     public Theme(String name, Color background, Color text, Color divider, Color finePrint) {
         this(name, background, text, divider, finePrint, DEFAULT_CHART_ELEMENTS);
