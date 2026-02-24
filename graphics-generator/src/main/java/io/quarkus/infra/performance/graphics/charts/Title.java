@@ -1,9 +1,11 @@
 package io.quarkus.infra.performance.graphics.charts;
 
-import java.awt.Font;
-
 import io.quarkus.infra.performance.graphics.Theme;
-import io.quarkus.infra.performance.graphics.VAlignment;
+import io.quarkus.infra.performance.graphics.charts.fonts.Sizer;
+import io.quarkus.infra.performance.graphics.charts.fonts.VAlignment;
+
+import static io.quarkus.infra.performance.graphics.charts.fonts.FontStyle.BOLD;
+import static io.quarkus.infra.performance.graphics.charts.fonts.FontStyle.ITALIC;
 
 public class Title implements ElasticElement {
     protected static final int MINIMUM_TITLE_TEXT_SIZE = 12;
@@ -23,15 +25,15 @@ public class Title implements ElasticElement {
 
     public Title(String title, String subtitle) {
         this.title = title;
-        titleLabel = new Label(title).setStyle(Font.BOLD).setVerticalAlignment(VAlignment.TOP);
+        titleLabel = new Label(title).setStyle(BOLD).setVerticalAlignment(VAlignment.TOP);
         this.subtitle = subtitle;
-        subtitleLabel = new Label(subtitle).setStyle(Font.ITALIC).setVerticalAlignment(VAlignment.TOP);
+        subtitleLabel = new Label(subtitle).setStyle(ITALIC).setVerticalAlignment(VAlignment.TOP);
     }
 
     @Override
     public int getMaximumVerticalSize() {
         // Assume top and bottom margins equal to half the title height (each)
-        int subtitleHeight = hasSubtitle() ? Sizer.calculateHeight(MAXIMUM_SUBTITLE_TEXT_SIZE) : 0;
+        int subtitleHeight = hasSubtitle() ? Sizer.calculateHeight(MAXIMUM_SUBTITLE_TEXT_SIZE):0;
         return 2 * Sizer.calculateHeight(MAXIMUM_TITLE_TEXT_SIZE) + subtitleHeight;
     }
 
@@ -44,7 +46,7 @@ public class Title implements ElasticElement {
     @Override
     public int getMinimumVerticalSize() {
         // Assume top and bottom margins equal to half the title height (each)
-        int subtitleHeight = hasSubtitle() ? Sizer.calculateHeight(MINIMUM_SUBTITLE_TEXT_SIZE) : 0;
+        int subtitleHeight = hasSubtitle() ? Sizer.calculateHeight(MINIMUM_SUBTITLE_TEXT_SIZE):0;
         return 2 * Sizer.calculateHeight(MINIMUM_TITLE_TEXT_SIZE) + subtitleHeight;
     }
 
@@ -56,7 +58,7 @@ public class Title implements ElasticElement {
 
     @Override
     public void draw(Subcanvas g, Theme theme) {
-        int subtitleFactor = hasSubtitle() ? 1 : 0;
+        int subtitleFactor = hasSubtitle() ? 1:0;
         // Allow margins of half the main title height
         int titleHeight = (RATIO * g.getHeight()) / (2 * RATIO + subtitleFactor);
         titleLabel.setTargetHeight(titleHeight);

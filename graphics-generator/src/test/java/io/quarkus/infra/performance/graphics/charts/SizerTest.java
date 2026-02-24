@@ -1,10 +1,12 @@
 package io.quarkus.infra.performance.graphics.charts;
 
-import java.awt.Font;
 import java.util.Set;
 
+import io.quarkus.infra.performance.graphics.charts.fonts.Sizer;
 import org.junit.jupiter.api.Test;
 
+import static io.quarkus.infra.performance.graphics.charts.fonts.FontStyle.BOLD;
+import static io.quarkus.infra.performance.graphics.charts.fonts.FontStyle.PLAIN;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class SizerTest {
@@ -12,17 +14,17 @@ class SizerTest {
     @Test
     void calculateWidthForSingleString() {
         // It's hard to reason about the exact right values here, so hardcode some expectations
-        assertEquals(70, Sizer.calculateWidth("some string", 12));
-        assertEquals(106, Sizer.calculateWidth("some string", 18));
+        assertEquals(68, Sizer.calculateWidth("some string", 12));
+        assertEquals(102, Sizer.calculateWidth("some string", 18));
     }
 
     @Test
     void calculateWidthForSingleStringWithStyle() {
         // It's hard to reason about the exact right values here, so hardcode some expectations
-        assertEquals(66, Sizer.calculateWidth("some string", 12, Font.PLAIN));
-        assertEquals(70, Sizer.calculateWidth("some string", 12, Font.BOLD));
-        assertEquals(100, Sizer.calculateWidth("some string", 18, Font.PLAIN));
-        assertEquals(106, Sizer.calculateWidth("some string", 18, Font.BOLD));
+        assertEquals(65, Sizer.calculateWidth("some string", 12, PLAIN));
+        assertEquals(68, Sizer.calculateWidth("some string", 12, BOLD));
+        assertEquals(95, Sizer.calculateWidth("some string", 18, PLAIN));
+        assertEquals(102, Sizer.calculateWidth("some string", 18, BOLD));
     }
 
     @Test

@@ -13,15 +13,18 @@ public class SvgAdjuster {
     public static final String FONT_FAMILY_DECLARATION = "font-family:\\s*'" + Theme.FONT.getName() + "'";
 
     public static String adjustSvg(String svg) {
-        String fallbackString = "font-family: " + Theme.FONT.getFamilyDeclaration();
         Document svgDoc = Jsoup.parse(svg, "", Parser.xmlParser());
 
         Elements gElements = svgDoc.select(GRAPHICS_ELEMENT);
 
-        for (Element g : gElements) {
-            String style = g.attr(STYLE);
-            style = style.replaceAll(FONT_FAMILY_DECLARATION, fallbackString);
-            g.attr(STYLE, style);
+        for (String name : Theme.FONT.getNames()) {
+            String fontFamilyDeclaration = "font-family:\\s*'" + name + "'";
+            String fallbackString = "font-family: '" + name + "', " + Theme.FONT.getFamilyDeclaration();
+            for (Element g : gElements) {
+                String style = g.attr(STYLE);
+                style = style.replaceAll(fontFamilyDeclaration, fallbackString);
+                g.attr(STYLE, style);
+            }
         }
         return svgDoc.outerHtml();
     }

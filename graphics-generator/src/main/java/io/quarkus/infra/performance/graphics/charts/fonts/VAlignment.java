@@ -1,4 +1,4 @@
-package io.quarkus.infra.performance.graphics;
+package io.quarkus.infra.performance.graphics.charts.fonts;
 
 public enum VAlignment {
     TOP,

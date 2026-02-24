@@ -6,7 +6,12 @@ import java.util.Arrays;
 import java.util.Comparator;
 
 import io.quarkus.infra.performance.graphics.Theme;
-import io.quarkus.infra.performance.graphics.VAlignment;
+import io.quarkus.infra.performance.graphics.charts.fonts.Alignment;
+import io.quarkus.infra.performance.graphics.charts.fonts.FontStyle;
+import io.quarkus.infra.performance.graphics.charts.fonts.Sizer;
+import io.quarkus.infra.performance.graphics.charts.fonts.VAlignment;
+
+import static io.quarkus.infra.performance.graphics.charts.fonts.FontStyle.PLAIN;
 
 public class Label {
 
@@ -16,7 +21,7 @@ public class Label {
     private final String[] strings;
     private int targetHeight = 24; // Arbitrary default
     private double lineSpacing = 1;
-    private DelimitedStyles styles = new DelimitedStyles(new int[]{Font.PLAIN}, LINE_BREAK);
+    private DelimitedStyles styles = new DelimitedStyles(new FontStyle[]{PLAIN}, LINE_BREAK);
     private Alignment alignment = Alignment.LEFT;
     private VAlignment valignment = VAlignment.MIDDLE;
     private FontMetrics fontMetrics;
@@ -60,13 +65,14 @@ public class Label {
             case BOTTOM -> y;
             case MIDDLE -> y - textBlockHeight / 2 + fontMetrics.getAscent();
         };
-        
+
         for (int i = 0; i < strings.length; i++) {
 
             String string = strings[i];
             // Set a base font for the line height
             Font font = fonts[i % fonts.length];
             g.setFont(font);
+
             FontMetrics metrics = g.getFontMetrics(font);
 
             // String bounds is a bit more accurate than getWidth() for alignment
@@ -115,14 +121,14 @@ public class Label {
     public Label setTargetHeight(int height) {
         this.targetHeight = height;
         int size = strings.length > 1 ? Sizer.calculateFontSize((int) (targetHeight / (strings.length * lineSpacing))):Sizer.calculateFontSize(targetHeight);
-        baseFont = new Font(Theme.FONT.getName(), styles.styles()[0], size);
+        baseFont = new Font(Theme.FONT.getName(), Font.PLAIN, size);
         initialiseFonts();
         return this;
     }
 
     private void initialiseFonts() {
         fonts = Arrays.stream(styles.styles())
-                .mapToObj(s -> new Font(Theme.FONT.getName(), s, baseFont.getSize()))
+                .map(s -> Theme.FONT.getFont(s, baseFont.getSize()))
                 .toArray(Font[]::new);
     }
 
@@ -138,15 +144,15 @@ public class Label {
     /**
      * Should be one of the constants declared in #Font or their combination
      */
-    public Label setStyle(int style) {
-        return setStyles(new int[]{style});
+    public Label setStyle(FontStyle style) {
+        return setStyles(new FontStyle[]{style});
     }
 
     /**
      * Should be one of the constants declared in #Font or their combination
      * The different styles are applied to different parts of the text, with the default delimiter being \n
      */
-    public Label setStyles(int[] styles) {
+    public Label setStyles(FontStyle[] styles) {
         return setStyles(styles, LINE_BREAK);
     }
 
@@ -154,7 +160,7 @@ public class Label {
     /*
      *    Note that if a style delimiter is set (other than a line break), line breaks will no longer be style delimiters.
      */
-    public Label setStyles(int[] styles, String newDelimiter) {
+    public Label setStyles(FontStyle[] styles, String newDelimiter) {
 
         this.styles = new DelimitedStyles(styles, newDelimiter);
 
@@ -184,6 +190,9 @@ public class Label {
         }
     }
 
+    public int calculateWidth(String s, FontStyle style) {
+        return Sizer.calculateWidth(s, Theme.FONT.getFont(style, baseFont.getSize()));
+    }
 
     public int getActualHeight() {
         return (int) (strings.length * lineSpacing * getLineHeight());
@@ -223,7 +232,7 @@ public class Label {
     }
 
 
-    private record DelimitedStyles(int[] styles, String delimiter) {
+    private record DelimitedStyles(FontStyle[] styles, String delimiter) {
     }
 
 }
