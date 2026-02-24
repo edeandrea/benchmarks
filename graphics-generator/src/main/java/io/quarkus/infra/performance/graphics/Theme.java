@@ -3,7 +3,7 @@ package io.quarkus.infra.performance.graphics;
 import java.awt.Color;
 import java.util.Map;
 
-import io.quarkus.infra.performance.graphics.charts.EmbeddableFont;
+import io.quarkus.infra.performance.graphics.charts.fonts.EmbeddableFont;
 import io.quarkus.infra.performance.graphics.model.Framework;
 
 import static java.awt.Color.decode;

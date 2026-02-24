@@ -1,4 +1,4 @@
-package io.quarkus.infra.performance.graphics.charts;
+package io.quarkus.infra.performance.graphics.charts.fonts;
 
 import java.awt.Font;
 import java.awt.FontMetrics;
@@ -14,6 +14,9 @@ import org.apache.batik.anim.dom.SVGDOMImplementation;
 import org.apache.batik.svggen.SVGGraphics2D;
 import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
+
+import static io.quarkus.infra.performance.graphics.charts.fonts.FontStyle.BOLD;
+import static io.quarkus.infra.performance.graphics.charts.fonts.FontStyle.PLAIN;
 
 public class Sizer {
     // The g.getGraphics().getFontMetrics().getHeight() number is 39-40% bigger than the notional font size; use it to estimate what font size we might need to set
@@ -47,17 +50,16 @@ public class Sizer {
     }
 
     public static int calculateWidth(String string, int fontSize) {
-        String longest = longestString(List.of(string.split("\n")));
-        // If we don't know the font, guess bold, because it's better to have too much whitespace than too little
-        return calculateWidthNoLineBreaks(longest, fontSize, Font.BOLD);
+        // Default to assuming bold fonts, to err on the side of too much whitespace
+        return calculateWidth(string, fontSize, BOLD);
     }
 
-    public static int calculateWidth(String string, int fontSize, int fontStyle) {
+    public static int calculateWidth(String string, int fontSize, FontStyle fontStyle) {
         String longest = longestString(List.of(string.split("\n")));
         return calculateWidthNoLineBreaks(longest, fontSize, fontStyle);
     }
 
-    private static int calculateWidthNoLineBreaks(String longest, int fontSize, int fontStyle) {
+    private static int calculateWidthNoLineBreaks(String longest, int fontSize, FontStyle fontStyle) {
         Font font = getFont(fontSize, fontStyle);
         return calculateWidth(longest, font);
     }
@@ -67,16 +69,16 @@ public class Sizer {
         return fm.stringWidth(longest);
     }
 
-    private static Font getFont(int fontSize, int fontStyle) {
-        if (fontStyle == Font.BOLD) {
-            return boldFonts.computeIfAbsent(fontSize, s -> new Font(Theme.FONT.getName(), Font.BOLD, s));
+    private static Font getFont(int fontSize, FontStyle fontStyle) {
+        if (fontStyle == BOLD) {
+            return boldFonts.computeIfAbsent(fontSize, s -> Theme.FONT.getFont(fontStyle, fontSize));
         } else {
-            return fonts.computeIfAbsent(fontSize, s -> new Font(Theme.FONT.getName(), Font.PLAIN, s));
+            return fonts.computeIfAbsent(fontSize, s -> Theme.FONT.getFont(fontStyle, fontSize));
         }
     }
 
     public static int calculateHeight(int fontSize) {
-        Font font = getFont(fontSize, Font.PLAIN);
+        Font font = getFont(fontSize, PLAIN);
         FontMetrics fm = g.getFontMetrics(font);
         return fm.getHeight();
     }

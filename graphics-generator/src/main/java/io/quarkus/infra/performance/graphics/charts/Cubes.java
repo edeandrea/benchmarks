@@ -1,11 +1,12 @@
 package io.quarkus.infra.performance.graphics.charts;
 
-import java.awt.Font;
-
 import io.quarkus.infra.performance.graphics.Theme;
-import io.quarkus.infra.performance.graphics.VAlignment;
+import io.quarkus.infra.performance.graphics.charts.fonts.Alignment;
+import io.quarkus.infra.performance.graphics.charts.fonts.VAlignment;
 
 import static io.quarkus.infra.performance.graphics.charts.Bar.BAR_THICKNESS;
+import static io.quarkus.infra.performance.graphics.charts.fonts.FontStyle.BOLD;
+import static io.quarkus.infra.performance.graphics.charts.fonts.FontStyle.PLAIN;
 
 public class Cubes implements ElasticElement {
     private static final int LABEL_HEIGHT = BAR_THICKNESS;
@@ -28,12 +29,12 @@ public class Cubes implements ElasticElement {
         frameworkLabel = new Label(d.framework().getExpandedName())
                 .setHorizontalAlignment(Alignment.CENTER)
                 .setVerticalAlignment(VAlignment.TOP)
-                .setStyles(new int[]{Font.BOLD, Font.PLAIN})
+                .setStyles(new io.quarkus.infra.performance.graphics.charts.fonts.FontStyle[]{BOLD, PLAIN})
                 .setTargetHeight(LABEL_HEIGHT);
         valueLabel = new Label(String.format("%d %s", Math.round(val), d.value().getUnits()))
                 .setHorizontalAlignment(Alignment.CENTER)
                 .setVerticalAlignment(VAlignment.TOP)
-                .setStyle(Font.BOLD).setTargetHeight(LABEL_HEIGHT * 2 / 3);
+                .setStyle(BOLD).setTargetHeight(LABEL_HEIGHT * 2 / 3);
     }
 
     @Override
@@ -51,7 +52,7 @@ public class Cubes implements ElasticElement {
 
     @Override
     public int getMinimumVerticalSize() {
-        return (int) Math.min(cubeGroup.getNumCubesPerColumn(), d.value().getValue()/cubeGroup.getUnitsPerCube()) * MINIMUM_CUBE_SIZE + valueLabel.getTargetHeight()
+        return (int) Math.min(cubeGroup.getNumCubesPerColumn(), d.value().getValue() / cubeGroup.getUnitsPerCube()) * MINIMUM_CUBE_SIZE + valueLabel.getTargetHeight()
                 + frameworkLabel.getTargetHeight();
     }
 

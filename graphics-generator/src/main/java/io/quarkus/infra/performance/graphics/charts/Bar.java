@@ -1,10 +1,13 @@
 package io.quarkus.infra.performance.graphics.charts;
 
-import java.awt.Font;
-
 import io.quarkus.infra.performance.graphics.Theme;
-import io.quarkus.infra.performance.graphics.VAlignment;
+import io.quarkus.infra.performance.graphics.charts.fonts.Alignment;
+import io.quarkus.infra.performance.graphics.charts.fonts.FontStyle;
+import io.quarkus.infra.performance.graphics.charts.fonts.Sizer;
+import io.quarkus.infra.performance.graphics.charts.fonts.VAlignment;
 
+import static io.quarkus.infra.performance.graphics.charts.fonts.FontStyle.BOLD;
+import static io.quarkus.infra.performance.graphics.charts.fonts.FontStyle.PLAIN;
 import static java.lang.Math.round;
 
 public class Bar implements ElasticElement {
@@ -37,10 +40,10 @@ public class Bar implements ElasticElement {
         frameworkLabel = new Label(frameworkLabelText)
                 .setHorizontalAlignment(Alignment.RIGHT)
                 .setVerticalAlignment(VAlignment.MIDDLE)
-                .setStyles(new int[]{Font.BOLD, Font.PLAIN})
+                .setStyles(new FontStyle[]{BOLD, PLAIN})
                 .setTargetHeight(BAR_THICKNESS);
         valueLabelText = String.format("%d %s", round(val), d.value().getUnits());
-        valueLabel = new Label(valueLabelText).setStyle(Font.BOLD).setTargetHeight(VALUE_LABEL_HEIGHT);
+        valueLabel = new Label(valueLabelText).setStyle(BOLD).setTargetHeight(VALUE_LABEL_HEIGHT);
 
         // This will probably be overridden, but set a value
         leftLabelWidth = Sizer.calculateWidth(frameworkLabelText, LEFT_LABEL_SIZE);
@@ -77,7 +80,7 @@ public class Bar implements ElasticElement {
     }
 
     private int getValueLabelWidth() {
-        return Sizer.calculateWidth(valueLabelText, RIGHT_LABEL_SIZE, Font.BOLD);
+        return Sizer.calculateWidth(valueLabelText, RIGHT_LABEL_SIZE, BOLD);
     }
 
     public String getLeftLabelText() {

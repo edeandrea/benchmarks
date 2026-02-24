@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 
 import io.quarkus.infra.performance.graphics.PlotDefinition;
 import io.quarkus.infra.performance.graphics.Theme;
+import io.quarkus.infra.performance.graphics.charts.fonts.Sizer;
 import io.quarkus.infra.performance.graphics.model.BenchmarkData;
 import io.quarkus.infra.performance.graphics.model.Category;
 

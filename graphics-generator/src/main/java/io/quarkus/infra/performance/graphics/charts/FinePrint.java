@@ -1,6 +1,5 @@
 package io.quarkus.infra.performance.graphics.charts;
 
-import java.awt.Font;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -10,13 +9,17 @@ import java.util.List;
 import java.util.Optional;
 
 import io.quarkus.infra.performance.graphics.Theme;
-import io.quarkus.infra.performance.graphics.VAlignment;
+import io.quarkus.infra.performance.graphics.charts.fonts.Alignment;
+import io.quarkus.infra.performance.graphics.charts.fonts.FontStyle;
+import io.quarkus.infra.performance.graphics.charts.fonts.VAlignment;
 import io.quarkus.infra.performance.graphics.model.BenchmarkData;
 import io.quarkus.infra.performance.graphics.model.Config;
 import io.quarkus.infra.performance.graphics.model.Repo;
 import io.quarkus.infra.performance.graphics.model.Timing;
 
-import static io.quarkus.infra.performance.graphics.charts.Sizer.calculateWidth;
+import static io.quarkus.infra.performance.graphics.charts.fonts.FontStyle.BOLD;
+import static io.quarkus.infra.performance.graphics.charts.fonts.FontStyle.PLAIN;
+import static io.quarkus.infra.performance.graphics.charts.fonts.Sizer.calculateWidth;
 import static io.quarkus.infra.performance.graphics.model.Category.JVM;
 import static io.quarkus.infra.performance.graphics.model.Category.NATIVE;
 import static io.quarkus.infra.performance.graphics.model.Category.OLD;
@@ -146,7 +149,7 @@ public class FinePrint implements ElasticElement {
         return new Label(column.toArray(String[]::new))
                 .setHorizontalAlignment(Alignment.LEFT)
                 .setVerticalAlignment(VAlignment.TOP)
-                .setStyles(new int[]{Font.BOLD, Font.PLAIN}, ": ");
+                .setStyles(new FontStyle[]{BOLD, PLAIN}, ": ");
     }
 
     private static void adjustToSameRows(List<String> labels, int maxRows) {
@@ -204,7 +207,7 @@ public class FinePrint implements ElasticElement {
         var rl = new Subcanvas(padded, padded.getWidth() - rightLabelX, padded.getHeight(), rightLabelX, 0);
         rightLabel.draw(rl);
 
-        int sw = rightLabel.calculateWidth(SOURCE_CODE_LABEL);
+        int sw = rightLabel.calculateWidth(SOURCE_CODE_LABEL, BOLD);
 
         if (metadata.repo() != null) {
             int logoSize = rightLabel.getAscent();
