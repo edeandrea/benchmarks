@@ -45,8 +45,7 @@ public class ImageGenerator {
 
             Element root = svgGenerator.getRoot();
             initialiseFonts(doc, root);
-            inlineGraphics(doc, root, chart.getInlinedSVGs());
-
+            inlineGraphics(doc, root, chart.getInlinedSVGs(), theme);
 
             outFile.getParentFile().mkdirs();
 
@@ -66,12 +65,12 @@ public class ImageGenerator {
         }
     }
 
-    private void inlineGraphics(Document doc, Element root, Collection<InlinedSVG> inlinedSVGs) {
+    private void inlineGraphics(Document doc, Element root, Collection<InlinedSVG> inlinedSVGs, Theme theme) {
         String parser = XMLResourceDescriptor.getXMLParserClassName();
         SAXSVGDocumentFactory factory = new SAXSVGDocumentFactory(parser);
 
         for (InlinedSVG inlinedSVG : inlinedSVGs) {
-            inlinedSVG.draw(factory, root, doc);
+            inlinedSVG.draw(factory, root, doc, theme);
         }
     }
 
