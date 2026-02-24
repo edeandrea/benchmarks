@@ -48,7 +48,7 @@ public class EmbeddableFont {
         css = dfonts.stream().map(d -> generateFontFaceCSS(d)).collect(Collectors.joining(" "));
         fonts = dfonts.stream().collect(Collectors.toMap(d -> d.style, d -> d.font()));
 
-        familyDeclaration = "'" + fontName + "', " + fallbacks.stream().map(s -> "'" + s + "'").collect(Collectors.joining(", ")).replaceAll("'sans-serif'", "sans-serif");
+        familyDeclaration = "'" + fontName + " Light', '" + fontName + "', " + fallbacks.stream().map(s -> "'" + s + "'").collect(Collectors.joining(", ")).replaceAll("'sans-serif'", "sans-serif");
 
     }
 
@@ -129,15 +129,18 @@ public class EmbeddableFont {
         // Base64 encode the font bytes
         // It would be nice to subset the characters and only include what's needed, to save file sizes
         String base64Font = Base64.getEncoder().encodeToString(downloadedFont.raw());
+        String fontName = downloadedFont.font().getFontName();
         return """
                   @font-face {
                     font-family: '%s';
                     src:
-                      url('data:font/ttf;base64,%s') format('truetype');
-                   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+                      url('data:font/ttf;base64,%s') format('truetype'),
+                      local(%s),
+                      local(%s);
+                    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
                     font-style: normal;
                   }
-                """.formatted(downloadedFont.font().getFontName(), base64Font);
+                """.formatted(fontName, base64Font, fontName, fontName.replaceAll(" ", ""));
     }
 
     public String getFamilyDeclaration() {
