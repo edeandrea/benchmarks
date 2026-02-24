@@ -4,9 +4,10 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import io.quarkus.infra.performance.graphics.Theme;
 import io.quarkus.infra.performance.graphics.charts.fonts.Alignment;
@@ -42,7 +43,7 @@ public class FinePrint implements ElasticElement {
     private final Label leftLabel;
     private final Label middleLabel;
     private final Label rightLabel;
-    private InlinedSVG svg;
+    private final Set<InlinedSVG> svgs = new HashSet<>();
     private final List<String> leftColumn = new ArrayList<>();
     private final List<String> middleColumn = new ArrayList<>();
     private final List<String> rightColumn = new ArrayList<>();
@@ -109,7 +110,7 @@ public class FinePrint implements ElasticElement {
 
         if (metadata.repo() != null) {
             rightColumn.add(SOURCE_CODE_LABEL + " "
-                    + metadata.repo().url().replace("https://github.com/", "     ").replaceAll(".git$", ""));
+                    + prettyRepoName());
             // Use a few spaces to leave room for a logo
 
             if (hasScenario(metadata.repo())) {
@@ -207,16 +208,27 @@ public class FinePrint implements ElasticElement {
         var rl = new Subcanvas(padded, padded.getWidth() - rightLabelX, padded.getHeight(), rightLabelX, 0);
         rightLabel.draw(rl);
 
-        int sw = rightLabel.calculateWidth(SOURCE_CODE_LABEL, BOLD);
 
         if (metadata.repo() != null) {
+            int sourceWidth = rightLabel.calculateWidth(SOURCE_CODE_LABEL, BOLD);
+
             int logoSize = rightLabel.getAscent();
-            int logoX = padded.getXOffset() + rightLabelX + sw + 2;
+
+            // Assume the link is the top entry in the column for ease of calculations
+            int logoX = padded.getXOffset() + rightLabelX + sourceWidth + 4;
             int logoY = padded.getYOffset() + rightLabel.getDescent() / 4;
-            this.svg = new InlinedSVG(getPath(theme), logoSize,
-                    logoX,
-                    logoY);
+            svgs.add(new InlinedSVGImage(getPath(theme), logoSize, logoX, logoY));
+
+            int linkX = logoX;
+            int linkY = padded.getYOffset() + rightLabel.getAscent();
+            // We could just do a bunch of spaces, but for accessibility, keep the text on the link
+            String repoName = prettyRepoName();
+            svgs.add(new InlinedSVGLink(metadata.repo().url(), repoName, linkX, linkY));
         }
+    }
+
+    private String prettyRepoName() {
+        return metadata.repo().url().replace("https://github.com/", "     ").replaceAll(".git$", "");
     }
 
     private int calculateTopPadding(int targetHeight) {
@@ -248,10 +260,7 @@ public class FinePrint implements ElasticElement {
     }
 
     public Collection<InlinedSVG> getInlinedSVGs() {
-        if (svg == null) {
-            return Collections.emptyList();
-        }
-        return List.of(svg);
+        return svgs;
     }
 
     public int getActualHorizontalSize(int targetHeight) {

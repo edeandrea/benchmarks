@@ -199,6 +199,21 @@ class FinePrintTest extends ElasticElementTest {
         assertSvgContainsText("Execution date: " + now.atZone(ZoneOffset.UTC).format(FinePrint.DATE_TIME_FORMATTER), s);
     }
 
+    @Test
+    void repoUrlIncludedAndTrimmed() {
+        var timing = mock(Timing.class);
+        var config = mock(Config.class);
+        when(config.repo()).thenReturn(new Repo("main", "https://github.com/someorg/somerepo.git", "ootb", "1234"));
+
+        var finePrint = new FinePrint(new BenchmarkData(timing, null, config));
+        var s = drawSvg(finePrint);
+
+        // We expect a space before for the gap for the logo, and we expect the string to end with the repo name, not the .git
+        assertSvgContainsText(" someorg/somerepo<", s);
+
+        // We can't really test the hyperlink because it's injected later on by the image generator
+    }
+
     private static void assertSvgContainsText(String text, String svg) {
         assertTrue(svg.matches("(?s).*" + text.replace(": ", ": " + TEXT_TAG) + "(?s).*"), svg);
     }
