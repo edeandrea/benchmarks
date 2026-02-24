@@ -15,7 +15,7 @@ public record Theme(String name, Color background, Color text, Color divider, Co
     public static final Color SPRING_GREEN = decode("#6ab443");
     public static final Color SPRING_LIGHT_GREEN = decode("#c3e1b4");
 
-    public static final Color LIGHT_DIVIDER = decode("#aaa");
+    public static final Color LIGHT_DIVIDER = decode("#AAAAAA");
     public static final Color DARK_DIVIDER = decode("#555555");
 
     public static final Color BARELY_GREY = decode("#F9FBFB");
