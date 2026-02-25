@@ -121,7 +121,7 @@ public class Label {
     public Label setTargetHeight(int height) {
         this.targetHeight = height;
         int size = strings.length > 1 ? Sizer.calculateFontSize((int) (targetHeight / (strings.length * lineSpacing))):Sizer.calculateFontSize(targetHeight);
-        baseFont = new Font(Theme.FONT.getName(), Font.PLAIN, size);
+        baseFont = Theme.FONT.getFont(PLAIN, size);
         initialiseFonts();
         return this;
     }
