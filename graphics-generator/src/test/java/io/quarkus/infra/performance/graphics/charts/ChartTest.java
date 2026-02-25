@@ -2,6 +2,7 @@ package io.quarkus.infra.performance.graphics.charts;
 
 import java.util.Random;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import io.quarkus.infra.performance.graphics.PlotDefinition;
 import io.quarkus.infra.performance.graphics.SingleSeriesPlotDefinition;
@@ -137,6 +138,23 @@ public abstract class ChartTest extends ElasticElementTest {
     @Test
     public void testCanDrawSoloGroupInPreferredDimensions() {
         BenchmarkData data = mockBenchmarkData(1);
+        System.out.println("Data " + data);
+        PlotDefinition plotDefinition = createPlotDefinition();
+
+        Chart chart = createChart(plotDefinition, data);
+
+        int width = chart.getPreferredHorizontalSize();
+        int height = chart.getPreferredVerticalSize();
+
+        SVGGraphics2D svgGenerator = getSvgGraphics2D(width, height);
+        Theme theme = Theme.LIGHT;
+        chart.draw(new Subcanvas(svgGenerator), theme);
+    }
+
+    // This sometimes fails for the cube chart, if the value is less than the column height
+    @Test
+    public void testCanDrawSoloGroupWithLowValueInPreferredDimensions() {
+        BenchmarkData data = mockBenchmarkData(1, () -> 2.0);
         PlotDefinition plotDefinition = createPlotDefinition();
 
         Chart chart = createChart(plotDefinition, data);
@@ -174,13 +192,18 @@ public abstract class ChartTest extends ElasticElementTest {
         return mockBenchmarkData(4);
     }
 
+
     private static BenchmarkData mockBenchmarkData(int count) {
+        return mockBenchmarkData(count, () -> (double) new Random().nextInt(400));
+    }
+
+    private static BenchmarkData mockBenchmarkData(int count, Supplier<Double> value) {
         BenchmarkData data = mock(BenchmarkData.class);
         Results results = new Results();
         when(data.results()).thenReturn(results);
         when(data.group()).thenReturn(Group.ALL);
         for (int i = 0; i < count; i++) {
-            addDatapoint(data, Framework.values()[i], (double) new Random().nextInt(400));
+            addDatapoint(data, Framework.values()[i], value.get());
         }
         addConfig(data);
         return data;

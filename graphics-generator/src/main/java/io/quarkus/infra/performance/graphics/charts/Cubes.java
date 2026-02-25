@@ -97,7 +97,7 @@ public class Cubes implements ElasticElement {
 
         int cubeSize = cubeGroup.getTotalCubeSize() - CUBE_PADDING;
 
-        Subcanvas cubeArea = new Subcanvas(dataArea, dataArea.getWidth(), cubeGroup.getNumCubesPerColumn() * cubeGroup.getTotalCubeSize(), 0, 0);
+        Subcanvas cubeArea = new Subcanvas(dataArea, dataArea.getWidth(), Math.min(cubeGroup.getNumCubesPerColumn(), (int) (val / cubeGroup.getUnitsPerCube())) * cubeGroup.getTotalCubeSize(), 0, 0);
 
         Subcanvas labelArea = new Subcanvas(dataArea, dataArea.getWidth(), dataArea.getHeight() - cubeArea.getHeight(), 0,
                 cubeArea.getHeight());
