@@ -83,7 +83,11 @@ public class EmbeddableFont {
         return fonts.values().stream().map(Font::getName).collect(Collectors.toList()).toArray(new String[0]);
     }
 
-
+    /**
+     * Gets a font instance with the specified style and size. This should be used instead of new Font(), partly for better control of styles,
+     * but also because on Linux, there's a metrics difference between fonts created using new Font() and fonts created with deriveFont().
+     * That can cause wonky spacing on CI-generated images.
+     */
     public Font getFont(FontStyle style, int size) {
         // If the style doesn't exist, fall back to the first font we find
         return fonts.get(style).deriveFont((float) size);
