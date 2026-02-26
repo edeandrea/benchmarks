@@ -71,7 +71,7 @@ jobs:
       - name: Publish latest images for inspection
         if: github.repository == 'quarkusio/benchmarks' && ! endsWith(github.ref, '/main') && github.event_name == 'pull_request'
         id: artifact-upload-step
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: images
           path: ./images/tuned/*svg
@@ -83,7 +83,7 @@ jobs:
         run: |
           mkdir -p ./pr
           echo $PR_NUMBER > ./pr/pr_number
-      - uses: actions/upload-artifact@v6
+      - uses: actions/upload-artifact@v7
         with:
           name: pr_number
           path: pr/
