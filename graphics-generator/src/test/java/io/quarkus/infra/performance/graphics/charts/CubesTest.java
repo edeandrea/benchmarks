@@ -1,7 +1,5 @@
 package io.quarkus.infra.performance.graphics.charts;
 
-import java.util.Random;
-
 import io.quarkus.infra.performance.graphics.model.Framework;
 import io.quarkus.infra.performance.graphics.model.units.Memory;
 import org.junit.jupiter.api.Test;
@@ -54,10 +52,6 @@ class CubesTest {
 
         assertTrue(preferredHeight <= maximumHeight, preferredHeight + " > " + maximumHeight);
         assertTrue(preferredHeight >= minimumHeight, preferredHeight + " > " + minimumHeight);
-    }
-
-    private static Memory getRandomMemory() {
-        return new Memory(new Random().nextDouble() * 1000);
     }
 
 }

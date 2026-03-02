@@ -27,6 +27,8 @@ import static org.mockito.Mockito.when;
 
 public abstract class ChartTest extends ElasticElementTest {
 
+    protected static final Random RANDOM = new Random();
+
     @Test
     public void testBoundsOnDimensionsForSmallGroup() {
         BenchmarkData data = mockBenchmarkData(2);
@@ -194,7 +196,7 @@ public abstract class ChartTest extends ElasticElementTest {
 
 
     private static BenchmarkData mockBenchmarkData(int count) {
-        return mockBenchmarkData(count, () -> (double) new Random().nextInt(400));
+        return mockBenchmarkData(count, () -> (double) RANDOM.nextInt(400));
     }
 
     private static BenchmarkData mockBenchmarkData(int count, Supplier<Double> value) {
