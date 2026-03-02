@@ -235,21 +235,23 @@ jobs:
 
       - name: Update PR status comment with link
         if: steps.changed.outputs.files_changed == 'true'
-        uses: actions-cool/maintain-one-comment@v3
+        uses: quarkusio/action-helpers@main
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          action: maintain-one-comment
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           body: |
             🚀 This is what some of the generated images would look like with this change. You can browse the full set on [the preview branch](../blob/${{ steps.hash.outputs.hash }}/images/).
 
             ${{ steps.svgs_changed_md.outputs.svgs_changed_md }}
             ${{ steps.svgs_added_md.outputs.svgs_added_md }}
             ${{ steps.svgs_removed_md.outputs.svgs_removed_md }}
-          number: ${{ steps.pr.outputs.id }}
+          pr-number: ${{ steps.pr.outputs.id }}
 
       - name: Update PR status comment with absence of link
         if: steps.changed.outputs.files_changed == 'false'
-        uses: actions-cool/maintain-one-comment@v3
+        uses: quarkusio/action-helpers@main
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
+          action: maintain-one-comment
+          github-token: ${{ secrets.GITHUB_TOKEN }}
           body: This PR would not change any of the generated images.
-          number: ${{ steps.pr.outputs.id }}
+          pr-number: ${{ steps.pr.outputs.id }}
