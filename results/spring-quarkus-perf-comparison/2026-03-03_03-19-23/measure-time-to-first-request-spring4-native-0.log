@@ -1,0 +1,72 @@
+21:54:48,212 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Found logback-core version ?
+21:54:48,212 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Found logback-classic version ?
+21:54:48,212 |-WARN in ch.qos.logback.classic.LoggerContext[default] - Versions of logback-classic and ? are different or unknown.
+21:54:48,215 |-INFO in ch.qos.logback.classic.util.ContextInitializer@2e74d79a - Here is a list of configurators discovered as a service, by rank: 
+21:54:48,215 |-INFO in ch.qos.logback.classic.util.ContextInitializer@2e74d79a -   org.springframework.boot.logging.logback.RootLogLevelConfigurator
+21:54:48,215 |-INFO in ch.qos.logback.classic.util.ContextInitializer@2e74d79a - They will be invoked in order until ExecutionStatus.DO_NOT_INVOKE_NEXT_IF_ANY is returned.
+21:54:48,215 |-INFO in ch.qos.logback.classic.util.ContextInitializer@2e74d79a - Constructed configurator of type class org.springframework.boot.logging.logback.RootLogLevelConfigurator
+21:54:48,216 |-INFO in ch.qos.logback.classic.util.ContextInitializer@2e74d79a - org.springframework.boot.logging.logback.RootLogLevelConfigurator.configure() call lasted 1 milliseconds. ExecutionStatus=INVOKE_NEXT_IF_ANY
+21:54:48,216 |-INFO in ch.qos.logback.classic.util.ContextInitializer@2e74d79a - Trying to configure with ch.qos.logback.classic.util.DefaultJoranConfigurator
+21:54:48,217 |-INFO in ch.qos.logback.classic.util.ContextInitializer@2e74d79a - Constructed configurator of type class ch.qos.logback.classic.util.DefaultJoranConfigurator
+21:54:48,217 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Could NOT find resource [logback-test.xml]
+21:54:48,218 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Could NOT find resource [logback.xml]
+21:54:48,218 |-INFO in ch.qos.logback.classic.util.ContextInitializer@2e74d79a - ch.qos.logback.classic.util.DefaultJoranConfigurator.configure() call lasted 1 milliseconds. ExecutionStatus=INVOKE_NEXT_IF_ANY
+21:54:48,218 |-INFO in ch.qos.logback.classic.util.ContextInitializer@2e74d79a - Trying to configure with ch.qos.logback.classic.BasicConfigurator
+21:54:48,219 |-INFO in ch.qos.logback.classic.util.ContextInitializer@2e74d79a - Constructed configurator of type class ch.qos.logback.classic.BasicConfigurator
+21:54:48,219 |-INFO in ch.qos.logback.classic.BasicConfigurator@2b8ca314 - Setting up default configuration.
+21:54:48,223 |-INFO in ch.qos.logback.core.ConsoleAppender[console] - NOTE: Writing to the console can be slow. Try to avoid logging to the 
+21:54:48,223 |-INFO in ch.qos.logback.core.ConsoleAppender[console] - console in production environments, especially in high volume systems.
+21:54:48,223 |-INFO in ch.qos.logback.core.ConsoleAppender[console] - See also https://logback.qos.ch/codes.html#slowConsole
+21:54:48,223 |-INFO in ch.qos.logback.classic.util.ContextInitializer@2e74d79a - ch.qos.logback.classic.BasicConfigurator.configure() call lasted 4 milliseconds. ExecutionStatus=NEUTRAL
+
+21:54:48,212 |-WARN in ch.qos.logback.classic.LoggerContext[default] - Versions of logback-classic and ? are different or unknown.
+21:54:48,212 |-WARN in ch.qos.logback.classic.LoggerContext[default] - Versions of logback-classic and ? are different or unknown.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::                (v4.0.3)
+
+2026-03-02T21:54:48.375-05:00  INFO 700962 --- [           main] org.acme.SpringBoot4Application          : Starting AOT-processed SpringBoot4Application using Java 25.0.2 with PID 700962 (/home/jenkins/spring-quarkus-perf-comparison/spring-quarkus-perf-comparison/springboot4/target/springboot4 started by jenkins in /home/jenkins/spring-quarkus-perf-comparison/spring-quarkus-perf-comparison/springboot4)
+2026-03-02T21:54:48.375-05:00  INFO 700962 --- [           main] org.acme.SpringBoot4Application          : No active profile set, falling back to 1 default profile: "default"
+2026-03-02T21:54:48.464-05:00  INFO 700962 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat initialized with port 8080 (http)
+2026-03-02T21:54:48.470-05:00  INFO 700962 --- [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-03-02T21:54:48.470-05:00  INFO 700962 --- [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/11.0.18]
+2026-03-02T21:54:48.490-05:00  INFO 700962 --- [           main] b.w.c.s.WebApplicationContextInitializer : Root WebApplicationContext: initialization completed in 114 ms
+2026-03-02T21:54:48.553-05:00  INFO 700962 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-03-02T21:54:48.601-05:00  INFO 700962 --- [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@460c1cb
+2026-03-02T21:54:48.601-05:00  INFO 700962 --- [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-03-02T21:54:48.605-05:00  INFO 700962 --- [           main] org.hibernate.orm.jpa                    : HHH008540: Processing PersistenceUnitInfo [name: default]
+2026-03-02T21:54:48.619-05:00  INFO 700962 --- [           main] org.hibernate.orm.core                   : HHH000001: Hibernate ORM core version 7.2.4.Final
+2026-03-02T21:54:48.633-05:00  INFO 700962 --- [           main] org.hibernate.orm.cache                  : HHH90001028: Second-level cache region factory [org.hibernate.cache.jcache.internal.JCacheRegionFactory]
+2026-03-02T21:54:48.688-05:00  INFO 700962 --- [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [jdbc:postgresql://localhost:5432/fruits]
+	Database driver: PostgreSQL JDBC Driver
+	Database dialect: PostgreSQLDialect
+	Database version: 17.7
+	Default catalog/schema: fruits/public
+	Autocommit mode: undefined/unknown
+	Isolation level: READ_COMMITTED [default READ_COMMITTED]
+	JDBC fetch size: none
+	Pool: DataSourceConnectionProvider
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-03-02T21:54:48.774-05:00  INFO 700962 --- [           main] org.hibernate.orm.core                   : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-03-02T21:54:48.775-05:00  INFO 700962 --- [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-03-02T21:54:48.790-05:00  INFO 700962 --- [           main] o.s.d.j.r.query.QueryEnhancerFactories   : Hibernate is in classpath; If applicable, HQL parser will be used.
+2026-03-02T21:54:48.868-05:00  WARN 700962 --- [           main] i.m.c.i.binder.jvm.JvmGcMetrics          : GC notifications will not be available because no GarbageCollectorMXBean of the JVM provides any. GCs=[young generation scavenger, complete scavenger]
+2026-03-02T21:54:48.872-05:00  INFO 700962 --- [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 1 endpoint beneath base path '/actuator'
+2026-03-02T21:54:48.880-05:00  INFO 700962 --- [           main] o.s.boot.tomcat.TomcatWebServer          : Tomcat started on port 8080 (http) with context path '/'
+2026-03-02T21:54:48.881-05:00  INFO 700962 --- [           main] org.acme.SpringBoot4Application          : Started SpringBoot4Application in 0.606 seconds (process running for 0.876)
+2026-03-02T21:54:48.884-05:00  INFO 700962 --- [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-03-02T21:54:48.884-05:00  INFO 700962 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-03-02T21:54:48.885-05:00  INFO 700962 --- [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-03-02T21:54:49.314-05:00  INFO 700962 --- [ionShutdownHook] o.s.boot.tomcat.GracefulShutdown         : Commencing graceful shutdown. Waiting for active requests to complete
+2026-03-02T21:54:49.315-05:00  INFO 700962 --- [tomcat-shutdown] o.s.boot.tomcat.GracefulShutdown         : Graceful shutdown complete
+2026-03-02T21:54:49.317-05:00  INFO 700962 --- [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-03-02T21:54:49.318-05:00  INFO 700962 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-03-02T21:54:49.322-05:00  INFO 700962 --- [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
