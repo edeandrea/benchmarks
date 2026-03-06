@@ -64,7 +64,7 @@ class FinePrintTest extends ElasticElementTest {
 
         FinePrint p = new FinePrint(new BenchmarkData(null, null, config));
         String s = drawSvg(p);
-        assertSvgContainsText("Spring: 3.10.3", s);
+        assertSvgContainsText("Spring Boot: 3.10.3", s);
     }
 
 
@@ -75,7 +75,7 @@ class FinePrintTest extends ElasticElementTest {
         when(config.springboot3()).thenReturn(new FrameworkBuild("", "3.10.3"));
         FinePrint p = new FinePrint(new BenchmarkData(null, null, config));
         String s = drawSvg(p);
-        assertSvgContainsText("Spring: 3.10.3", s);
+        assertSvgContainsText("Spring Boot: 3.10.3", s);
 
     }
 
@@ -86,7 +86,7 @@ class FinePrintTest extends ElasticElementTest {
         when(config.springboot4()).thenReturn(new FrameworkBuild("", "4.10.3"));
         FinePrint p = new FinePrint(new BenchmarkData(null, null, config));
         String s = drawSvg(p);
-        assertSvgContainsText("Spring: 4.10.3", s);
+        assertSvgContainsText("Spring Boot: 4.10.3", s);
     }
 
     @Test
@@ -97,8 +97,8 @@ class FinePrintTest extends ElasticElementTest {
         when(config.springboot4()).thenReturn(new FrameworkBuild("", "4.10.3"));
         FinePrint p = new FinePrint(new BenchmarkData(null, null, config));
         String s = drawSvg(p);
-        assertSvgContainsText("Spring 3: 3.10.3", s);
-        assertSvgContainsText("Spring 4: 4.10.3", s);
+        assertSvgContainsText("Spring Boot 3: 3.10.3", s);
+        assertSvgContainsText("Spring Boot 4: 4.10.3", s);
 
     }
 
@@ -112,7 +112,7 @@ class FinePrintTest extends ElasticElementTest {
         String s = drawSvg(p);
         assertSvgDoesNotContainText("Spring 3: 3.10.3", s);
         assertSvgDoesNotContainText("Spring 4: 4.10.3", s);
-        assertSvgContainsText("Spring: 4.10.3", s);
+        assertSvgContainsText("Spring Boot: 4.10.3", s);
 
     }
 

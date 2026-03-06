@@ -30,6 +30,7 @@ import static io.quarkus.infra.performance.graphics.model.Category.SPRING;
 public class FinePrint implements ElasticElement {
     static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
     private static final String SOURCE_CODE_LABEL = "Source:";
+    public static final String SPRING_LABEL = "Spring Boot: ";
 
     private static final int MAXIMUM_FONT_SIZE = 30;
     private static final int MINIMUM_FONT_SIZE = 8;
@@ -61,21 +62,21 @@ public class FinePrint implements ElasticElement {
         if (bmData.group().containsAny(SPRING)) {
             // This is a bit brittle, but it seems to be the best way of checking if we are plotting two springs or one; the metadata is not sufficient
             if (bmData.group().containsAny(OLD) && metadata.springboot3() != null && metadata.springboot4() != null) {
-                leftColumn.add("Spring 3: "
+                leftColumn.add("Spring Boot 3: "
                         + metadata.springboot3().version());
-                leftColumn.add("Spring 4: "
+                leftColumn.add("Spring Boot 4: "
                         + metadata.springboot4().version());
             } else {
                 if (metadata.springboot() != null) {
-                    leftColumn.add("Spring: "
+                    leftColumn.add(SPRING_LABEL
                             + metadata.springboot().version());
                     // Assume if the group doesn't include old stuff that we want Spring 4
                 } else if (metadata.springboot4() != null) {
-                    leftColumn.add("Spring: "
+                    leftColumn.add(SPRING_LABEL
                             + metadata.springboot4().version());
 
                 } else if (metadata.springboot3() != null) { // Edge case, Spring 3 but no Spring 4
-                    leftColumn.add("Spring: "
+                    leftColumn.add(SPRING_LABEL
                             + metadata.springboot3().version());
 
                 }
