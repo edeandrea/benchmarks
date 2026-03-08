@@ -1,8 +1,10 @@
 package io.quarkus.infra.performance.graphics.charts;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontMetrics;
+import java.awt.Stroke;
 import java.awt.geom.Rectangle2D;
 
 import org.apache.batik.svggen.SVGGraphics2D;
@@ -61,6 +63,17 @@ public class Subcanvas {
 
     public void fillRect(int x, int y, int width, int height) {
         g.fillRect(x + xOffset, y + yOffset, width, height);
+    }
+
+    public void drawLine(int x1, int y1, int x2, int y2) {
+        g.drawLine(x1 + xOffset, y1 + yOffset, x2 + xOffset, y2 + yOffset);
+    }
+
+    public void drawLine(int x1, int y1, int x2, int y2, int thickness) {
+        Stroke oldStroke = g.getStroke();
+        g.setStroke(new BasicStroke(thickness));
+        g.drawLine(x1 + xOffset, y1 + yOffset, x2 + xOffset, y2 + yOffset);
+        g.setStroke(oldStroke);
     }
 
     public void fill(Rectangle2D.Double aDouble) {

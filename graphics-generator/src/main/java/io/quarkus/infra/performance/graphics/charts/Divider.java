@@ -28,6 +28,7 @@ public class Divider implements ElasticElement {
     @Override
     public void draw(Subcanvas g, Theme theme) {
         g.setPaint(theme.divider());
-        g.fillRect(0, (g.getHeight() - THICKNESS) / 2, g.getWidth(), THICKNESS);
+        int y = g.getHeight() / 2;
+        g.drawLine(0, y, g.getWidth(), y, THICKNESS);
     }
 }
