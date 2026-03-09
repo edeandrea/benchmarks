@@ -66,7 +66,7 @@ public class Subcanvas {
     }
 
     public void drawLine(int x1, int y1, int x2, int y2) {
-        g.drawLine(x1 + xOffset, y1 + yOffset, x2 + xOffset, y2 + yOffset);
+        drawLine(x1, y1, x2, y2, 1);
     }
 
     public void drawLine(int x1, int y1, int x2, int y2, int thickness) {
@@ -74,6 +74,14 @@ public class Subcanvas {
         g.setStroke(new BasicStroke(thickness));
         g.drawLine(x1 + xOffset, y1 + yOffset, x2 + xOffset, y2 + yOffset);
         g.setStroke(oldStroke);
+    }
+
+    public void drawCircle(int centerX, int centerY, int diameter) {
+        g.drawOval(centerX - diameter / 2 + xOffset, centerY - diameter / 2 + yOffset, diameter, diameter);
+    }
+
+    public void fillCircle(int centerX, int centerY, int diameter) {
+        g.fillOval(centerX - diameter / 2 + xOffset, centerY - diameter / 2 + yOffset, diameter, diameter);
     }
 
     public void fill(Rectangle2D.Double aDouble) {

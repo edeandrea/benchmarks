@@ -9,6 +9,7 @@ import java.util.stream.Collectors;
 import io.quarkus.infra.performance.graphics.PlotDefinition;
 import io.quarkus.infra.performance.graphics.Theme;
 import io.quarkus.infra.performance.graphics.charts.fonts.Sizer;
+import io.quarkus.infra.performance.graphics.charts.scales.ScaleDivider;
 import io.quarkus.infra.performance.graphics.model.BenchmarkData;
 import io.quarkus.infra.performance.graphics.model.Category;
 
@@ -20,6 +21,7 @@ public class BarChart extends SingleSeriesChart {
     private final Optional<FinePrint> fineprint;
     private final List<Bar> bars = new ArrayList<>();
     private final List<ElasticElement> barsAndPartitions = new ArrayList<>();
+    private List<ScaleDivider> partitions = new ArrayList<>();
 
     public BarChart(PlotDefinition plotDefinition, BenchmarkData bmData) {
         this(plotDefinition, bmData, false);
@@ -36,8 +38,8 @@ public class BarChart extends SingleSeriesChart {
         }
 
         Category previousCategory = null;
-        int partitions = countPartitions(data) + 1;
-        int averagePartitionSize = data.size() / partitions;
+        int partitionCount = countPartitions(data) + 1;
+        int averagePartitionSize = data.size() / partitionCount;
         // Do an extra check, so we don't get stupidly small partitions; technically maybe we'd prefer to check the ratio
         boolean shouldUsePartitions = (averagePartitionSize >= MINIMUM_PARTITION_SIZE);
 
@@ -45,8 +47,9 @@ public class BarChart extends SingleSeriesChart {
             Category newCategory = d.framework().getPartitionableCategory();
             if (shouldUsePartitions) {
                 if (newCategory != null && previousCategory != null && ! newCategory.equals(previousCategory)) {
-                    Divider e1 = new Divider();
+                    ScaleDivider e1 = new ScaleDivider(maxValue);
                     barsAndPartitions.add(e1);
+                    partitions.add(e1);
                     children.add(e1);
                 }
             }
@@ -111,6 +114,11 @@ public class BarChart extends SingleSeriesChart {
         // Set a common left label width before trying to calculate a scale
         for (Bar bar : bars) {
             bar.setLeftLabelWidth(leftLabelWidth);
+        }
+        if (! bars.isEmpty()) {
+            for (ScaleDivider part : partitions) {
+                part.setOffset(bars.getFirst().getOffset());
+            }
         }
 
         double scale = bars.stream().mapToDouble(bar -> bar.getMaximumScale(barArea)).min().orElse(1);
