@@ -125,14 +125,16 @@ public class CompositeChart extends Chart {
         rightChart.draw(rightArea, theme);
 
         topChartArea.setPaint(theme.divider());
-        topChartArea.fillRect(leftArea.getWidth(), 0, DIVIDER_WIDTH, topChartArea.getHeight());
+        int x = leftArea.getWidth();
+        topChartArea.drawLine(x, 0, x, topChartArea.getHeight(), DIVIDER_WIDTH);
 
 
         Subcanvas bottomChartArea = new Subcanvas(g, g.getWidth(), bottomChartsHeight, 0, topChartArea.getHeight() + + DIVIDER_WIDTH);
         bottomChart.draw(bottomChartArea, theme);
 
         topChartArea.setPaint(theme.divider());
-        topChartArea.fillRect(0, topChartArea.getHeight() - DIVIDER_WIDTH, topChartArea.getWidth(), DIVIDER_WIDTH);
+        int y = topChartArea.getHeight();
+        topChartArea.drawLine(0, y, topChartArea.getWidth(), y, DIVIDER_WIDTH);
 
 
         int finePrintWidth = Math.min(g.getWidth(), fineprint.getActualHorizontalSize(finePrintHeight));
