@@ -74,7 +74,8 @@ jobs:
           git add images/tuned/*svg
           git update-index --refresh
           # Decide if any images has changed relative to origin/main (not just the head of this branch)
-          if ! git diff-index --quiet origin/main -- images/tuned/*svg; then
+          # Use HEAD instead of the working tree to compare against origin/main
+          if ! git diff --quiet HEAD origin/main -- images/tuned/*svg; then
             echo "Changes detected."
             echo "files_changed=true" >> $GITHUB_OUTPUT
           else
