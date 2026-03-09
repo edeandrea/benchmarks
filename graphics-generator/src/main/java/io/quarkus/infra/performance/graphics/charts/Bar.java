@@ -98,12 +98,12 @@ public class Bar implements ElasticElement {
         int labelY = barArea.getHeight() / 2;
 
         barArea.setPaint(theme.text());
+        int xOffset = getOffset();
 
         Subcanvas frameworkSubcanvas = new Subcanvas(barArea, leftLabelWidth, frameworkLabel.getTargetHeight(), 0, 0);
         frameworkLabel.draw(frameworkSubcanvas, leftLabelWidth, labelY);
-        int xOffset = frameworkSubcanvas.getWidth() + labelPadding;
         Subcanvas barSubcanvas = new Subcanvas(barArea, barArea.getWidth() - xOffset, frameworkLabel.getTargetHeight(), xOffset, 0);
-
+        
         // If this framework isn't found, it will just be the text colour, which is fine
         barSubcanvas.setPaint(theme.chartElements().get(d.framework()));
         int length = (int) (val * scale);
@@ -121,5 +121,9 @@ public class Bar implements ElasticElement {
 
     public double getMaximumScale(Subcanvas barArea) {
         return getMaximumBarWidth(barArea) / d.value().getValue();
+    }
+
+    public int getOffset() {
+        return leftLabelWidth + labelPadding;
     }
 }
