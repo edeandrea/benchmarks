@@ -63,6 +63,13 @@ jobs:
           
           # Add and commit changes
           git add images/
+          
+          # Check if there are changes to commit
+          if git diff --staged --quiet; then
+            echo "No changes to commit, skipping PR creation"
+            exit 0
+          fi
+          
           git commit -m "Generate charts (from ${{ github.workflow }} run # ${{ github.run_number }})"
           
           # Push the branch
