@@ -79,6 +79,8 @@ jobs:
           echo "pull-request-url=$PR_URL" >> $GITHUB_OUTPUT
       - name: Merge PR
         if: steps.create-pr.outputs.pull-request-url && github.repository == 'quarkusio/benchmarks' && endsWith(github.ref, '/main') && github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: gh pr merge --merge --delete-branch "${{ steps.create-pr.outputs.pull-request-url }}"
       - name: Publish latest images for inspection
         if: github.repository == 'quarkusio/benchmarks' && ! endsWith(github.ref, '/main') && github.event_name == 'pull_request'
