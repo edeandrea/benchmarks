@@ -1,0 +1,9 @@
+__  ____  __  _____   ___  __ ____  ______ 
+ --/ __ \/ / / / _ | / _ \/ //_/ / / / __/ 
+ -/ /_/ / /_/ / __ |/ , _/ ,< / /_/ /\ \   
+--\___\_\____/_/ |_/_/|_/_/|_|\____/___/   
+2026-03-10 04:54:57,341 WARN  [io.micrometer.core.instrument.MeterRegistry] (main) This Gauge has been already registered (MeterId{name='netty.eventexecutor.workers', tags=[]}), the registration will be ignored. Note that subsequent logs will be logged at debug level.
+2026-03-10 04:54:57,348 INFO  [io.quarkus] (main) quarkus3 1.0 native (powered by Quarkus 3.32.2) started in 0.337s. Listening on: http://0.0.0.0:8080
+2026-03-10 04:54:57,348 INFO  [io.quarkus] (main) Profile prod activated. 
+2026-03-10 04:54:57,348 INFO  [io.quarkus] (main) Installed features: [agroal, cdi, config-yaml, hibernate-orm, hibernate-orm-panache, hibernate-validator, jdbc-postgresql, micrometer, narayana-jta, rest, rest-jackson, smallrye-context-propagation, smallrye-health, vertx]
+2026-03-10 04:55:29,631 INFO  [io.quarkus] (Shutdown thread) quarkus3 stopped in 0.001s
