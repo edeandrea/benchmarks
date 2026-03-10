@@ -57,19 +57,18 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           
-          # Create a new branch with short commit hash
-          BRANCH_NAME="create-images/sourceref-$(git rev-parse --short HEAD)"
-          git checkout -b "$BRANCH_NAME"
-          
-          # Add and commit changes
-          git add images/
-          
           # Check if there are changes to commit
+          git add images/
           if git diff --staged --quiet; then
             echo "No changes to commit, skipping PR creation"
             exit 0
           fi
           
+          # Create a new branch with short commit hash
+          BRANCH_NAME="create-images/sourceref-$(git rev-parse --short HEAD)"
+          git checkout -b "$BRANCH_NAME"
+          
+          # Commit changes
           git commit -m "Generate charts (from ${{ github.workflow }} run # ${{ github.run_number }})"
           
           # Push the branch
