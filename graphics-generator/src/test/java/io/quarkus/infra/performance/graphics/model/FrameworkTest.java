@@ -14,7 +14,7 @@ class FrameworkTest {
 
     @Test
     void getExpandedNameForSimpleSpringCase() {
-        assertEquals("Spring 3\nJIT (via OpenJDK)", Framework.SPRING3_JVM.getExpandedName());
+        assertEquals("Spring Boot 3\nJIT (via OpenJDK)", Framework.SPRING3_JVM.getExpandedName());
     }
 
     @Test
