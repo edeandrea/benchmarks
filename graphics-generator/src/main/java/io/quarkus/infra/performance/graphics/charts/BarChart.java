@@ -130,6 +130,9 @@ public class BarChart extends SingleSeriesChart {
         for (Bar bar : bars) {
             bar.setScale(scale);
         }
+        for (ScaleDivider part : partitions) {
+            part.setScale(scale);
+        }
 
         int extraVerticalSpace = barArea.getHeight() - barsAndPartitions.stream().mapToInt(ElasticElement::getMinimumVerticalSize).sum();
         int padding = barsAndPartitions.isEmpty() ? 0:extraVerticalSpace / barsAndPartitions.size();
