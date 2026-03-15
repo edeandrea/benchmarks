@@ -28,6 +28,7 @@ public class ScaleDivider implements ElasticElement {
     private final double[] circleValues;
     private final ValueFormatter formatter;
     private int offset = 0;
+    private double scale;
 
     /**
      * Creates a scale divider with the specified maximum value.
@@ -59,6 +60,10 @@ public class ScaleDivider implements ElasticElement {
 
     public void setOffset(int offset) {
         this.offset = offset;
+    }
+
+    public void setScale(double scale) {
+        this.scale = scale;
     }
 
     @Override
@@ -97,7 +102,6 @@ public class ScaleDivider implements ElasticElement {
     }
 
     private void drawCircles(Subcanvas g, Theme theme) {
-        int width = g.getWidth();
         int height = g.getHeight();
 
         int y = height / 2;
@@ -105,7 +109,7 @@ public class ScaleDivider implements ElasticElement {
         // Draw circles with labels at round numbers
         for (double value : circleValues) {
             // Calculate x position based on value
-            int x = (int) ((width * value) / maxValue);
+            int x = (int) (value * scale);
 
             // Drop the first circle
             if (value > 0) {
@@ -134,7 +138,6 @@ public class ScaleDivider implements ElasticElement {
 
     private void drawTicks(Subcanvas g, double interval) {
         double smallTickInterval = interval / NUM_TICKS;
-        int width = g.getWidth();
         int height = g.getHeight();
 
         int y = height / 2;
@@ -142,10 +145,10 @@ public class ScaleDivider implements ElasticElement {
         double currentValue = 0;
         int tickIndex = 0;
         while (currentValue <= maxValue) {
-            int x = (int) ((width * currentValue) / maxValue);
+            int x = (int) (currentValue * scale);
 
             // Skip ticks that are within 2 pixels of any circle boundary
-            if (! isNearCircleBoundary(x, width)) {
+            if (! isNearCircleBoundary(x)) {
                 int tickHeight = TICK_HEIGHT;
                 int smallTickHeight = tickHeight / 2;
 
@@ -162,14 +165,14 @@ public class ScaleDivider implements ElasticElement {
         }
     }
 
-    private boolean isNearCircleBoundary(int tickX, int width) {
+    private boolean isNearCircleBoundary(int tickX) {
         // Check if tick is within 2 pixels of any circle boundary
         // Circle radius is CIRCLE_DIAMETER / 2, so boundary is at radius + 2 pixels from center
         int boundaryDistance = CIRCLE_DIAMETER / 2 + 2;
 
         for (double value : circleValues) {
             if (value > 0) { // Skip the first circle at 0
-                int circleX = (int) ((width * value) / maxValue);
+                int circleX = (int) (value * scale);
                 if (Math.abs(tickX - circleX) <= boundaryDistance) {
                     return true;
                 }

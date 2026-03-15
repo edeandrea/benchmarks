@@ -68,6 +68,7 @@ class ScaleDividerTest extends ElasticElementTest {
     @Test
     public void testDrawWithDarkTheme() {
         ScaleDivider divider = new ScaleDivider(new Seconds(100));
+        divider.setScale(1);
         String svg = drawSvg(divider);
         assertNotNull(svg, "Should generate SVG");
         assertTrue(svg.length() > 0, "SVG should not be empty");
@@ -78,6 +79,7 @@ class ScaleDividerTest extends ElasticElementTest {
     @Test
     public void testDrawWithLightTheme() {
         ScaleDivider divider = new ScaleDivider(new Seconds(100));
+        divider.setScale(1);
         SVGGraphics2D g = getSvgGraphics2D(divider.getPreferredHorizontalSize(),
                 divider.getPreferredVerticalSize());
         Subcanvas canvas = new Subcanvas(g, divider.getPreferredHorizontalSize(),
@@ -90,6 +92,7 @@ class ScaleDividerTest extends ElasticElementTest {
     @Test
     public void testScaleMarkingsAreGenerated() {
         ScaleDivider divider = new ScaleDivider(new Seconds(100));
+        divider.setScale(1);
         String svg = drawSvg(divider);
         // Should have multiple tick marks
         int lineCount = countOccurrences(svg, "<line");
@@ -183,6 +186,7 @@ class ScaleDividerTest extends ElasticElementTest {
     @Test
     public void testTickMarkOrientation() {
         ScaleDivider divider = new ScaleDivider(new Seconds(100));
+        divider.setScale(1);
         String svg = drawSvg(divider);
         // Tick marks should be vertical lines (x1 == x2)
         assertTrue(svg.contains("<line"), "Should contain line elements");
