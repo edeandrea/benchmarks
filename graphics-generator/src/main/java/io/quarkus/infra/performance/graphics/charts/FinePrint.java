@@ -105,7 +105,7 @@ public class FinePrint implements ElasticElement {
             }
         }
 
-        if (metadata.resources() != null) {
+        if (metadata.resources() != null && metadata.resources().appCpus() > 0) {
             middleColumn.add("CPUS: " + metadata.resources().appCpus());
         }
 
