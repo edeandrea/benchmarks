@@ -1,6 +1,6 @@
 package io.quarkus.infra.performance.graphics.model;
 
-import java.util.EnumMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -17,17 +17,12 @@ public class Results {
 
     @JsonAnySetter
     public void addFramework(String key, Result result) {
-        Framework type = Framework.valueOfIgnoreCase(key);
-        if (type != null) {
-            frameworks.put(type, result);
-        } else {
-            // Map unknown frameworks to the UNKNOWN enum value
-            frameworks.put(Framework.UNKNOWN, result);
-        }
+        Framework framework = Framework.valueOfIgnoreCase(key);
+        frameworks.put(framework, result);
     }
 
     public Results() {
-        this.frameworks = new EnumMap<>(Framework.class);
+        this.frameworks = new LinkedHashMap<>();
     }
 
     private Results(Map<Framework, Result> frameworks) {
@@ -42,35 +37,45 @@ public class Results {
         return frameworks.get(type);
     }
 
+    public List<UnknownFramework> unknownFrameworks() {
+        return frameworks.keySet().stream()
+                .filter(f -> f instanceof UnknownFramework)
+                .map(f -> (UnknownFramework) f)
+                .collect(Collectors.toList());
+    }
+
 
     public List<Datapoint> getDatasets(Function<Result, ? extends DimensionalNumber> fun) {
         // Adjust the frameworks to unqualified ones if there's not different versions of the same framework
         // There's no perfect place to do this, but this seems like a reasonable place
 
-        if (hasOnlyOneSpringVersion(frameworks)) {
-            swap(Framework.SPRING3_JVM, Framework.SPRING_JVM);
-            swap(Framework.SPRING3_NATIVE, Framework.SPRING_NATIVE);
-            swap(Framework.SPRING3_JVM_AOT, Framework.SPRING_JVM_AOT);
-            swap(Framework.SPRING3_VIRTUAL, Framework.SPRING_VIRTUAL);
-            swap(Framework.QUARKUS3_SPRING3_COMPAT, Framework.QUARKUS3_SPRING_COMPAT);
+        if (hasOnlyOneSpringVersion()) {
+            swap(KnownFramework.SPRING3_JVM, KnownFramework.SPRING_JVM);
+            swap(KnownFramework.SPRING3_NATIVE, KnownFramework.SPRING_NATIVE);
+            swap(KnownFramework.SPRING3_JVM_AOT, KnownFramework.SPRING_JVM_AOT);
+            swap(KnownFramework.SPRING3_VIRTUAL, KnownFramework.SPRING_VIRTUAL);
+            swap(KnownFramework.QUARKUS3_SPRING3_COMPAT, KnownFramework.QUARKUS3_SPRING_COMPAT);
 
-            swap(Framework.SPRING4_JVM, Framework.SPRING_JVM);
-            swap(Framework.SPRING4_NATIVE, Framework.SPRING_NATIVE);
-            swap(Framework.SPRING4_JVM_AOT, Framework.SPRING_JVM_AOT);
-            swap(Framework.SPRING4_VIRTUAL, Framework.SPRING_VIRTUAL);
-            swap(Framework.QUARKUS3_SPRING4_COMPAT, Framework.QUARKUS3_SPRING_COMPAT);
+            swap(KnownFramework.SPRING4_JVM, KnownFramework.SPRING_JVM);
+            swap(KnownFramework.SPRING4_NATIVE, KnownFramework.SPRING_NATIVE);
+            swap(KnownFramework.SPRING4_JVM_AOT, KnownFramework.SPRING_JVM_AOT);
+            swap(KnownFramework.SPRING4_VIRTUAL, KnownFramework.SPRING_VIRTUAL);
+            swap(KnownFramework.QUARKUS3_SPRING4_COMPAT, KnownFramework.QUARKUS3_SPRING_COMPAT);
         }
 
-        return frameworks.entrySet().stream().map(e -> getDatapoint(e, fun))
+        // Sort frameworks: known frameworks by enum order, unknown frameworks at the end in insertion order
+        return frameworks.entrySet().stream()
+                .sorted(Map.Entry.comparingByKey(Framework.COMPARATOR))
+                .map(e -> getDatapoint(e, fun))
                 .toList();
 
     }
 
-    private boolean hasOnlyOneSpringVersion(Map<Framework, Result> frameworks) {
-        boolean hasSpring3 = frameworks.containsKey(Framework.SPRING3_JVM) || frameworks.containsKey(Framework.SPRING3_NATIVE)
-                || frameworks.containsKey(Framework.SPRING3_JVM_AOT);
-        boolean hasSpring4 = frameworks.containsKey(Framework.SPRING4_JVM) || frameworks.containsKey(Framework.SPRING4_NATIVE)
-                || frameworks.containsKey(Framework.SPRING4_JVM_AOT);
+    private boolean hasOnlyOneSpringVersion() {
+        boolean hasSpring3 = frameworks.containsKey(KnownFramework.SPRING3_JVM) || frameworks.containsKey(KnownFramework.SPRING3_NATIVE)
+                || frameworks.containsKey(KnownFramework.SPRING3_JVM_AOT);
+        boolean hasSpring4 = frameworks.containsKey(KnownFramework.SPRING4_JVM) || frameworks.containsKey(KnownFramework.SPRING4_NATIVE)
+                || frameworks.containsKey(KnownFramework.SPRING4_JVM_AOT);
 
         // Use xor
         return hasSpring3 ^ hasSpring4;
@@ -84,7 +89,7 @@ public class Results {
         }
     }
 
-    private static Datapoint getDatapoint(Map.Entry<Framework, Result> entry,
+    private static Datapoint getDatapoint(Map.Entry<? extends Framework, Result> entry,
                                           Function<Result, ? extends DimensionalNumber> fun) {
         Framework framework = entry.getKey();
         try {
@@ -103,7 +108,7 @@ public class Results {
                 .filter(a -> a.getKey()
                         .isInGroup(group))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (existing, replacement) -> existing,
-                        () -> new EnumMap<>(Framework.class)));
+                        LinkedHashMap::new));
 
         return new Results(filtered);
     }

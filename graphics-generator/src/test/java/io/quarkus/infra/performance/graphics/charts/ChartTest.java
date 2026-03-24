@@ -12,6 +12,7 @@ import io.quarkus.infra.performance.graphics.model.Config;
 import io.quarkus.infra.performance.graphics.model.Framework;
 import io.quarkus.infra.performance.graphics.model.FrameworkBuild;
 import io.quarkus.infra.performance.graphics.model.Group;
+import io.quarkus.infra.performance.graphics.model.KnownFramework;
 import io.quarkus.infra.performance.graphics.model.Load;
 import io.quarkus.infra.performance.graphics.model.Repo;
 import io.quarkus.infra.performance.graphics.model.Result;
@@ -55,7 +56,7 @@ public abstract class ChartTest extends ElasticElementTest {
 
     @Test
     public void testBoundsOnDimensionsForLargeGroup() {
-        BenchmarkData data = mockBenchmarkData(Framework.values().length);
+        BenchmarkData data = mockBenchmarkData(KnownFramework.values().length);
         PlotDefinition plotDefinition = createPlotDefinition();
 
         Chart chart = createChart(plotDefinition, data);
@@ -94,7 +95,7 @@ public abstract class ChartTest extends ElasticElementTest {
 
     @Test
     public void testCanDrawLargeGroupInMinimumDimensions() {
-        BenchmarkData data = mockBenchmarkData(Framework.values().length);
+        BenchmarkData data = mockBenchmarkData(KnownFramework.values().length);
         PlotDefinition plotDefinition = createPlotDefinition();
 
         Chart chart = createChart(plotDefinition, data);
@@ -124,7 +125,7 @@ public abstract class ChartTest extends ElasticElementTest {
 
     @Test
     public void testCanDrawLargeGroupInPreferredDimensions() {
-        BenchmarkData data = mockBenchmarkData(Framework.values().length);
+        BenchmarkData data = mockBenchmarkData(KnownFramework.values().length);
         PlotDefinition plotDefinition = createPlotDefinition();
 
         Chart chart = createChart(plotDefinition, data);
@@ -205,7 +206,7 @@ public abstract class ChartTest extends ElasticElementTest {
         when(data.results()).thenReturn(results);
         when(data.group()).thenReturn(Group.ALL);
         for (int i = 0; i < count; i++) {
-            addDatapoint(data, Framework.values()[i], value.get());
+            addDatapoint(data, KnownFramework.values()[i], value.get());
         }
         addConfig(data);
         return data;

@@ -6,6 +6,22 @@ import java.util.Map;
 import io.quarkus.infra.performance.graphics.charts.fonts.EmbeddableFont;
 import io.quarkus.infra.performance.graphics.model.Framework;
 
+import static io.quarkus.infra.performance.graphics.model.KnownFramework.QUARKUS3_JVM;
+import static io.quarkus.infra.performance.graphics.model.KnownFramework.QUARKUS3_NATIVE;
+import static io.quarkus.infra.performance.graphics.model.KnownFramework.QUARKUS3_SPRING_COMPAT;
+import static io.quarkus.infra.performance.graphics.model.KnownFramework.QUARKUS3_VIRTUAL;
+import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING3_JVM;
+import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING3_JVM_AOT;
+import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING3_NATIVE;
+import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING3_VIRTUAL;
+import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING4_JVM;
+import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING4_JVM_AOT;
+import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING4_NATIVE;
+import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING4_VIRTUAL;
+import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING_JVM;
+import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING_JVM_AOT;
+import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING_NATIVE;
+import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING_VIRTUAL;
 import static java.awt.Color.decode;
 
 public record Theme(String name, Color background, Color text, Color divider, Color finePrint,
@@ -23,28 +39,28 @@ public record Theme(String name, Color background, Color text, Color divider, Co
 
     private static final Map<Framework, Color> DEFAULT_CHART_ELEMENTS = Map.ofEntries(
             // Quarkus
-            Map.entry(Framework.QUARKUS3_JVM, QUARKUS_BLUE),
-            Map.entry(Framework.QUARKUS3_VIRTUAL, QUARKUS_BLUE),
-            Map.entry(Framework.QUARKUS3_NATIVE, QUARKUS_BLUE),
-            Map.entry(Framework.QUARKUS3_SPRING_COMPAT, QUARKUS_BLUE),
+            Map.entry(QUARKUS3_JVM, QUARKUS_BLUE),
+            Map.entry(QUARKUS3_VIRTUAL, QUARKUS_BLUE),
+            Map.entry(QUARKUS3_NATIVE, QUARKUS_BLUE),
+            Map.entry(QUARKUS3_SPRING_COMPAT, QUARKUS_BLUE),
 
             // Spring 3
-            Map.entry(Framework.SPRING3_JVM, SPRING_LIGHT_GREEN),
-            Map.entry(Framework.SPRING3_NATIVE, SPRING_LIGHT_GREEN),
-            Map.entry(Framework.SPRING3_JVM_AOT, SPRING_LIGHT_GREEN),
-            Map.entry(Framework.SPRING3_VIRTUAL, SPRING_LIGHT_GREEN),
+            Map.entry(SPRING3_JVM, SPRING_LIGHT_GREEN),
+            Map.entry(SPRING3_NATIVE, SPRING_LIGHT_GREEN),
+            Map.entry(SPRING3_JVM_AOT, SPRING_LIGHT_GREEN),
+            Map.entry(SPRING3_VIRTUAL, SPRING_LIGHT_GREEN),
 
             // Spring 4
-            Map.entry(Framework.SPRING4_JVM, SPRING_GREEN),
-            Map.entry(Framework.SPRING4_NATIVE, SPRING_GREEN),
-            Map.entry(Framework.SPRING4_JVM_AOT, SPRING_GREEN),
-            Map.entry(Framework.SPRING4_VIRTUAL, SPRING_GREEN),
+            Map.entry(SPRING4_JVM, SPRING_GREEN),
+            Map.entry(SPRING4_NATIVE, SPRING_GREEN),
+            Map.entry(SPRING4_JVM_AOT, SPRING_GREEN),
+            Map.entry(SPRING4_VIRTUAL, SPRING_GREEN),
 
             // Spring
-            Map.entry(Framework.SPRING_JVM, SPRING_LIGHT_GREEN),
-            Map.entry(Framework.SPRING_NATIVE, SPRING_LIGHT_GREEN),
-            Map.entry(Framework.SPRING_JVM_AOT, SPRING_LIGHT_GREEN),
-            Map.entry(Framework.SPRING_VIRTUAL, SPRING_LIGHT_GREEN));
+            Map.entry(SPRING_JVM, SPRING_LIGHT_GREEN),
+            Map.entry(SPRING_NATIVE, SPRING_LIGHT_GREEN),
+            Map.entry(SPRING_JVM_AOT, SPRING_LIGHT_GREEN),
+            Map.entry(SPRING_VIRTUAL, SPRING_LIGHT_GREEN));
 
     public static final Theme LIGHT = new Theme("light", Color.WHITE, decode("#121212"), LIGHT_DIVIDER, BARELY_GREY);
     public static final Theme DARK = new Theme("dark", decode("#121212"), decode("#B5B5B5"), DARK_DIVIDER, OFF_BLACK);

@@ -131,6 +131,134 @@
         "avConnectionErrors": 0,
         "avRequestTimeouts": 0
       }
+    },
+    "unknown-framework-abc": {
+      "build": {
+        "timings": [
+          18.3,
+          17.9,
+          18.1
+        ],
+        "avBuildTime": 18.1
+      },
+      "startup": {
+        "timings": [
+          4000,
+          4050,
+          4025
+        ],
+        "avStartTime": 4025.0
+      },
+      "rss": {
+        "startup": [
+          320.0,
+          325.0,
+          322.5
+        ],
+        "firstRequest": [
+          370.0,
+          375.0,
+          372.5
+        ],
+        "avStartupRss": 322.5,
+        "avFirstRequestRss": 372.5
+      },
+      "load": {
+        "throughput": [
+          11000.0,
+          11100.0,
+          11050.0
+        ],
+        "connectionErrors": [
+          0,
+          0,
+          0
+        ],
+        "requestTimeouts": [
+          0,
+          0,
+          0
+        ],
+        "rss": [
+          520.0,
+          525.0,
+          522.5
+        ],
+        "throughputDensity": [
+          21.15,
+          21.14,
+          21.15
+        ],
+        "avThroughput": 11050.0,
+        "avMaxRss": 522.5,
+        "maxThroughputDensity": 21.15,
+        "avConnectionErrors": 0,
+        "avRequestTimeouts": 0
+      }
+    },
+    "unknown-framework-def": {
+      "build": {
+        "timings": [
+          20.5,
+          21.0,
+          20.8
+        ],
+        "avBuildTime": 20.766666666666666
+      },
+      "startup": {
+        "timings": [
+          4500,
+          4550,
+          4525
+        ],
+        "avStartTime": 4525.0
+      },
+      "rss": {
+        "startup": [
+          340.0,
+          345.0,
+          342.5
+        ],
+        "firstRequest": [
+          390.0,
+          395.0,
+          392.5
+        ],
+        "avStartupRss": 342.5,
+        "avFirstRequestRss": 392.5
+      },
+      "load": {
+        "throughput": [
+          10000.0,
+          10100.0,
+          10050.0
+        ],
+        "connectionErrors": [
+          0,
+          0,
+          0
+        ],
+        "requestTimeouts": [
+          0,
+          0,
+          0
+        ],
+        "rss": [
+          540.0,
+          545.0,
+          542.5
+        ],
+        "throughputDensity": [
+          18.52,
+          18.53,
+          18.52
+        ],
+        "avThroughput": 10050.0,
+        "avMaxRss": 542.5,
+        "maxThroughputDensity": 18.53,
+        "avConnectionErrors": 0,
+        "avRequestTimeouts": 0
+      }
     }
   },
   "config": {

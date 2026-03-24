@@ -9,13 +9,13 @@ import static io.quarkus.infra.performance.graphics.model.Category.COMPATIBILITY
 import static io.quarkus.infra.performance.graphics.model.Category.JVM;
 import static io.quarkus.infra.performance.graphics.model.Category.NATIVE;
 import static io.quarkus.infra.performance.graphics.model.Category.OLD;
-import static io.quarkus.infra.performance.graphics.model.Framework.QUARKUS3_JVM;
-import static io.quarkus.infra.performance.graphics.model.Framework.QUARKUS3_NATIVE;
-import static io.quarkus.infra.performance.graphics.model.Framework.SPRING4_JVM;
-import static io.quarkus.infra.performance.graphics.model.Framework.SPRING4_NATIVE;
+import static io.quarkus.infra.performance.graphics.model.KnownFramework.QUARKUS3_JVM;
+import static io.quarkus.infra.performance.graphics.model.KnownFramework.QUARKUS3_NATIVE;
+import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING4_JVM;
+import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING4_NATIVE;
 
 /**
- * A group of franeworks for plotting.
+ * A group of frameworks for plotting.
  * You can define a group by explicitly listing the frameworks in it, by listing frameworks (which can be empty) and also categories for inclusion (by OR), or frameworks, categories, and categories which should be excluded.
  */
 public enum Group {
@@ -24,7 +24,7 @@ public enum Group {
             QUARKUS3_JVM, SPRING4_JVM, QUARKUS3_NATIVE, SPRING4_NATIVE
     ), null),
 
-    AOT_COMPARISON(EnumSet.noneOf(Framework.class), Set.of(JVM, AOT), EnumSet.of(Category.VIRTUAL_THREADS)),
+    AOT_COMPARISON(EnumSet.noneOf(KnownFramework.class), Set.of(JVM, AOT), EnumSet.of(Category.VIRTUAL_THREADS)),
 
     JAVA_FRAMEWORKS_WITH_COMPATIBILITY(EnumSet.of(JVM, COMPATIBILITY)),
 
@@ -32,41 +32,41 @@ public enum Group {
             Category.QUARKUS
     )),
 
-    VIRTUAL_THREADS(EnumSet.noneOf(Framework.class), EnumSet.of(
+    VIRTUAL_THREADS(EnumSet.noneOf(KnownFramework.class), EnumSet.of(
             Category.VIRTUAL_THREADS,
             JVM
     ), EnumSet.of(Category.AOT)),
 
-    JAVA_AND_NATIVE_FRAMEWORKS(EnumSet.noneOf(Framework.class), EnumSet.of(
+    JAVA_AND_NATIVE_FRAMEWORKS(EnumSet.noneOf(KnownFramework.class), EnumSet.of(
             JVM, NATIVE
     ), EnumSet.of(AOT, Category.VIRTUAL_THREADS)),
 
-    ALL(EnumSet.allOf(Framework.class), null),
+    ALL(EnumSet.allOf(KnownFramework.class), null),
 
-    JAVA_AND_NATIVE_AND_AOT_FRAMEWORKS(EnumSet.noneOf(Framework.class), EnumSet.of(
+    JAVA_AND_NATIVE_AND_AOT_FRAMEWORKS(EnumSet.noneOf(KnownFramework.class), EnumSet.of(
             NATIVE,
             AOT,
             JVM
     ), EnumSet.of(OLD, Category.VIRTUAL_THREADS));
 
-    private final Set<Framework> frameworks;
+    private final Set<KnownFramework> frameworks;
 
     Group(Set<Category> categories) {
-        this(EnumSet.noneOf(Framework.class), categories);
+        this(EnumSet.noneOf(KnownFramework.class), categories);
     }
 
-    Group(EnumSet<Framework> frameworks, Set<Category> categories) {
+    Group(EnumSet<KnownFramework> frameworks, Set<Category> categories) {
         this(frameworks, categories, EnumSet.noneOf(Category.class));
     }
 
     /**
      * Include all the named frameworks and also everything with the named category.
      */
-    Group(EnumSet<Framework> frameworks, Set<Category> categories, Set<Category> exclusions) {
+    Group(EnumSet<KnownFramework> frameworks, Set<Category> categories, Set<Category> exclusions) {
         this.frameworks = EnumSet.copyOf(frameworks);
         if (categories != null) {
             for (Category category : categories) {
-                for (Framework candidate : Framework.values()) {
+                for (KnownFramework candidate : KnownFramework.values()) {
                     if (candidate.hasCategory(category)) {
                         // Now check the candidate doesn't have any of the exclusions
                         boolean isExcluded = false;
