@@ -1,0 +1,71 @@
+17:14:52,298 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Found logback-core version ?
+17:14:52,298 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Found logback-classic version ?
+17:14:52,298 |-WARN in ch.qos.logback.classic.LoggerContext[default] - Versions of logback-classic and ? are different or unknown.
+17:14:52,311 |-INFO in ch.qos.logback.classic.util.ContextInitializer@2a0bd54 - Here is a list of configurators discovered as a service, by rank: 
+17:14:52,311 |-INFO in ch.qos.logback.classic.util.ContextInitializer@2a0bd54 -   org.springframework.boot.logging.logback.RootLogLevelConfigurator
+17:14:52,311 |-INFO in ch.qos.logback.classic.util.ContextInitializer@2a0bd54 - They will be invoked in order until ExecutionStatus.DO_NOT_INVOKE_NEXT_IF_ANY is returned.
+17:14:52,311 |-INFO in ch.qos.logback.classic.util.ContextInitializer@2a0bd54 - Constructed configurator of type class org.springframework.boot.logging.logback.RootLogLevelConfigurator
+17:14:52,312 |-INFO in ch.qos.logback.classic.util.ContextInitializer@2a0bd54 - org.springframework.boot.logging.logback.RootLogLevelConfigurator.configure() call lasted 0 milliseconds. ExecutionStatus=INVOKE_NEXT_IF_ANY
+17:14:52,312 |-INFO in ch.qos.logback.classic.util.ContextInitializer@2a0bd54 - Trying to configure with ch.qos.logback.classic.util.DefaultJoranConfigurator
+17:14:52,315 |-INFO in ch.qos.logback.classic.util.ContextInitializer@2a0bd54 - Constructed configurator of type class ch.qos.logback.classic.util.DefaultJoranConfigurator
+17:14:52,315 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Could NOT find resource [logback-test.xml]
+17:14:52,315 |-INFO in ch.qos.logback.classic.LoggerContext[default] - Could NOT find resource [logback.xml]
+17:14:52,315 |-INFO in ch.qos.logback.classic.util.ContextInitializer@2a0bd54 - ch.qos.logback.classic.util.DefaultJoranConfigurator.configure() call lasted 0 milliseconds. ExecutionStatus=INVOKE_NEXT_IF_ANY
+17:14:52,315 |-INFO in ch.qos.logback.classic.util.ContextInitializer@2a0bd54 - Trying to configure with ch.qos.logback.classic.BasicConfigurator
+17:14:52,318 |-INFO in ch.qos.logback.classic.util.ContextInitializer@2a0bd54 - Constructed configurator of type class ch.qos.logback.classic.BasicConfigurator
+17:14:52,318 |-INFO in ch.qos.logback.classic.BasicConfigurator@e43f771 - Setting up default configuration.
+17:14:52,324 |-INFO in ch.qos.logback.core.ConsoleAppender[console] - NOTE: Writing to the console can be slow. Try to avoid logging to the 
+17:14:52,324 |-INFO in ch.qos.logback.core.ConsoleAppender[console] - console in production environments, especially in high volume systems.
+17:14:52,324 |-INFO in ch.qos.logback.core.ConsoleAppender[console] - See also https://logback.qos.ch/codes.html#slowConsole
+17:14:52,324 |-INFO in ch.qos.logback.classic.util.ContextInitializer@2a0bd54 - ch.qos.logback.classic.BasicConfigurator.configure() call lasted 6 milliseconds. ExecutionStatus=NEUTRAL
+
+17:14:52,298 |-WARN in ch.qos.logback.classic.LoggerContext[default] - Versions of logback-classic and ? are different or unknown.
+17:14:52,298 |-WARN in ch.qos.logback.classic.LoggerContext[default] - Versions of logback-classic and ? are different or unknown.
+
+  .   ____          _            __ _ _
+ /\\ / ___'_ __ _ _(_)_ __  __ _ \ \ \ \
+( ( )\___ | '_ | '_| | '_ \/ _` | \ \ \ \
+ \\/  ___)| |_)| | | | | || (_| |  ) ) ) )
+  '  |____| .__|_| |_|_| |_\__, | / / / /
+ =========|_|==============|___/=/_/_/_/
+
+ :: Spring Boot ::               (v3.5.12)
+
+2026-03-24T17:14:52.547-04:00  INFO 3023371 --- [springboot3] [           main] org.acme.SpringBoot3Application          : Starting AOT-processed SpringBoot3Application using Java 25.0.2 with PID 3023371 (/home/jenkins/spring-quarkus-perf-comparison/spring-quarkus-perf-comparison/springboot3/target/springboot3 started by jenkins in /home/jenkins/spring-quarkus-perf-comparison/spring-quarkus-perf-comparison/springboot3)
+2026-03-24T17:14:52.548-04:00  INFO 3023371 --- [springboot3] [           main] org.acme.SpringBoot3Application          : No active profile set, falling back to 1 default profile: "default"
+2026-03-24T17:14:52.671-04:00  INFO 3023371 --- [springboot3] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat initialized with port 8080 (http)
+2026-03-24T17:14:52.679-04:00  INFO 3023371 --- [springboot3] [           main] o.apache.catalina.core.StandardService   : Starting service [Tomcat]
+2026-03-24T17:14:52.679-04:00  INFO 3023371 --- [springboot3] [           main] o.apache.catalina.core.StandardEngine    : Starting Servlet engine: [Apache Tomcat/10.1.52]
+2026-03-24T17:14:52.697-04:00  INFO 3023371 --- [springboot3] [           main] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring embedded WebApplicationContext
+2026-03-24T17:14:52.697-04:00  INFO 3023371 --- [springboot3] [           main] w.s.c.ServletWebServerApplicationContext : Root WebApplicationContext: initialization completed in 149 ms
+2026-03-24T17:14:52.775-04:00  INFO 3023371 --- [springboot3] [           main] i.o.i.s.a.OpenTelemetryAutoConfiguration : OpenTelemetry Spring Boot starter (2.25.0) has been started
+2026-03-24T17:14:52.821-04:00  INFO 3023371 --- [springboot3] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Starting...
+2026-03-24T17:14:52.867-04:00  INFO 3023371 --- [springboot3] [           main] com.zaxxer.hikari.pool.HikariPool        : HikariPool-1 - Added connection org.postgresql.jdbc.PgConnection@75e66f0
+2026-03-24T17:14:52.867-04:00  INFO 3023371 --- [springboot3] [           main] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Start completed.
+2026-03-24T17:14:52.871-04:00  INFO 3023371 --- [springboot3] [           main] o.hibernate.jpa.internal.util.LogHelper  : HHH000204: Processing PersistenceUnitInfo [name: default]
+2026-03-24T17:14:52.886-04:00  INFO 3023371 --- [springboot3] [           main] org.hibernate.Version                    : HHH000412: Hibernate ORM core version 6.6.44.Final
+2026-03-24T17:14:52.899-04:00  INFO 3023371 --- [springboot3] [           main] o.h.c.internal.RegionFactoryInitiator    : HHH000025: Second-level cache region factory [org.hibernate.cache.jcache.internal.JCacheRegionFactory]
+2026-03-24T17:14:52.944-04:00  INFO 3023371 --- [springboot3] [           main] org.hibernate.orm.connections.pooling    : HHH10001005: Database info:
+	Database JDBC URL [Connecting through datasource 'io.opentelemetry.instrumentation.spring.autoconfigure.internal.instrumentation.jdbc.DataSourcePostProcessor$DataSource$$Wrapper: 0 interfaces []; 0 advisors []; targetSource [SingletonTargetSource for target object [com.zaxxer.hikari.HikariDataSource@7df6d16c]]; proxyTargetClass=false; optimize=false; opaque=false; exposeProxy=false; frozen=false']
+	Database driver: undefined/unknown
+	Database version: 17.7
+	Autocommit mode: undefined/unknown
+	Isolation level: undefined/unknown
+	Minimum pool size: undefined/unknown
+	Maximum pool size: undefined/unknown
+2026-03-24T17:14:52.989-04:00  WARN 3023371 --- [springboot3] [           main] org.hibernate.mapping.RootClass          : HHH000038: Composite-id class does not override equals(): org.acme.domain.StoreFruitPriceId
+2026-03-24T17:14:52.989-04:00  WARN 3023371 --- [springboot3] [           main] org.hibernate.mapping.RootClass          : HHH000039: Composite-id class does not override hashCode(): org.acme.domain.StoreFruitPriceId
+2026-03-24T17:14:53.021-04:00  INFO 3023371 --- [springboot3] [           main] o.h.e.t.j.p.i.JtaPlatformInitiator       : HHH000489: No JTA platform available (set 'hibernate.transaction.jta.platform' to enable JTA platform integration)
+2026-03-24T17:14:53.022-04:00  INFO 3023371 --- [springboot3] [           main] j.LocalContainerEntityManagerFactoryBean : Initialized JPA EntityManagerFactory for persistence unit 'default'
+2026-03-24T17:14:53.208-04:00  WARN 3023371 --- [springboot3] [           main] i.m.c.i.binder.jvm.JvmGcMetrics          : GC notifications will not be available because no GarbageCollectorMXBean of the JVM provides any. GCs=[young generation scavenger, complete scavenger]
+2026-03-24T17:14:53.302-04:00  INFO 3023371 --- [springboot3] [           main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 2 endpoints beneath base path '/actuator'
+2026-03-24T17:14:53.311-04:00  INFO 3023371 --- [springboot3] [           main] o.s.b.w.embedded.tomcat.TomcatWebServer  : Tomcat started on port 8080 (http) with context path '/'
+2026-03-24T17:14:53.312-04:00  INFO 3023371 --- [springboot3] [           main] org.acme.SpringBoot3Application          : Started SpringBoot3Application in 0.902 seconds (process running for 1.174)
+2026-03-24T17:14:53.316-04:00  INFO 3023371 --- [springboot3] [nio-8080-exec-1] o.a.c.c.C.[Tomcat].[localhost].[/]       : Initializing Spring DispatcherServlet 'dispatcherServlet'
+2026-03-24T17:14:53.316-04:00  INFO 3023371 --- [springboot3] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Initializing Servlet 'dispatcherServlet'
+2026-03-24T17:14:53.317-04:00  INFO 3023371 --- [springboot3] [nio-8080-exec-1] o.s.web.servlet.DispatcherServlet        : Completed initialization in 1 ms
+2026-03-24T17:14:53.342-04:00  INFO 3023371 --- [springboot3] [ionShutdownHook] o.s.b.w.e.tomcat.GracefulShutdown        : Commencing graceful shutdown. Waiting for active requests to complete
+2026-03-24T17:14:53.344-04:00  INFO 3023371 --- [springboot3] [tomcat-shutdown] o.s.b.w.e.tomcat.GracefulShutdown        : Graceful shutdown complete
+2026-03-24T17:14:53.360-04:00  INFO 3023371 --- [springboot3] [ionShutdownHook] j.LocalContainerEntityManagerFactoryBean : Closing JPA EntityManagerFactory for persistence unit 'default'
+2026-03-24T17:14:53.361-04:00  INFO 3023371 --- [springboot3] [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown initiated...
+2026-03-24T17:14:53.364-04:00  INFO 3023371 --- [springboot3] [ionShutdownHook] com.zaxxer.hikari.HikariDataSource       : HikariPool-1 - Shutdown completed.
