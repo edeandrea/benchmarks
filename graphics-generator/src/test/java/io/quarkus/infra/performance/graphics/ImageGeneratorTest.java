@@ -57,6 +57,7 @@ class ImageGeneratorTest {
             when(data.group()).thenReturn(Group.ALL);
             addDatapoint(data, Framework.QUARKUS3_JVM, THROUGHPUT);
             addDatapoint(data, Framework.SPRING3_JVM, 267.87);
+            addDatapoint(data, Framework.UNKNOWN, 123.45);
             addConfig(data);
             Function<Result, ? extends DimensionalNumber> fun = framework -> framework.load().avThroughput();
             PlotDefinition plotDefinition = new SingleSeriesPlotDefinition("test plot", "some subtitle", fun);
@@ -121,6 +122,12 @@ class ImageGeneratorTest {
         assertTrue(contents.indexOf(font)
                         != contents.lastIndexOf(font),
                 "Fallback font declaration should appear more than once");
+    }
+
+    @Test
+    public void testUnknownFrameworkLabel() throws IOException {
+        String contents = getImageFileContents();
+        assertTrue(contents.contains("Unknown"), "Image should contain 'Unknown' label for unknown framework");
     }
 
     private String getImageFileContents() throws IOException {

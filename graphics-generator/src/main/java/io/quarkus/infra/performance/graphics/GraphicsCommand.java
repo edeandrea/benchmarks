@@ -142,7 +142,8 @@ public class GraphicsCommand implements Runnable {
         var currentFilename = file.getFileName().toString();
         String group = data.group().toString().toLowerCase().replaceAll("_", "-");
 
-        return Optional.ofNullable(data.config().repo().scenario())
+        return Optional.ofNullable(data.config().repo())
+                .map(repo -> repo.scenario())
                 .filter(scenario -> ! currentFilename.contains(scenario))
                 .map(scenario -> currentFilename.replace(".json", "-%s-%s-for-%s-%s.svg".formatted(scenario, filename, group, mode.name())))
                 .orElseGet(() -> currentFilename.replace(".json", "-%s-for-%s-%s.svg".formatted(filename, group, mode.name())));

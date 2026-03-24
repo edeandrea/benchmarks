@@ -1,18 +1,16 @@
 package io.quarkus.infra.performance.graphics;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import java.nio.file.Path;
 import java.time.Instant;
-
 import jakarta.inject.Inject;
-
-import org.junit.jupiter.api.Test;
 
 import io.quarkus.infra.performance.graphics.model.BenchmarkData;
 import io.quarkus.infra.performance.graphics.model.Framework;
 import io.quarkus.test.junit.QuarkusTest;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 @QuarkusTest
 class DataIngesterTest {
@@ -63,6 +61,26 @@ class DataIngesterTest {
 
         // Native
         assertEquals(11887, data.results().framework(Framework.SPRING3_NATIVE).build().reflectionClassCount().getValue());
+    }
+
+    @Test
+    public void testIngestWithUnknownFramework() {
+        var file = Path.of("src/test/resources/data-unknown-framework.json");
+        BenchmarkData data = dataIngester.ingest(file);
+        assertNotNull(data);
+
+        // Verify the file can be parsed without error even though it contains an unknown framework
+        assertNotNull(data.results());
+        assertNotNull(data.timing());
+        assertNotNull(data.config());
+
+        // Verify known frameworks are still accessible
+        assertNotNull(data.results().framework(Framework.QUARKUS3_JVM));
+        assertEquals(18615.88333333333, data.results().framework(Framework.QUARKUS3_JVM).load().avThroughput().getValue());
+
+        // Verify unknown framework data is accessible via Framework.UNKNOWN
+        assertNotNull(data.results().framework(Framework.UNKNOWN));
+        assertEquals(12050.0, data.results().framework(Framework.UNKNOWN).load().avThroughput().getValue());
     }
 
     @Test
