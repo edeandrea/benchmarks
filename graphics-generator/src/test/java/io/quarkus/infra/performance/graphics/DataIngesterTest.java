@@ -65,4 +65,33 @@ class DataIngesterTest {
         assertEquals(11887, data.results().framework(Framework.SPRING3_NATIVE).build().reflectionClassCount().getValue());
     }
 
+    @Test
+    public void testIngestWithoutCpuFields() {
+        var file = Path.of("src/test/resources/data-no-cpu.json");
+        BenchmarkData data = dataIngester.ingest(file);
+        assertNotNull(data);
+
+        assertNotNull(data.results());
+        assertNotNull(data.timing());
+        assertNotNull(data.config());
+
+        // Config should still be parseable
+        assertEquals("25.0.1-tem", data.config().jvm().version());
+        assertEquals("25.0.1-graalce", data.config().jvm().graalVM().version());
+        assertEquals("3.30.5", data.config().quarkus().version());
+
+        // Resources should be null when CPU fields are missing
+        assertNotNull(data.config().resources());
+        assertEquals(0, data.config().resources().appCpus());
+        // CPU object should be null when fields are missing
+        assertEquals(null, data.config().resources().cpu());
+
+        // Results should still be parseable
+        assertEquals(18615.88333333333, data.results().framework(Framework.QUARKUS3_JVM).load().avThroughput().getValue());
+
+        // Timing should still be parseable
+        assertEquals(Instant.parse("2025-11-18T22:28:52Z"), data.timing().start());
+        assertEquals(Instant.parse("2025-11-19T00:19:44Z"), data.timing().stop());
+    }
+
 }
