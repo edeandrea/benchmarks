@@ -9,7 +9,7 @@ import io.quarkus.infra.performance.graphics.charts.fonts.VAlignment;
 import static io.quarkus.infra.performance.graphics.charts.fonts.FontStyle.BOLD;
 import static io.quarkus.infra.performance.graphics.charts.fonts.FontStyle.PLAIN;
 
-public class Bar implements ElasticElement {
+public class Bar extends ScaledElement {
     static final int BAR_THICKNESS = 44;
     public static final int VALUE_LABEL_HEIGHT = BAR_THICKNESS * 2 / 3;
     private static final int MINIMUM_BAR_THICKNESS = 44;
@@ -17,19 +17,18 @@ public class Bar implements ElasticElement {
     private static final int MINIMUM_BAR_LENGTH = 200;
 
     public static final int LEFT_LABEL_SIZE = Sizer.calculateFontSize(BAR_THICKNESS / 2);
+    public static final int LABEL_PADDING = 12;
 
     private static final int barSpacing = 12;
-    private static final int labelPadding = 12;
 
     private final Label valueLabel;
     private final Label frameworkLabel;
     private final Datapoint d;
 
-    private double scale = 1;
-    private int leftLabelWidth;
     private final String frameworkLabelText;
 
-    public Bar(Datapoint d, LabelGroup frameworkLabelGroup, LabelGroup valueLabelGroup) {
+    public Bar(Datapoint d, LabelGroup frameworkLabelGroup, LabelGroup valueLabelGroup, ScaleGroup scaleGroup) {
+        super(scaleGroup);
         this.d = d;
         double val = d.value().getValue();
         frameworkLabelText = d.framework().getExpandedName();
@@ -42,16 +41,7 @@ public class Bar implements ElasticElement {
         valueLabel = new Label(valueLabelText, valueLabelGroup).setStyle(BOLD).setTargetHeight(VALUE_LABEL_HEIGHT);
 
         // This will probably be overridden, but set a value
-        leftLabelWidth = Sizer.calculateWidth(frameworkLabelText, LEFT_LABEL_SIZE);
-    }
-
-    public void setScale(double scale) {
-        this.scale = scale;
-    }
-
-    // Allows alignment of a group of bars
-    public void setLeftLabelWidth(int w) {
-        this.leftLabelWidth = w;
+        offset = Sizer.calculateWidth(frameworkLabelText, LEFT_LABEL_SIZE) + LABEL_PADDING;
     }
 
     @Override
@@ -72,7 +62,7 @@ public class Bar implements ElasticElement {
 
     @Override
     public int getMinimumHorizontalSize() {
-        return leftLabelWidth + MINIMUM_BAR_LENGTH + getValueLabelWidth() + 2 * labelPadding;
+        return offset + MINIMUM_BAR_LENGTH + getValueLabelWidth() + LABEL_PADDING;
     }
 
     private int getValueLabelWidth() {
@@ -90,32 +80,28 @@ public class Bar implements ElasticElement {
         int labelY = barArea.getHeight() / 2;
 
         barArea.setPaint(theme.text());
-        int xOffset = getOffset();
+        int leftLabelWidth = offset - LABEL_PADDING;
 
         Subcanvas frameworkSubcanvas = new Subcanvas(barArea, leftLabelWidth, frameworkLabel.getTargetHeight(), 0, 0);
         frameworkLabel.draw(frameworkSubcanvas, leftLabelWidth, labelY);
-        Subcanvas barSubcanvas = new Subcanvas(barArea, barArea.getWidth() - xOffset, frameworkLabel.getTargetHeight(), xOffset, 0);
+        Subcanvas barSubcanvas = new Subcanvas(barArea, barArea.getWidth() - offset, frameworkLabel.getTargetHeight(), offset, 0);
 
         // If this framework isn't found, it will just be the text colour, which is fine
         barSubcanvas.setPaint(theme.chartElements().get(d.framework()));
-        int length = (int) (val * scale);
+        int length = (int) (val * scaleGroup.getScale());
         int y = (barArea.getHeight() - BAR_THICKNESS) / 2;
         barSubcanvas.fillRect(0, y, length, BAR_THICKNESS);
 
         barSubcanvas.setPaint(theme.text());
 
-        valueLabel.setTargetHeight(BAR_THICKNESS * 2 / 3).draw(barSubcanvas, length + labelPadding, labelY);
+        valueLabel.setTargetHeight(BAR_THICKNESS * 2 / 3).draw(barSubcanvas, length + LABEL_PADDING, labelY);
     }
 
     public int getMaximumBarWidth(Subcanvas barArea) {
-        return barArea.getWidth() - 2 * labelPadding - leftLabelWidth - getValueLabelWidth();
+        return barArea.getWidth() - offset - LABEL_PADDING - getValueLabelWidth();
     }
 
     public double getMaximumScale(Subcanvas barArea) {
         return getMaximumBarWidth(barArea) / d.value().getValue();
-    }
-
-    public int getOffset() {
-        return leftLabelWidth + labelPadding;
     }
 }
