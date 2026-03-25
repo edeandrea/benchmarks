@@ -103,8 +103,17 @@ jobs:
           # This prevents false positives when main has been updated since the PR was created
           MERGE_BASE=${{ steps.branch.outputs.merge_base }}
           echo "Comparing against merge-base: $MERGE_BASE"
+
+          # Debug: show what we're comparing
+          echo "Files in index:"
+          git ls-files -s images/tuned/ | wc -l
+          echo "Files at merge-base:"
+          git ls-tree -r $MERGE_BASE images/tuned/ | wc -l
+
           if ! git diff --quiet --cached $MERGE_BASE -- images/tuned/*svg; then
             echo "Changes detected."
+            echo "Diff summary:"
+            git diff --cached --stat $MERGE_BASE -- images/tuned/*svg
             echo "files_changed=true" >> $GITHUB_OUTPUT
           else
             echo "No changes."
