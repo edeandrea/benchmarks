@@ -47,8 +47,19 @@ jobs:
           rm -rf images
           mkdir images
           java -jar graphics-generator/target/quarkus-app/quarkus-run.jar results images true
+      - name: Check if images changed
+        id: images-changed
+        run: |
+          git add images/
+          if git diff --staged --quiet; then
+            echo "No changes to images"
+            echo "changed=false" >> $GITHUB_OUTPUT
+          else
+            echo "Images changed"
+            echo "changed=true" >> $GITHUB_OUTPUT
+          fi
       - name: Commit generated resources via PR
-        if: github.repository == 'quarkusio/benchmarks' && endsWith(github.ref, '/main') && github.event_name != 'pull_request'
+        if: github.repository == 'quarkusio/benchmarks' && endsWith(github.ref, '/main') && github.event_name != 'pull_request' && steps.images-changed.outputs.changed == 'true'
         id: create-pr
         env:
           GH_TOKEN: ${{ github.token }}
@@ -56,13 +67,6 @@ jobs:
           # Configure git
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          
-          # Check if there are changes to commit
-          git add images/
-          if git diff --staged --quiet; then
-            echo "No changes to commit, skipping PR creation"
-            exit 0
-          fi
           
           # Create a new branch with short commit hash
           BRANCH_NAME="create-images/sourceref-$(git rev-parse --short HEAD)"
@@ -89,7 +93,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: gh pr merge --merge --delete-branch "${{ steps.create-pr.outputs.pull-request-url }}"
       - name: Publish latest images for inspection
-        if: github.repository == 'quarkusio/benchmarks' && ! endsWith(github.ref, '/main') && github.event_name == 'pull_request'
+        if: github.repository == 'quarkusio/benchmarks' && ! endsWith(github.ref, '/main') && github.event_name == 'pull_request' && steps.images-changed.outputs.changed == 'true'
         id: artifact-upload-step
         uses: actions/upload-artifact@v7
         with:
