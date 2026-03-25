@@ -192,4 +192,23 @@ public class GraphicsCommandTest {
         assertTrue(image.exists());
     }
 
+    @Test
+    @Launch({"src/test/resources/data-unknown-framework.json", "target/test-output/unknown-framework"})
+    public void testLaunchWithUnknownFramework(LaunchResult result) {
+        String output = result.getOutput();
+        assertTrue(output.contains("data-unknown-framework.json"), output);
+
+        // Verify that images are generated successfully even with unknown frameworks
+        File image = new File("target/test-output/unknown-framework/data-unknown-framework-throughput-for-all-light.svg");
+        assertTrue(image.exists(), "Image should be generated for JSON with unknown framework");
+
+        // Verify dark mode image is also generated
+        File darkImage = new File("target/test-output/unknown-framework/data-unknown-framework-throughput-for-all-dark.svg");
+        assertTrue(darkImage.exists(), "Dark mode image should be generated for JSON with unknown framework");
+
+        // Verify composite image is also generated
+        File compositeImage = new File("target/test-output/unknown-framework/data-unknown-framework-composite-for-all-light.svg");
+        assertTrue(compositeImage.exists(), "Composite image should be generated for JSON with unknown framework");
+    }
+
 }

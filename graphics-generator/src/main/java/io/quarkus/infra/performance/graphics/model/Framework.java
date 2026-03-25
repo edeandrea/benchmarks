@@ -40,7 +40,8 @@ public enum Framework {
     SPRING3_NATIVE("spring3-native", "Spring Boot 3\nNative (via GraalVM)", EnumSet.of(SPRING, NATIVE, OLD)),
     QUARKUS3_SPRING_COMPAT("quarkus3-spring-compat", "Quarkus\nwith Spring compatibility libraries", EnumSet.of(SPRING, COMPATIBILITY, JVM)),
     QUARKUS3_SPRING4_COMPAT("quarkus3-spring4-compat", "Quarkus\nwith Spring Boot 4 compatibility libraries", EnumSet.of(SPRING, COMPATIBILITY, JVM)),
-    QUARKUS3_SPRING3_COMPAT("quarkus3-spring3-compat", "Quarkus\nwith Spring Boot 3 compatibility libraries", EnumSet.of(SPRING, COMPATIBILITY, JVM, OLD));
+    QUARKUS3_SPRING3_COMPAT("quarkus3-spring3-compat", "Quarkus\nwith Spring Boot 3 compatibility libraries", EnumSet.of(SPRING, COMPATIBILITY, JVM, OLD)),
+    UNKNOWN("unknown", "Unknown\nNo Details", EnumSet.noneOf(Category.class));
 
     private final String name;
     private final String expandedName;

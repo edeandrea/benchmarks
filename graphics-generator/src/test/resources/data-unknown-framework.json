@@ -1,0 +1,156 @@
+{
+  "timing": {
+    "start": "2025-11-18T22:28:52Z",
+    "stop": "2025-11-19T00:19:44Z"
+  },
+  "results": {
+    "quarkus3-jvm": {
+      "build": {
+        "timings": [
+          10.02,
+          13.08,
+          10.05
+        ],
+        "avBuildTime": 11.050000000000002
+      },
+      "startup": {
+        "timings": [
+          2831,
+          2834,
+          2844
+        ],
+        "avStartTime": 2836.3333333333335
+      },
+      "rss": {
+        "startup": [
+          238.1875,
+          238.8671875,
+          240.984375
+        ],
+        "firstRequest": [
+          272.25,
+          279.15625,
+          277.8359375
+        ],
+        "avStartupRss": 239.34635416666666,
+        "avFirstRequestRss": 276.4140625
+      },
+      "load": {
+        "throughput": [
+          18538.62,
+          18528.47,
+          18780.56
+        ],
+        "connectionErrors": [
+          0,
+          0,
+          0
+        ],
+        "requestTimeouts": [
+          0,
+          0,
+          0
+        ],
+        "rss": [
+          751.53125,
+          716.609375,
+          741.7109375
+        ],
+        "throughputDensity": [
+          24.66779658197846,
+          25.855746026208493,
+          25.32059195904739
+        ],
+        "avThroughput": 18615.88333333333,
+        "avMaxRss": 736.6171875,
+        "maxThroughputDensity": 25.855746026208493,
+        "avConnectionErrors": 0,
+        "avRequestTimeouts": 0
+      }
+    },
+    "unknown-framework-xyz": {
+      "build": {
+        "timings": [
+          15.5,
+          16.2,
+          15.8
+        ],
+        "avBuildTime": 15.833333333333334
+      },
+      "startup": {
+        "timings": [
+          3500,
+          3550,
+          3525
+        ],
+        "avStartTime": 3525.0
+      },
+      "rss": {
+        "startup": [
+          300.0,
+          305.5,
+          302.25
+        ],
+        "firstRequest": [
+          350.0,
+          355.0,
+          352.5
+        ],
+        "avStartupRss": 302.58333333333337,
+        "avFirstRequestRss": 352.5
+      },
+      "load": {
+        "throughput": [
+          12000.0,
+          12100.0,
+          12050.0
+        ],
+        "connectionErrors": [
+          0,
+          0,
+          0
+        ],
+        "requestTimeouts": [
+          0,
+          0,
+          0
+        ],
+        "rss": [
+          500.0,
+          505.0,
+          502.5
+        ],
+        "throughputDensity": [
+          24.0,
+          23.96,
+          23.98
+        ],
+        "avThroughput": 12050.0,
+        "avMaxRss": 502.5,
+        "maxThroughputDensity": 24.0,
+        "avConnectionErrors": 0,
+        "avRequestTimeouts": 0
+      }
+    }
+  },
+  "config": {
+    "jvm": {
+      "version": "25.0.1-tem",
+      "graalVM": {
+        "version": "25.0.1-graalce"
+      }
+    },
+    "quarkus": {
+      "version": "3.30.5"
+    },
+    "resources": {
+      "appCpus": 4,
+      "cpu": {
+        "app": "0-3",
+        "firstRequest": "10",
+        "loadGenerator": "7-9",
+        "db": "4-6"
+      }
+    }
+  }
+}

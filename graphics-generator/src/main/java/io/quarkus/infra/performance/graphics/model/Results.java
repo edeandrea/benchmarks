@@ -17,11 +17,12 @@ public class Results {
 
     @JsonAnySetter
     public void addFramework(String key, Result result) {
-        try {
-            Framework type = Framework.valueOfIgnoreCase(key);
+        Framework type = Framework.valueOfIgnoreCase(key);
+        if (type != null) {
             frameworks.put(type, result);
-        } catch (IllegalArgumentException e) {
-            // Optionally log or ignore unknown frameworks
+        } else {
+            // Map unknown frameworks to the UNKNOWN enum value
+            frameworks.put(Framework.UNKNOWN, result);
         }
     }
 
