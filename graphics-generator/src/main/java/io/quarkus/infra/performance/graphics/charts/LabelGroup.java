@@ -57,4 +57,11 @@ public class LabelGroup {
         }
         return styledFonts[index % styledFonts.length];
     }
+
+    public void decrement() {
+        int newSize = getFontSize() - 1;
+        setBaseFont(Theme.FONT.getFont(PLAIN, newSize));
+
+        // Note that if this is called, the owning label's target height is inaccurate
+    }
 }

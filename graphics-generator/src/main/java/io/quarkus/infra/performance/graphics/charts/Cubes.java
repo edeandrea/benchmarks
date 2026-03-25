@@ -10,7 +10,6 @@ import static io.quarkus.infra.performance.graphics.charts.fonts.FontStyle.PLAIN
 
 public class Cubes implements ElasticElement {
     private static final int LABEL_HEIGHT = BAR_THICKNESS;
-    public static final double DECREMENT_INCREMENT = 0.97;
     private final Datapoint d;
     private static final int CUBE_PADDING = 1;
     private final Label valueLabel;
@@ -22,16 +21,20 @@ public class Cubes implements ElasticElement {
     private final CubeGroup cubeGroup;
 
     public Cubes(Datapoint d, CubeGroup cubeGroup) {
+        this(d, cubeGroup, new LabelGroup(), new LabelGroup());
+    }
+
+    public Cubes(Datapoint d, CubeGroup cubeGroup, LabelGroup frameworkLabelGroup, LabelGroup valueLabelGroup) {
         this.d = d;
         this.cubeGroup = cubeGroup;
         double val = d.value().getValue();
 
-        frameworkLabel = new Label(d.framework().getExpandedName())
+        frameworkLabel = new Label(d.framework().getExpandedName(), frameworkLabelGroup)
                 .setHorizontalAlignment(Alignment.CENTER)
                 .setVerticalAlignment(VAlignment.TOP)
                 .setStyles(new io.quarkus.infra.performance.graphics.charts.fonts.FontStyle[]{BOLD, PLAIN})
                 .setTargetHeight(LABEL_HEIGHT);
-        valueLabel = new Label(String.format("%d %s", Math.round(val), d.value().getUnits()))
+        valueLabel = new Label(String.format("%d %s", Math.round(val), d.value().getUnits()), valueLabelGroup)
                 .setHorizontalAlignment(Alignment.CENTER)
                 .setVerticalAlignment(VAlignment.TOP)
                 .setStyle(BOLD).setTargetHeight(LABEL_HEIGHT * 2 / 3);
@@ -121,17 +124,11 @@ public class Cubes implements ElasticElement {
 
         labelArea.setPaint(theme.text());
         frameworkLabel.draw(labelArea, labelArea.getWidth() / 2, 0);
-        // If we have extra space, have the gap at the the bottom, rather than awkwardly between the two labels
+        // If we have extra space, have the gap at the bottom, rather than awkwardly between the two labels
         valueLabel.draw(labelArea, labelArea.getWidth() / 2, frameworkLabel.getActualHeight());
     }
 
     public int getColumnCount() {
         return (int) Math.ceil(d.value().getValue() / (cubeGroup.getNumCubesPerColumn() * cubeGroup.getUnitsPerCube()));
     }
-
-    public void decrementFonts() {
-        frameworkLabel.setTargetHeight((int) (frameworkLabel.getTargetHeight() * DECREMENT_INCREMENT));
-        valueLabel.setTargetHeight((int) (valueLabel.getTargetHeight() * DECREMENT_INCREMENT));
-    }
-
 }

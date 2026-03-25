@@ -25,6 +25,8 @@ public class CubeChart extends SingleSeriesChart {
     private final List<Cubes> cubes = new ArrayList<>();
     private final Optional<Cubes> tallestCube;
     private final CubeGroup cubeGroup;
+    private final LabelGroup frameworkLabelGroup = new LabelGroup();
+    private final LabelGroup valueLabelGroup = new LabelGroup();
 
     public CubeChart(PlotDefinition plotDefinition, BenchmarkData bmData) {
         this(plotDefinition, bmData, false);
@@ -45,7 +47,7 @@ public class CubeChart extends SingleSeriesChart {
         cubeGroup.setNumCubesPerColumn(16);
 
         for (Datapoint d : data) {
-            Cubes c = new Cubes(d, cubeGroup);
+            Cubes c = new Cubes(d, cubeGroup, frameworkLabelGroup, valueLabelGroup);
             cubes.add(c);
 
         }
@@ -228,9 +230,8 @@ public class CubeChart extends SingleSeriesChart {
 
     private void decrementFonts() {
         // If it doesn't fit, shrink fonts
-        for (Cubes c : cubes) {
-            c.decrementFonts();
-        }
+        frameworkLabelGroup.decrement();
+        valueLabelGroup.decrement();
     }
 
     @Override

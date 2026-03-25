@@ -22,6 +22,8 @@ public class BarChart extends SingleSeriesChart {
     private final List<Bar> bars = new ArrayList<>();
     private final List<ElasticElement> barsAndPartitions = new ArrayList<>();
     private List<ScaleDivider> partitions = new ArrayList<>();
+    private final LabelGroup frameworkLabelGroup = new LabelGroup(Bar.LEFT_LABEL_SIZE);
+    private final LabelGroup valueLabelGroup = new LabelGroup();
 
     public BarChart(PlotDefinition plotDefinition, BenchmarkData bmData) {
         this(plotDefinition, bmData, false);
@@ -54,7 +56,7 @@ public class BarChart extends SingleSeriesChart {
                 }
             }
 
-            Bar e = new Bar(d);
+            Bar e = new Bar(d, frameworkLabelGroup, valueLabelGroup);
             bars.add(e);
             barsAndPartitions.add(e);
             children.add(e);
@@ -109,7 +111,7 @@ public class BarChart extends SingleSeriesChart {
                 barHeight, 0, titleCanvas.getHeight());
 
         int leftLabelWidth = Sizer.calculateWidth(bars.stream().map(Bar::getLeftLabelText).collect(Collectors.toSet()),
-                Bar.LEFT_LABEL_SIZE);
+                frameworkLabelGroup.getFontSize());
 
         // Set a common left label width before trying to calculate a scale
         for (Bar bar : bars) {

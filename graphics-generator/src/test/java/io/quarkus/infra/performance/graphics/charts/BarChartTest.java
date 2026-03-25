@@ -9,6 +9,4 @@ public class BarChartTest extends ChartTest {
     protected BarChart createChart(PlotDefinition plotDefinition, BenchmarkData data) {
         return new BarChart(plotDefinition, data);
     }
-
-
 }
