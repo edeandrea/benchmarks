@@ -1,0 +1,107 @@
+{
+  "timing": {
+    "start": "2025-11-18T22:28:52Z",
+    "stop": "2025-11-19T00:19:44Z"
+  },
+  "results": {
+    "quarkus3-jvm": {
+      "build": {
+        "timings": [
+          10.02,
+          13.08,
+          10.05
+        ],
+        "avBuildTime": 11.050000000000002
+      },
+      "startup": {
+        "timings": [
+          2831,
+          2834,
+          2844
+        ],
+        "avStartTime": 2836.3333333333335
+      },
+      "rss": {
+        "startup": [
+          238.1875,
+          238.8671875,
+          240.984375
+        ],
+        "firstRequest": [
+          272.25,
+          279.15625,
+          277.8359375
+        ],
+        "avStartupRss": 239.34635416666666,
+        "avFirstRequestRss": 276.4140625
+      },
+      "load": {
+        "throughput": [
+          18538.62,
+          18528.47,
+          18780.56
+        ],
+        "connectionErrors": [
+          0,
+          0,
+          0
+        ],
+        "requestTimeouts": [
+          0,
+          0,
+          0
+        ],
+        "rss": [
+          751.53125,
+          716.609375,
+          741.7109375
+        ],
+        "throughputDensity": [
+          24.66779658197846,
+          25.855746026208493,
+          25.32059195904739
+        ],
+        "avThroughput": 18615.88333333333,
+        "avMaxRss": 736.6171875,
+        "maxThroughputDensity": 25.855746026208493,
+        "avConnectionErrors": 0,
+        "avRequestTimeouts": 0
+      }
+    }
+  },
+  "config": {
+    "jvm": {
+      "args": "-XX:+UseNUMA",
+      "memory": "-Xmx512m -Xms512m",
+      "graalvm": {
+        "version": "25.0.1-graalce"
+      },
+      "version": "25.0.1-tem"
+    },
+    "num_iterations": 3,
+    "quarkus": {
+      "build_config_args": "",
+      "native_build_options": "",
+      "version": "3.30.5"
+    },
+    "repo": {
+      "commit": "c1bb532fa33f6da12e8973ea04b7cb92adcd0557",
+      "branch": "main",
+      "scenario": "tuned",
+      "url": "https://github.com/quarkusio/spring-quarkus-perf-comparison.git"
+    },
+    "springboot3": {
+      "native_build_options": "",
+      "version": "3.5.9"
+    },
+    "springboot4": {
+      "native_build_options": "",
+      "version": "4.0.1"
+    },
+    "resources": {},
+    "profiler": {
+      "name": "none",
+      "events": "cpu"
+    }
+  }
+}
