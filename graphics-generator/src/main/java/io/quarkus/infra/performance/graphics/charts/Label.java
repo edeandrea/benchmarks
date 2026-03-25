@@ -25,19 +25,26 @@ public class Label {
     private Alignment alignment = Alignment.LEFT;
     private VAlignment valignment = VAlignment.MIDDLE;
     private FontMetrics fontMetrics;
-    private Font baseFont;
-    private Font[] fonts;
+    private final LabelGroup labelGroup;
 
     /**
      * @param text Use \n for multiline text
      */
     public Label(String text) {
         this(text.split(LINE_BREAK));
-
     }
 
     public Label(String[] lines) {
+        this(lines, new LabelGroup());
+    }
+
+    public Label(String text, LabelGroup labelGroup) {
+        this(text.split(LINE_BREAK), labelGroup);
+    }
+
+    public Label(String[] lines, LabelGroup labelGroup) {
         this.strings = lines;
+        this.labelGroup = labelGroup;
         setTargetHeight(DEFAULT_TARGET_HEIGHT);
     }
 
@@ -47,7 +54,7 @@ public class Label {
 
     public void draw(Subcanvas g, int x, int y) {
 
-        g.getGraphics().setFont(baseFont);
+        g.getGraphics().setFont(labelGroup.getBaseFont());
 
         // The SVG attribute alignment-baseline="middle" is not supported by Batik.
         // The value we pass in to drawString is the position of the bottom baseline
@@ -70,7 +77,7 @@ public class Label {
 
             String string = strings[i];
             // Set a base font for the line height
-            Font font = fonts[i % fonts.length];
+            Font font = labelGroup.getFont(i);
             g.setFont(font);
 
             FontMetrics metrics = g.getFontMetrics(font);
@@ -91,7 +98,7 @@ public class Label {
             for (int j = 0; j < segments.length; j++) {
                 // Chaos; which index we use depends on the delimiter
                 int index = (LINE_BREAK.equals(styles.delimiter())) ? i:j;
-                font = fonts[index % fonts.length];
+                font = labelGroup.getFont(index);
                 g.getGraphics().setFont(font);
                 metrics = g.getGraphics().getFontMetrics(font);
 
@@ -106,7 +113,7 @@ public class Label {
                 g.drawString(segment, segmentX, yPosition);
                 segmentX += segmentWidth;
             }
-            yPosition += metrics.getHeight() * lineSpacing; // Recalculate the line height in case the style affected the height slighly
+            yPosition += metrics.getHeight() * lineSpacing; // Recalculate the line height in case the style affected the height slightly
 
         }
 
@@ -117,19 +124,13 @@ public class Label {
         return fontMetrics.getAscent();
     }
 
-    // We will need to have a labelGroup abstraction to keep sizes consistent, and perhaps also set a maximum width
     public Label setTargetHeight(int height) {
         this.targetHeight = height;
         int size = strings.length > 1 ? Sizer.calculateFontSize((int) (targetHeight / (strings.length * lineSpacing))):Sizer.calculateFontSize(targetHeight);
-        baseFont = Theme.FONT.getFont(PLAIN, size);
-        initialiseFonts();
-        return this;
-    }
+        Font baseFont = Theme.FONT.getFont(PLAIN, size);
+        labelGroup.setBaseFont(baseFont);
 
-    private void initialiseFonts() {
-        fonts = Arrays.stream(styles.styles())
-                .map(s -> Theme.FONT.getFont(s, baseFont.getSize()))
-                .toArray(Font[]::new);
+        return this;
     }
 
     public int getTargetHeight() {
@@ -164,7 +165,7 @@ public class Label {
 
         this.styles = new DelimitedStyles(styles, newDelimiter);
 
-        initialiseFonts();
+        labelGroup.setStyles(this.styles.styles());
 
         return this;
     }
@@ -178,7 +179,7 @@ public class Label {
         if (fontMetrics != null) {
             return fontMetrics.getHeight();
         } else {
-            return Sizer.calculateHeight(baseFont.getSize());
+            return Sizer.calculateHeight(labelGroup.getFontSize());
         }
     }
 
@@ -186,12 +187,12 @@ public class Label {
         if (fontMetrics != null) {
             return fontMetrics.stringWidth(s);
         } else {
-            return Sizer.calculateWidth(s, baseFont.getSize());
+            return Sizer.calculateWidth(s, labelGroup.getFontSize());
         }
     }
 
     public int calculateWidth(String s, FontStyle style) {
-        return Sizer.calculateWidth(s, Theme.FONT.getFont(style, baseFont.getSize()));
+        return Sizer.calculateWidth(s, Theme.FONT.getFont(style, labelGroup.getFontSize()));
     }
 
     public int getActualHeight() {
@@ -203,12 +204,15 @@ public class Label {
     }
 
     public int calculateWidth() {
-        String longestText = getLongestText();
-        int index = Arrays.asList(strings).indexOf(longestText);
-        Font font = fonts[index % fonts.length];
+        if (strings.length > 0) {
+            String longestText = getLongestText();
+            int index = Arrays.asList(strings).indexOf(longestText);
+            Font font = labelGroup.getFont(index);
 
-
-        return Sizer.calculateWidth(longestText, font);
+            return Sizer.calculateWidth(longestText, font);
+        } else {
+            return 0;
+        }
     }
 
 

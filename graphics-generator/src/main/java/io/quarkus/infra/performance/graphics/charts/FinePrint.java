@@ -44,6 +44,7 @@ public class FinePrint implements ElasticElement {
     private final Label leftLabel;
     private final Label middleLabel;
     private final Label rightLabel;
+    private final LabelGroup labelGroup = new LabelGroup();
     private final Set<InlinedSVG> svgs = new HashSet<>();
     private final List<String> leftColumn = new ArrayList<>();
     private final List<String> middleColumn = new ArrayList<>();
@@ -133,13 +134,6 @@ public class FinePrint implements ElasticElement {
                 .map(stopTime -> stopTime.atZone(ZoneOffset.UTC).format(DATE_TIME_FORMATTER))
                 .ifPresent(stopTime -> rightColumn.add("Execution date: %s".formatted(stopTime)));
 
-        // Make sure font sizes are the same
-        // TODO this can go away when we have label groups
-        var maxRows = getHighestLineCount();
-        adjustToSameRows(leftColumn, maxRows);
-        adjustToSameRows(middleColumn, maxRows);
-        adjustToSameRows(rightColumn, maxRows);
-
         leftLabel = createLabel(leftColumn);
 
         middleLabel = createLabel(middleColumn);
@@ -148,16 +142,10 @@ public class FinePrint implements ElasticElement {
     }
 
     private Label createLabel(List<String> column) {
-        return new Label(column.toArray(String[]::new))
+        return new Label(column.toArray(String[]::new), labelGroup)
                 .setHorizontalAlignment(Alignment.LEFT)
                 .setVerticalAlignment(VAlignment.TOP)
                 .setStyles(new FontStyle[]{BOLD, PLAIN}, ": ");
-    }
-
-    private static void adjustToSameRows(List<String> labels, int maxRows) {
-        while (labels.size() < maxRows) {
-            labels.add(" ");
-        }
     }
 
     @Override
@@ -181,6 +169,19 @@ public class FinePrint implements ElasticElement {
         return Math.max(leftColumn.size(), Math.max(middleColumn.size(), rightColumn.size()));
     }
 
+    private Label getLabelWithMostLines() {
+        int maxLines = getHighestLineCount();
+
+        if (leftColumn.size() == maxLines) {
+            return leftLabel;
+        } else if (middleColumn.size() == maxLines) {
+            return middleLabel;
+        } else {
+            return rightLabel;
+        }
+        
+    }
+
     @Override
     public int getMinimumHorizontalSize() {
         return calculateWidth(leftColumn, MINIMUM_FONT_SIZE) + calculateWidth(middleColumn, MINIMUM_FONT_SIZE) + calculateWidth(rightColumn, MINIMUM_FONT_SIZE) + MINIMUM_PADDING;
@@ -195,17 +196,16 @@ public class FinePrint implements ElasticElement {
 
         g.setPaint(theme.text());
 
-        leftLabel.setTargetHeight(padded.getHeight());
+        setTargetHeight(padded.getHeight());
+
         leftLabel.draw(padded);
 
         int leftLabelWidth = leftLabel.calculateWidth();
         int middleLabelX = leftLabelWidth + GUTTER;
-        middleLabel.setTargetHeight(padded.getHeight());
         Subcanvas ml = new Subcanvas(padded, padded.getWidth() - middleLabelX, padded.getHeight(), middleLabelX, 0);
         middleLabel.draw(ml);
 
         int rightLabelX = leftLabel.calculateWidth() + middleLabel.calculateWidth() + 2 * GUTTER;
-        rightLabel.setTargetHeight(padded.getHeight());
         var rl = new Subcanvas(padded, padded.getWidth() - rightLabelX, padded.getHeight(), rightLabelX, 0);
         rightLabel.draw(rl);
 
@@ -268,16 +268,17 @@ public class FinePrint implements ElasticElement {
         int topPadding = calculateTopPadding(targetHeight);
         int heightLessPadding = targetHeight - topPadding;
 
-        leftLabel.setTargetHeight(heightLessPadding);
+        setTargetHeight(heightLessPadding);
         int leftLabelWidth = leftLabel.calculateWidth();
-
-        middleLabel.setTargetHeight(heightLessPadding);
         int middleLabelWidth = middleLabel.calculateWidth();
-
-        rightLabel.setTargetHeight(heightLessPadding);
         int rightLabelWidth = rightLabel.calculateWidth();
 
         return leftLabelWidth + middleLabelWidth + rightLabelWidth + 2 * GUTTER;
 
+    }
+
+    private void setTargetHeight(int heightLessPadding) {
+        // Set target height on the label with the most lines first, so it sets the font for the group
+        getLabelWithMostLines().setTargetHeight(heightLessPadding);
     }
 }
