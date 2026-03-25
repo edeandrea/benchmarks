@@ -1,88 +1,73 @@
 package io.quarkus.infra.performance.graphics.model;
 
-import java.util.Arrays;
-import java.util.EnumSet;
-import java.util.Map;
+import java.util.Comparator;
 import java.util.Set;
-import java.util.function.Function;
-import java.util.stream.Collectors;
 
-import com.fasterxml.jackson.annotation.JsonCreator;
-import com.fasterxml.jackson.annotation.JsonValue;
+/**
+ * Represents a framework type, either known (enum-based) or unknown (dynamically created).
+ */
+public interface Framework {
 
-import static io.quarkus.infra.performance.graphics.model.Category.AOT;
-import static io.quarkus.infra.performance.graphics.model.Category.COMPATIBILITY;
-import static io.quarkus.infra.performance.graphics.model.Category.JVM;
-import static io.quarkus.infra.performance.graphics.model.Category.NATIVE;
-import static io.quarkus.infra.performance.graphics.model.Category.OLD;
-import static io.quarkus.infra.performance.graphics.model.Category.QUARKUS;
-import static io.quarkus.infra.performance.graphics.model.Category.SPRING;
-import static io.quarkus.infra.performance.graphics.model.Category.VANILLA_JIT;
-import static io.quarkus.infra.performance.graphics.model.Category.VIRTUAL_THREADS;
+    /**
+     * Comparator that ensures:
+     * 1. Known frameworks come first, sorted by enum ordinal
+     * 2. Unknown frameworks come after, in insertion order
+     */
+    Comparator<Framework> COMPARATOR = (f1, f2) -> {
+        // Both are KnownFramework enums - compare by ordinal
+        if (f1 instanceof KnownFramework && f2 instanceof KnownFramework) {
+            return ((KnownFramework) f1).compareTo((KnownFramework) f2);
+        }
+        // f1 is KnownFramework, f2 is unknown - KnownFramework comes first
+        if (f1 instanceof KnownFramework) {
+            return - 1;
+        }
+        // f2 is KnownFramework, f1 is unknown - KnownFramework comes first
+        if (f2 instanceof KnownFramework) {
+            return 1;
+        }
+        // Both unknown - maintain insertion order (already in LinkedHashMap order)
+        return 0;
+    };
 
-
-public enum Framework {
-    // The order of these determines the natural order in the charts
-    QUARKUS3_JVM("quarkus3-jvm", "Quarkus\nJIT (via OpenJDK)", EnumSet.of(QUARKUS, JVM, VANILLA_JIT)),
-    SPRING4_JVM("spring4-jvm", "Spring Boot 4\nJIT (via OpenJDK)", EnumSet.of(SPRING, JVM, VANILLA_JIT)),
-    SPRING_JVM("spring-jvm", "Spring Boot\nJIT (via OpenJDK)", EnumSet.of(SPRING, JVM, VANILLA_JIT)),
-    SPRING3_JVM("spring3-jvm", "Spring Boot 3\nJIT (via OpenJDK)", EnumSet.of(SPRING, JVM, OLD, VANILLA_JIT)),
-    SPRING4_JVM_AOT("spring4-jvm-aot", "Spring Boot 4\nAOT (via OpenJDK)", EnumSet.of(SPRING, JVM, AOT)),
-    SPRING_JVM_AOT("spring-jvm-aot", "Spring Boot\nAOT (via OpenJDK)", EnumSet.of(SPRING, JVM, AOT)),
-    SPRING3_JVM_AOT("spring3-jvm-aot", "Spring Boot 3\nAOT (via OpenJDK)", EnumSet.of(SPRING, JVM, AOT, OLD)),
-    QUARKUS3_VIRTUAL("quarkus3-virtual", "Quarkus w/Virtual Threads\nJIT (via OpenJDK)", EnumSet.of(QUARKUS, JVM, VIRTUAL_THREADS)),
-    SPRING4_VIRTUAL("spring4-virtual", "Spring Boot 4 w/Virtual Threads\nJIT (via OpenJDK)", EnumSet.of(SPRING, JVM, VIRTUAL_THREADS)),
-    SPRING_VIRTUAL("spring-virtual", "Spring Boot w/Virtual Threads\nJIT (via OpenJDK)", EnumSet.of(SPRING, JVM, VIRTUAL_THREADS)),
-    SPRING3_VIRTUAL("spring3-virtual", "Spring Boot 3 w/Virtual Threads\nJIT (via OpenJDK)", EnumSet.of(SPRING, JVM, VIRTUAL_THREADS, OLD)),
-    QUARKUS3_NATIVE("quarkus3-native", "Quarkus\nNative (via GraalVM)", EnumSet.of(QUARKUS, NATIVE)),
-    SPRING4_NATIVE("spring4-native", "Spring Boot 4\nNative (via GraalVM)", EnumSet.of(SPRING, NATIVE)),
-    SPRING_NATIVE("spring-native", "Spring Boot\nNative (via GraalVM)", EnumSet.of(SPRING, NATIVE)),
-    SPRING3_NATIVE("spring3-native", "Spring Boot 3\nNative (via GraalVM)", EnumSet.of(SPRING, NATIVE, OLD)),
-    QUARKUS3_SPRING_COMPAT("quarkus3-spring-compat", "Quarkus\nwith Spring compatibility libraries", EnumSet.of(SPRING, COMPATIBILITY, JVM)),
-    QUARKUS3_SPRING4_COMPAT("quarkus3-spring4-compat", "Quarkus\nwith Spring Boot 4 compatibility libraries", EnumSet.of(SPRING, COMPATIBILITY, JVM)),
-    QUARKUS3_SPRING3_COMPAT("quarkus3-spring3-compat", "Quarkus\nwith Spring Boot 3 compatibility libraries", EnumSet.of(SPRING, COMPATIBILITY, JVM, OLD)),
-    UNKNOWN("unknown", "Unknown\nNo Details", EnumSet.noneOf(Category.class));
-
-    private final String name;
-    private final String expandedName;
-    private static final Map<String, Framework> ENUM_MAP;
-    private final Set<Category> categories;
-
-    Framework(String name, String expandedName, Set<Category> categories) {
-        this.name = name;
-        this.expandedName = expandedName;
-        this.categories = categories;
+    public static Framework valueOfIgnoreCase(String key) {
+        Framework framework = KnownFramework.valueOfIgnoreCase(key);
+        if (framework == null) {
+            // Create an unknown framework instance
+            framework = new UnknownFramework(key);
+        }
+        return framework;
     }
 
-    @JsonValue
-    public String getName() {
-        return this.name;
-    }
+    /**
+     * Get the internal name/key of the framework
+     */
+    String getName();
 
-    public String getExpandedName() {
-        return this.expandedName;
-    }
+    /**
+     * Get the expanded display name of the framework
+     */
+    String getExpandedName();
 
-    // Build an immutable map of String name to enum pairs.
-    static {
-        ENUM_MAP = Arrays.stream(values())
-                .collect(Collectors.toUnmodifiableMap(framework -> framework.getName().toLowerCase(), Function.identity()));
-    }
+    /**
+     * Check if this framework belongs to a specific group
+     */
+    boolean isInGroup(Group group);
 
-    @JsonCreator
-    public static Framework valueOfIgnoreCase(String name) {
-        return ENUM_MAP.get(name.toLowerCase());
-    }
+    /**
+     * Check if this framework has a specific category
+     */
+    boolean hasCategory(Category category);
 
-    public boolean isInGroup(Group group) {
-        return group.contains(this);
-    }
+    /**
+     * Get the partitionable category for this framework
+     */
+    Category getPartitionableCategory();
 
-    public boolean hasCategory(Category category) {
-        return categories.contains(category);
-    }
-
-    public Category getPartitionableCategory() {
-        return categories.stream().filter(c -> c.isPartitionable()).findFirst().orElse(null);
-    }
+    /**
+     * Get all categories for this framework
+     */
+    Set<Category> getCategories();
 }
+
+// Made with Bob
