@@ -31,6 +31,13 @@ jobs:
           git checkout pr-images
           git reset --hard origin/main
 
+          # Find the merge-base between the PR head and main for proper comparison
+          PR_HEAD=${{ github.event.workflow_run.head_sha }}
+          git fetch origin $PR_HEAD
+          MERGE_BASE=$(git merge-base origin/main $PR_HEAD)
+          echo "merge_base=$MERGE_BASE" >> $GITHUB_OUTPUT
+          echo "Merge base: $MERGE_BASE"
+
       - name: Check for changes from the reset
         id: reset_needed
         run: |
@@ -73,9 +80,11 @@ jobs:
           # Refresh index so git diff-index doesn't return true just because of timestamp changes
           git add images/tuned/*svg
           git update-index --refresh
-          # Decide if any images has changed relative to origin/main (not just the head of this branch)
-          # Compare the staged changes (index) to origin/main since HEAD is already at origin/main from the reset
-          if ! git diff --quiet --cached origin/main -- images/tuned/*svg; then
+          # Compare the staged changes (index) against the merge-base, not current origin/main
+          # This prevents false positives when main has been updated since the PR was created
+          MERGE_BASE=${{ steps.branch.outputs.merge_base }}
+          echo "Comparing against merge-base: $MERGE_BASE"
+          if ! git diff --quiet --cached $MERGE_BASE -- images/tuned/*svg; then
             echo "Changes detected."
             echo "files_changed=true" >> $GITHUB_OUTPUT
           else
