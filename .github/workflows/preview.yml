@@ -29,8 +29,8 @@ jobs:
       - name: Store PR id as variable
         id: pr
         run: |
-          echo "id=$(<pr/pr_number)" >> $GITHUB_OUTPUT
-          rm -rf pr
+          echo "id=$(<pr_number)" >> $GITHUB_OUTPUT
+          rm pr_number
 
       - name: Set up temporary branch
         id: branch
