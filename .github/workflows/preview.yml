@@ -33,8 +33,12 @@ jobs:
 
           # Find the merge-base between the PR head and main for proper comparison
           PR_HEAD=${{ github.event.workflow_run.head_sha }}
-          PR_BRANCH=${{ github.event.workflow_run.head_branch }}
-          git fetch origin $PR_BRANCH
+          echo "PR head SHA: $PR_HEAD"
+          # The SHA should be available after the fetch above; if not, try to fetch it explicitly
+          if ! git cat-file -e $PR_HEAD 2>/dev/null; then
+            echo "SHA not found, fetching all refs..."
+            git fetch origin '+refs/heads/*:refs/remotes/origin/*' '+refs/pull/*/head:refs/remotes/origin/pr/*'
+          fi
           MERGE_BASE=$(git merge-base origin/main $PR_HEAD)
           echo "merge_base=$MERGE_BASE" >> $GITHUB_OUTPUT
           echo "Merge base: $MERGE_BASE"
