@@ -32,7 +32,29 @@ jobs:
           echo "id=$(<pr_number)" >> $GITHUB_OUTPUT
           rm pr_number
 
+      - name: Download images artifact
+        id: download-images
+        continue-on-error: true
+        uses: actions/download-artifact@v8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+          name: images
+          path: images/tuned
+
+      - name: Check if images artifact exists
+        id: check-images
+        run: |
+          if [ -d images/tuned ] && [ -n "$(ls -A images/tuned 2>/dev/null)" ]; then
+            echo "images_exist=true" >> $GITHUB_OUTPUT
+            echo "Images artifact found"
+          else
+            echo "images_exist=false" >> $GITHUB_OUTPUT
+            echo "No images artifact found - no changes to preview"
+          fi
+
       - name: Set up temporary branch
+        if: steps.check-images.outputs.images_exist == 'true'
         id: branch
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -58,6 +80,7 @@ jobs:
           echo "Merge base: $MERGE_BASE"
 
       - name: Check for changes from the reset
+        if: steps.check-images.outputs.images_exist == 'true'
         id: reset_needed
         run: |
           # Decide if any images has changed on this branch
@@ -70,7 +93,7 @@ jobs:
           fi
 
       - name: Push to temporary branch after reset
-        if: steps.reset_needed.outputs.reset_needed == 'true'
+        if: steps.check-images.outputs.images_exist == 'true' && steps.reset_needed.outputs.reset_needed == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -79,21 +102,15 @@ jobs:
           git push origin -u pr-images-reset --force
 
       - name: Tidy existing files
+        if: steps.check-images.outputs.images_exist == 'true'
         id: tidy
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           rm -f images/tuned/*svg || echo "No files to remove"
 
-      - name: Download PR Artifact
-        uses: actions/download-artifact@v8
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          run-id: ${{ github.event.workflow_run.id }}
-          name: images
-          path: images/tuned
-
       - name: Check for changes relative to main
+        if: steps.check-images.outputs.images_exist == 'true'
         id: changed
         run: |
           # Refresh index so git diff-index doesn't return true just because of timestamp changes
@@ -120,6 +137,7 @@ jobs:
             echo "files_changed=false" >> $GITHUB_OUTPUT
           fi
       - name: Check for changes on this branch
+        if: steps.check-images.outputs.images_exist == 'true'
         id: branch_changed
         run: |
           # Decide if any images has changed on this branch
@@ -132,7 +150,7 @@ jobs:
           fi
 
       - name: Push to temporary branch
-        if: steps.branch_changed.outputs.branch_changed == 'true'
+        if: steps.check-images.outputs.images_exist == 'true' && steps.branch_changed.outputs.branch_changed == 'true'
         id: push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -184,13 +202,13 @@ jobs:
           git push origin -u pr-images --force
 
       - name: Capture most recent hash on branch
-        if: steps.changed.outputs.files_changed == 'true'
+        if: steps.check-images.outputs.images_exist == 'true' && steps.changed.outputs.files_changed == 'true'
         id: hash
         run: |
           echo "hash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
 
       - name: Prepare markdown for changed SVGs
-        if: steps.push.outputs.svgs_changed != ''
+        if: steps.check-images.outputs.images_exist == 'true' && steps.push.outputs.svgs_changed != ''
         id: svgs_changed_md
         run: |
           HASH=${{ steps.hash.outputs.hash }}
@@ -227,7 +245,7 @@ jobs:
           } >> $GITHUB_OUTPUT
 
       - name: Prepare markdown for added SVGs
-        if: steps.push.outputs.svgs_added != ''
+        if: steps.check-images.outputs.images_exist == 'true' && steps.push.outputs.svgs_added != ''
         id: svgs_added_md
         run: |
           HASH=${{ steps.hash.outputs.hash }}
@@ -244,7 +262,7 @@ jobs:
           } >> $GITHUB_OUTPUT
 
       - name: Prepare markdown for removed SVGs
-        if: steps.push.outputs.svgs_removed != ''
+        if: steps.check-images.outputs.images_exist == 'true' && steps.push.outputs.svgs_removed != ''
         id: svgs_removed_md
         run: |
           FILES="${{ steps.push.outputs.svgs_removed }}"
@@ -259,7 +277,7 @@ jobs:
           } >> $GITHUB_OUTPUT
 
       - name: Update PR status comment with link
-        if: steps.changed.outputs.files_changed == 'true'
+        if: steps.check-images.outputs.images_exist == 'true' && steps.changed.outputs.files_changed == 'true'
         uses: quarkusio/action-helpers@main
         with:
           action: maintain-one-comment
@@ -273,7 +291,7 @@ jobs:
           pr-number: ${{ steps.pr.outputs.id }}
 
       - name: Update PR status comment with absence of link
-        if: steps.changed.outputs.files_changed == 'false'
+        if: steps.check-images.outputs.images_exist == 'false' || (steps.check-images.outputs.images_exist == 'true' && steps.changed.outputs.files_changed == 'false')
         uses: quarkusio/action-helpers@main
         with:
           action: maintain-one-comment
