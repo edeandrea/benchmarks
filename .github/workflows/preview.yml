@@ -19,6 +19,19 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - name: Download PR number artifact
+        uses: actions/download-artifact@v8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          run-id: ${{ github.event.workflow_run.id }}
+          name: pr_number
+
+      - name: Store PR id as variable
+        id: pr
+        run: |
+          echo "id=$(<pr_number)" >> $GITHUB_OUTPUT
+          rm pr_number
+
       - name: Set up temporary branch
         id: branch
         env:
@@ -32,13 +45,12 @@ jobs:
           git reset --hard origin/main
 
           # Find the merge-base between the PR head and main for proper comparison
-          PR_HEAD=${{ github.event.workflow_run.head_sha }}
+          PR_NUMBER=${{ steps.pr.outputs.id }}
+          echo "PR number: $PR_NUMBER"
+          # Fetch the PR head using the pull request refspec (works for forks too)
+          git fetch origin pull/$PR_NUMBER/head:pr-$PR_NUMBER
+          PR_HEAD=$(git rev-parse pr-$PR_NUMBER)
           echo "PR head SHA: $PR_HEAD"
-          # The SHA should be available after the fetch above; if not, try to fetch it explicitly
-          if ! git cat-file -e $PR_HEAD 2>/dev/null; then
-            echo "SHA not found, fetching all refs..."
-            git fetch origin '+refs/heads/*:refs/remotes/origin/*' '+refs/pull/*/head:refs/remotes/origin/pr/*'
-          fi
           MERGE_BASE=$(git merge-base origin/main $PR_HEAD)
           echo "merge_base=$MERGE_BASE" >> $GITHUB_OUTPUT
           echo "Merge base: $MERGE_BASE"
@@ -107,19 +119,6 @@ jobs:
             echo "No changes."
             echo "branch_changed=false" >> $GITHUB_OUTPUT
           fi
-
-      - name: Download PR Artifact
-        uses: actions/download-artifact@v8
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          run-id: ${{ github.event.workflow_run.id }}
-          name: pr_number
-
-      - name: Store PR id as variable
-        id: pr
-        run: |
-          echo "id=$(<pr_number)" >> $GITHUB_OUTPUT
-          rm pr_number
 
       - name: Push to temporary branch
         if: steps.branch_changed.outputs.branch_changed == 'true'
