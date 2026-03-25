@@ -48,8 +48,9 @@ jobs:
           PR_NUMBER=${{ steps.pr.outputs.id }}
           echo "PR number: $PR_NUMBER"
           # Fetch the PR head using the pull request refspec (works for forks too)
-          # Use --depth=0 to get full history for merge-base calculation
-          git fetch --depth=0 origin pull/$PR_NUMBER/head:pr-$PR_NUMBER
+          # Unshallow the repo to get full history for merge-base calculation
+          git fetch --unshallow origin || true
+          git fetch origin pull/$PR_NUMBER/head:pr-$PR_NUMBER
           PR_HEAD=$(git rev-parse pr-$PR_NUMBER)
           echo "PR head SHA: $PR_HEAD"
           MERGE_BASE=$(git merge-base origin/main $PR_HEAD)
