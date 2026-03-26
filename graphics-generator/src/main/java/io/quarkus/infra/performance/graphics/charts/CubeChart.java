@@ -138,6 +138,17 @@ public class CubeChart extends SingleSeriesChart {
         // Now check in the cube bits themselves to adjust cube sizes and font sizes
         int gutterSize = workOutCubeSizes(plotArea);
 
+        // Do not snug right up to the edges when there's fewer than 3 blocks
+        if (cubes.size() == 1) {
+            // Center the single block
+            int totalOccupiedWidth = cubes.get(0).getActualHorizontalSize();
+            x = (plotArea.getWidth() - totalOccupiedWidth) / 2;
+        } else if (cubes.size() == 2) {
+            // For two blocks, split the gutter around the edges
+            x = gutterSize / 3;
+            gutterSize = x;
+        }
+
         for (Cubes c : cubes) {
             int width = c.getActualHorizontalSize();
             Subcanvas dataArea = new Subcanvas(plotArea, width, plotArea.getHeight(), x, 0);
