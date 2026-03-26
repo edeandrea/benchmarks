@@ -50,9 +50,10 @@ jobs:
       - name: Check if images changed
         id: images-changed
         run: |
-          # Refresh the index and stage all changes (including deletions)
-          git add -A images/
+          # Refresh the index first so timestamp-only changes don't trigger staging
           git update-index --refresh || true
+          # Stage all changes (including deletions)
+          git add -A images/
           if git diff --staged --quiet; then
             echo "No changes to images"
             echo "changed=false" >> $GITHUB_OUTPUT
