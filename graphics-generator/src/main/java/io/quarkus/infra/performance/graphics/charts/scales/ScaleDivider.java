@@ -1,8 +1,9 @@
 package io.quarkus.infra.performance.graphics.charts.scales;
 
 import io.quarkus.infra.performance.graphics.Theme;
-import io.quarkus.infra.performance.graphics.charts.ElasticElement;
 import io.quarkus.infra.performance.graphics.charts.Label;
+import io.quarkus.infra.performance.graphics.charts.ScaleGroup;
+import io.quarkus.infra.performance.graphics.charts.ScaledElement;
 import io.quarkus.infra.performance.graphics.charts.Subcanvas;
 import io.quarkus.infra.performance.graphics.charts.fonts.Alignment;
 import io.quarkus.infra.performance.graphics.charts.fonts.VAlignment;
@@ -14,7 +15,7 @@ import static io.quarkus.infra.performance.graphics.charts.fonts.FontStyle.PLAIN
  * A scale divider that draws a horizontal line with vertical tick marks and numeric labels,
  * similar to the scale shown in bar charts.
  */
-public class ScaleDivider implements ElasticElement {
+public class ScaleDivider extends ScaledElement {
     private static final int TICK_HEIGHT = 10;
     private static final int LABEL_FONT_SIZE = 14;
     private static final int LINE_THICKNESS = 1;
@@ -27,16 +28,25 @@ public class ScaleDivider implements ElasticElement {
     private final double maxValue;
     private final double[] circleValues;
     private final ValueFormatter formatter;
-    private int offset = 0;
-    private double scale;
 
     /**
-     * Creates a scale divider with the specified maximum value.
+     * Creates a scale divider with the specified maximum value and a new ScaleGroup.
      *
      * @param maxValue the maximum value to display on the scale (must be positive)
      * @throws IllegalArgumentException if maxValue is zero or negative
      */
     public ScaleDivider(DimensionalNumber maxValue) {
+        this(maxValue, new ScaleGroup());
+    }
+
+    /**
+     * Creates a scale divider with the specified maximum value and shared ScaleGroup.
+     *
+     * @param maxValue   the maximum value to display on the scale (must be positive)
+     * @param scaleGroup the scale group to use for managing scale
+     */
+    public ScaleDivider(DimensionalNumber maxValue, ScaleGroup scaleGroup) {
+        super(scaleGroup);
         this.maxValue = maxValue.getValue();
         this.circleValues = calculateRoundTickValues(this.maxValue);
         this.formatter = new ValueFormatter(maxValue);
@@ -56,14 +66,6 @@ public class ScaleDivider implements ElasticElement {
         }
 
         return ticks.stream().mapToDouble(Double::doubleValue).toArray();
-    }
-
-    public void setOffset(int offset) {
-        this.offset = offset;
-    }
-
-    public void setScale(double scale) {
-        this.scale = scale;
     }
 
     @Override
@@ -109,7 +111,7 @@ public class ScaleDivider implements ElasticElement {
         // Draw circles with labels at round numbers
         for (double value : circleValues) {
             // Calculate x position based on value
-            int x = (int) (value * scale);
+            int x = (int) (value * scaleGroup.getScale());
 
             // Drop the first circle
             if (value > 0) {
@@ -145,7 +147,7 @@ public class ScaleDivider implements ElasticElement {
         double currentValue = 0;
         int tickIndex = 0;
         while (currentValue <= maxValue) {
-            int x = (int) (currentValue * scale);
+            int x = (int) (currentValue * scaleGroup.getScale());
 
             // Skip ticks that are within 2 pixels of any circle boundary
             if (! isNearCircleBoundary(x)) {
@@ -172,7 +174,7 @@ public class ScaleDivider implements ElasticElement {
 
         for (double value : circleValues) {
             if (value > 0) { // Skip the first circle at 0
-                int circleX = (int) (value * scale);
+                int circleX = (int) (value * scaleGroup.getScale());
                 if (Math.abs(tickX - circleX) <= boundaryDistance) {
                     return true;
                 }

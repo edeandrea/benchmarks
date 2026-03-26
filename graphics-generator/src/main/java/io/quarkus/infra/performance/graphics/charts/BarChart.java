@@ -20,10 +20,10 @@ public class BarChart extends SingleSeriesChart {
     private static final int MINIMUM_PARTITION_SIZE = 2;
     private final Optional<FinePrint> fineprint;
     private final List<Bar> bars = new ArrayList<>();
-    private final List<ElasticElement> barsAndPartitions = new ArrayList<>();
-    private List<ScaleDivider> partitions = new ArrayList<>();
+    private final List<ScaledElement> barsAndPartitions = new ArrayList<>();
     private final LabelGroup frameworkLabelGroup = new LabelGroup(Bar.LEFT_LABEL_SIZE);
     private final LabelGroup valueLabelGroup = new LabelGroup();
+    private final ScaleGroup scaleGroup = new ScaleGroup();
 
     public BarChart(PlotDefinition plotDefinition, BenchmarkData bmData) {
         this(plotDefinition, bmData, false);
@@ -49,14 +49,13 @@ public class BarChart extends SingleSeriesChart {
             Category newCategory = d.framework().getPartitionableCategory();
             if (shouldUsePartitions) {
                 if (newCategory != null && previousCategory != null && ! newCategory.equals(previousCategory)) {
-                    ScaleDivider e1 = new ScaleDivider(maxValue);
+                    ScaleDivider e1 = new ScaleDivider(maxValue, scaleGroup);
                     barsAndPartitions.add(e1);
-                    partitions.add(e1);
                     children.add(e1);
                 }
             }
 
-            Bar e = new Bar(d, frameworkLabelGroup, valueLabelGroup);
+            Bar e = new Bar(d, frameworkLabelGroup, valueLabelGroup, scaleGroup);
             bars.add(e);
             barsAndPartitions.add(e);
             children.add(e);
@@ -113,14 +112,10 @@ public class BarChart extends SingleSeriesChart {
         int leftLabelWidth = Sizer.calculateWidth(bars.stream().map(Bar::getLeftLabelText).collect(Collectors.toSet()),
                 frameworkLabelGroup.getFontSize());
 
-        // Set a common left label width before trying to calculate a scale
-        for (Bar bar : bars) {
-            bar.setLeftLabelWidth(leftLabelWidth);
-        }
-        if (! bars.isEmpty()) {
-            for (ScaleDivider part : partitions) {
-                part.setOffset(bars.getFirst().getOffset());
-            }
+        // Set a common offset for all bars and partitions before trying to calculate a scale
+        int offset = leftLabelWidth + Bar.LABEL_PADDING;
+        for (ScaledElement element : barsAndPartitions) {
+            element.setOffset(offset);
         }
 
         double scale = bars.stream().mapToDouble(bar -> bar.getMaximumScale(barArea)).min().orElse(1);
@@ -129,17 +124,12 @@ public class BarChart extends SingleSeriesChart {
 
         canvasWithMargins.setPaint(theme.text());
 
-        for (Bar bar : bars) {
-            bar.setScale(scale);
-        }
-        for (ScaleDivider part : partitions) {
-            part.setScale(scale);
-        }
+        scaleGroup.setScale(scale);
 
         int extraVerticalSpace = barArea.getHeight() - barsAndPartitions.stream().mapToInt(ElasticElement::getMinimumVerticalSize).sum();
         int padding = barsAndPartitions.isEmpty() ? 0:extraVerticalSpace / barsAndPartitions.size();
 
-        for (ElasticElement bar : barsAndPartitions) {
+        for (ScaledElement bar : barsAndPartitions) {
             Subcanvas individualBarArea = new Subcanvas(barArea, barArea.getWidth(), bar.getMinimumVerticalSize() + padding, 0, y);
 
             bar.draw(individualBarArea, theme);
