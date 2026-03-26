@@ -42,20 +42,19 @@ jobs:
           name: images
           skip-decompress: true
 
-      - name: Check if images artifact exists
+      - name: Check if images artifact existed for download
         id: check-images
         run: |
           if [ "${{ steps.download-images.outcome }}" == "success" ]; then
-            echo "images_exist=true" >> $GITHUB_OUTPUT
+            echo "images_changed=true" >> $GITHUB_OUTPUT
             echo "Images artifact found"
           else
-            echo "images_exist=false" >> $GITHUB_OUTPUT
+            echo "images_changed=false" >> $GITHUB_OUTPUT
             echo "No images artifact found - no changes to preview"
           fi
 
-      - name: Set up temporary branch
-        if: steps.check-images.outputs.images_exist == 'true'
-        id: branch
+      - name: Set up preview branch
+        if: steps.check-images.outputs.images_changed == 'true'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -64,92 +63,17 @@ jobs:
           git fetch origin
           git branch --set-upstream-to=origin/pr-images pr-images || true
           git checkout pr-images
-          git reset --hard origin/main
-
-          # Find the merge-base between the PR head and main for proper comparison
-          PR_NUMBER=${{ steps.pr.outputs.id }}
-          echo "PR number: $PR_NUMBER"
-          # Fetch the PR head using the pull request refspec (works for forks too)
-          # Unshallow the repo to get full history for merge-base calculation
-          git fetch --unshallow origin || true
-          git fetch origin pull/$PR_NUMBER/head:pr-$PR_NUMBER
-          PR_HEAD=$(git rev-parse pr-$PR_NUMBER)
-          echo "PR head SHA: $PR_HEAD"
-          MERGE_BASE=$(git merge-base origin/main $PR_HEAD)
-          echo "merge_base=$MERGE_BASE" >> $GITHUB_OUTPUT
-          echo "Merge base: $MERGE_BASE"
+          git push origin pr-images --force
 
       - name: Extract images artifact
-        if: steps.check-images.outputs.images_exist == 'true'
+        if: steps.check-images.outputs.images_changed == 'true'
         run: |
           rm -rf images/tuned
           unzip -q images.zip -d images/tuned
           rm images.zip
 
-      - name: Check for changes from the reset
-        if: steps.check-images.outputs.images_exist == 'true'
-        id: reset_needed
-        run: |
-          # Decide if any images has changed on this branch
-          if [ -n "$(git status --porcelain images/)" ]; then
-            echo "Changes detected from reset."
-            echo "reset_needed=true" >> $GITHUB_OUTPUT
-          else
-            echo "No changes from reset."
-            echo "reset_needed=false" >> $GITHUB_OUTPUT
-          fi
-
-      - name: Push to temporary branch after reset
-        if: steps.check-images.outputs.images_exist == 'true' && steps.reset_needed.outputs.reset_needed == 'true'
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          git add images/
-          git commit -m "Reset while processing #${{ steps.pr.outputs.id }}" || echo "No changes to commit"
-          git push origin -u pr-images-reset --force
-
-      - name: Check for changes relative to main
-        if: steps.check-images.outputs.images_exist == 'true'
-        id: changed
-        run: |
-          # Refresh index so git diff-index doesn't return true just because of timestamp changes
-          git add images/tuned/*svg
-          git update-index --refresh
-          # Compare the staged changes (index) against the merge-base, not current origin/main
-          # This prevents false positives when main has been updated since the PR was created
-          MERGE_BASE=${{ steps.branch.outputs.merge_base }}
-          echo "Comparing against merge-base: $MERGE_BASE"
-
-          # Debug: show what we're comparing
-          echo "Files in index:"
-          git ls-files -s images/tuned/ | wc -l
-          echo "Files at merge-base:"
-          git ls-tree -r $MERGE_BASE images/tuned/ | wc -l
-
-          if ! git diff --quiet --cached $MERGE_BASE -- images/tuned/*svg; then
-            echo "Changes detected."
-            echo "Diff summary:"
-            git diff --cached --stat $MERGE_BASE -- images/tuned/*svg
-            echo "files_changed=true" >> $GITHUB_OUTPUT
-          else
-            echo "No changes."
-            echo "files_changed=false" >> $GITHUB_OUTPUT
-          fi
-      - name: Check for changes on this branch
-        if: steps.check-images.outputs.images_exist == 'true'
-        id: branch_changed
-        run: |
-          # Decide if any images has changed on this branch
-          if [ -n "$(git status --porcelain images/tuned/*svg)" ]; then
-            echo "Changes detected."
-            echo "branch_changed=true" >> $GITHUB_OUTPUT
-          else
-            echo "No changes."
-            echo "branch_changed=false" >> $GITHUB_OUTPUT
-          fi
-
       - name: Push to temporary branch
-        if: steps.check-images.outputs.images_exist == 'true' && steps.branch_changed.outputs.branch_changed == 'true'
+        if: steps.check-images.outputs.images_changed == 'true'
         id: push
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -201,13 +125,13 @@ jobs:
           git push origin -u pr-images --force
 
       - name: Capture most recent hash on branch
-        if: steps.check-images.outputs.images_exist == 'true' && steps.changed.outputs.files_changed == 'true'
+        if: steps.check-images.outputs.images_changed == 'true'
         id: hash
         run: |
           echo "hash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
 
       - name: Prepare markdown for changed SVGs
-        if: steps.check-images.outputs.images_exist == 'true' && steps.push.outputs.svgs_changed != ''
+        if: steps.check-images.outputs.images_changed == 'true' && steps.push.outputs.svgs_changed != ''
         id: svgs_changed_md
         run: |
           HASH=${{ steps.hash.outputs.hash }}
@@ -244,7 +168,7 @@ jobs:
           } >> $GITHUB_OUTPUT
 
       - name: Prepare markdown for added SVGs
-        if: steps.check-images.outputs.images_exist == 'true' && steps.push.outputs.svgs_added != ''
+        if: steps.check-images.outputs.images_changed == 'true' && steps.push.outputs.svgs_added != ''
         id: svgs_added_md
         run: |
           HASH=${{ steps.hash.outputs.hash }}
@@ -261,7 +185,7 @@ jobs:
           } >> $GITHUB_OUTPUT
 
       - name: Prepare markdown for removed SVGs
-        if: steps.check-images.outputs.images_exist == 'true' && steps.push.outputs.svgs_removed != ''
+        if: steps.check-images.outputs.images_changed == 'true' && steps.push.outputs.svgs_removed != ''
         id: svgs_removed_md
         run: |
           FILES="${{ steps.push.outputs.svgs_removed }}"
@@ -276,7 +200,7 @@ jobs:
           } >> $GITHUB_OUTPUT
 
       - name: Update PR status comment with link
-        if: steps.check-images.outputs.images_exist == 'true' && steps.changed.outputs.files_changed == 'true'
+        if: steps.check-images.outputs.images_changed == 'true'
         uses: quarkusio/action-helpers@main
         with:
           action: maintain-one-comment
@@ -290,7 +214,7 @@ jobs:
           pr-number: ${{ steps.pr.outputs.id }}
 
       - name: Update PR status comment with absence of link
-        if: steps.check-images.outputs.images_exist == 'false' || (steps.check-images.outputs.images_exist == 'true' && steps.changed.outputs.files_changed == 'false')
+        if: steps.check-images.outputs.images_changed == 'false'
         uses: quarkusio/action-helpers@main
         with:
           action: maintain-one-comment
