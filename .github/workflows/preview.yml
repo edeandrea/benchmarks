@@ -83,8 +83,8 @@ jobs:
         if: steps.check-images.outputs.images_exist == 'true'
         run: |
           rm -rf images/tuned
-          unzip -q images -d images/tuned
-          rm images
+          unzip -q images.zip -d images/tuned
+          rm images.zip
 
       - name: Check for changes from the reset
         if: steps.check-images.outputs.images_exist == 'true'
