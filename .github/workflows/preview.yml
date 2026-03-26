@@ -82,7 +82,7 @@ jobs:
       - name: Extract images artifact
         if: steps.check-images.outputs.images_exist == 'true'
         run: |
-          mkdir -p images/tuned
+          rm -rf images/tuned
           unzip -q images -d images/tuned
           rm images
 
