@@ -4,10 +4,8 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 import io.quarkus.infra.performance.graphics.Theme;
 import io.quarkus.infra.performance.graphics.charts.fonts.Alignment;
@@ -45,7 +43,7 @@ public class FinePrint implements ElasticElement {
     private final Label middleLabel;
     private final Label rightLabel;
     private final LabelGroup labelGroup = new LabelGroup();
-    private final Set<InlinedSVG> svgs = new HashSet<>();
+    private final List<InlinedSVG> svgs = new ArrayList<>();
     private final List<String> leftColumn = new ArrayList<>();
     private final List<String> middleColumn = new ArrayList<>();
     private final List<String> rightColumn = new ArrayList<>();
