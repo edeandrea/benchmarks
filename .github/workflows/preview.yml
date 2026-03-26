@@ -40,12 +40,12 @@ jobs:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           run-id: ${{ github.event.workflow_run.id }}
           name: images
-          path: images/tuned
+          skip-decompress: true
 
       - name: Check if images artifact exists
         id: check-images
         run: |
-          if [ -d images/tuned ] && [ -n "$(ls -A images/tuned 2>/dev/null)" ]; then
+          if [ "${{ steps.download-images.outcome }}" == "success" ]; then
             echo "images_exist=true" >> $GITHUB_OUTPUT
             echo "Images artifact found"
           else
@@ -78,6 +78,13 @@ jobs:
           MERGE_BASE=$(git merge-base origin/main $PR_HEAD)
           echo "merge_base=$MERGE_BASE" >> $GITHUB_OUTPUT
           echo "Merge base: $MERGE_BASE"
+
+      - name: Extract images artifact
+        if: steps.check-images.outputs.images_exist == 'true'
+        run: |
+          mkdir -p images/tuned
+          unzip -q images -d images/tuned
+          rm images
 
       - name: Check for changes from the reset
         if: steps.check-images.outputs.images_exist == 'true'
