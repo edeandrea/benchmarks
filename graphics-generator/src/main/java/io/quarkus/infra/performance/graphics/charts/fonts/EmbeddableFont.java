@@ -45,8 +45,8 @@ public class EmbeddableFont {
         Set<DownloadedFont> dfonts = fontUrls.entrySet().stream().map(entry -> loadAndRegisterFont(entry.getValue(), entry.getKey()))
                 .collect(Collectors.toSet());
 
-        css = dfonts.stream().map(d -> generateFontFaceCSS(d)).collect(Collectors.joining(" "));
-        fonts = dfonts.stream().collect(Collectors.toMap(d -> d.style, d -> d.font()));
+        css = dfonts.stream().map(EmbeddableFont::generateFontFaceCSS).collect(Collectors.joining(" "));
+        fonts = dfonts.stream().collect(Collectors.toMap(d -> d.style, DownloadedFont::font));
 
         familyDeclaration = "'" + fontName + " Light', '" + fontName + "', " + fallbacks.stream().map(s -> "'" + s + "'").collect(Collectors.joining(", ")).replaceAll("'sans-serif'", "sans-serif");
 
@@ -80,7 +80,7 @@ public class EmbeddableFont {
 
 
     public String[] getNames() {
-        return fonts.values().stream().map(Font::getName).collect(Collectors.toList()).toArray(new String[0]);
+        return fonts.values().stream().map(Font::getName).toList().toArray(new String[0]);
     }
 
     /**
@@ -88,9 +88,9 @@ public class EmbeddableFont {
      * but also because on Linux, there's a metrics difference between fonts created using new Font() and fonts created with deriveFont().
      * That can cause wonky spacing on CI-generated images.
      */
-    public Font getFont(FontStyle style, int size) {
+    public Font getFont(FontStyle style, float size) {
         // If the style doesn't exist, fall back to the first font we find
-        return fonts.get(style).deriveFont((float) size);
+        return fonts.get(style).deriveFont(size);
     }
 
     public String getCss() {
