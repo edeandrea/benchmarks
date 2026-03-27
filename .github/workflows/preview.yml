@@ -9,7 +9,7 @@ on:
       - 'main'
 
 concurrency:
-  group: git-operations
+  group: "workflow = ${{ github.workflow }}"
   cancel-in-progress: false
 
 jobs:
