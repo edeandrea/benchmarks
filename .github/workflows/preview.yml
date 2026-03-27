@@ -61,8 +61,8 @@ jobs:
           git config user.name github-actions
           git config user.email github-actions@github.com
           git fetch origin
-          git branch --set-upstream-to=origin/pr-images pr-images || true
-          git checkout pr-images
+          # Create/reset pr-images branch from current HEAD and force push
+          git checkout -B pr-images
           git push origin pr-images --force
 
       - name: Extract images artifact
@@ -78,8 +78,8 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          # Stage all SVG files
-          git add images/tuned/*svg
+          # Stage all changes in images/tuned (including deletions)
+          git add -A images/tuned/
           
           DIFF=$(git diff --cached --name-status)
           
