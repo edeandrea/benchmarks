@@ -29,16 +29,26 @@ public class EmbeddableFont {
     // (Even with the richer weights in TextAttributes, the graphics engine will fall back to the standard widths)
 
     public static final EmbeddableFont OPENSANS = new EmbeddableFont("Open Sans", List.of("Segoe UI", "Roboto", "Arial", "Noto Sans", "sans-serif"),
-            Map.of(PLAIN, "https://github.com/googlefonts/opensans/raw/refs/heads/main/fonts/ttf/OpenSans-Light.ttf", BOLD, "https://github.com/googlefonts/opensans/raw/refs/heads/main/fonts/ttf/OpenSans-SemiBold.ttf", ITALIC, "https://github.com/googlefonts/opensans/raw/refs/heads/main/fonts/ttf/OpenSans-LightItalic.ttf"));
+            Map.of(
+                PLAIN, new FontUrls("https://github.com/googlefonts/opensans/raw/refs/heads/main/fonts/ttf/OpenSans-Light.ttf",
+                    "https://fonts.gstatic.com/s/opensans/v44/memSYaGs126MiZpBA-UvWbX2vVnXBbObj2OVZyOOSr4dVJWUgsiH0B4gaVI.woff2"),
+                BOLD, new FontUrls("https://github.com/googlefonts/opensans/raw/refs/heads/main/fonts/ttf/OpenSans-SemiBold.ttf",
+                    "https://fonts.gstatic.com/s/opensans/v44/memSYaGs126MiZpBA-UvWbX2vVnXBbObj2OVZyOOSr4dVJWUgsgH1x4gaVI.woff2"),
+                ITALIC, new FontUrls("https://github.com/googlefonts/opensans/raw/refs/heads/main/fonts/ttf/OpenSans-LightItalic.ttf",
+                    "https://fonts.gstatic.com/s/opensans/v44/memQYaGs126MiZpBA-UFUIcVXSCEkx2cmqvXlWq8tWZ0Pw86hd0Rk5hkWVAewA.woff2")
+            ));
     private final String css;
     private final String familyDeclaration;
     private final String fontName;
     private final Map<FontStyle, Font> fonts;
 
-    private record DownloadedFont(Font font, byte[] raw, FontStyle style) {
+    private record FontUrls(String ttf, String woff2) {
     }
 
-    private EmbeddableFont(String fontName, List<String> fallbacks, Map<FontStyle, String> fontUrls) {
+    private record DownloadedFont(Font font, byte[] raw, byte[] woff2, FontStyle style) {
+    }
+
+    private EmbeddableFont(String fontName, List<String> fallbacks, Map<FontStyle, FontUrls> fontUrls) {
 
         this.fontName = fontName;
 
@@ -53,13 +63,16 @@ public class EmbeddableFont {
 
     }
 
-    private DownloadedFont loadAndRegisterFont(String fontUrl, FontStyle style) {
+    private DownloadedFont loadAndRegisterFont(FontUrls fontUrls, FontStyle style) {
         try {
-            // Download the font file
-            byte[] fontBytes = downloadFont(fontUrl);
+            // Download the TTF font file for Java
+            byte[] ttfBytes = downloadFont(fontUrls.ttf());
+
+            // Download the WOFF2 font file for embedding in SVG
+            byte[] woff2Bytes = downloadFont(fontUrls.woff2());
 
             Font font;
-            try (InputStream stream = new ByteArrayInputStream(fontBytes)) {
+            try (InputStream stream = new ByteArrayInputStream(ttfBytes)) {
                 font = Font.createFont(Font.TRUETYPE_FONT, stream);
                 if (style == ITALIC) {
                     // Just for italics, we also need to add the metadata saying the font is italic; if we do it for bold, width calculations are based on an artificially fat width and everything is misaligned
@@ -73,9 +86,9 @@ public class EmbeddableFont {
                     .registerFont(font);
 
 
-            return new DownloadedFont(font, fontBytes, style);
+            return new DownloadedFont(font, ttfBytes, woff2Bytes, style);
         } catch (URISyntaxException | IOException | FontFormatException e) {
-            throw new RuntimeException("Failed to load font from " + fontUrl, e);
+            throw new RuntimeException("Failed to load font from " + fontUrls.ttf() + " / " + fontUrls.woff2(), e);
         }
     }
 
@@ -131,15 +144,15 @@ public class EmbeddableFont {
     private static String generateFontFaceCSS(DownloadedFont downloadedFont) {
         // To try out the fallback visually, just mangle what goes into the url: line
 
-        // Base64 encode the font bytes
-        // It would be nice to subset the characters and only include what's needed, to save file sizes
-        String base64Font = Base64.getEncoder().encodeToString(downloadedFont.raw());
+        // Base64 encode the WOFF2 font bytes (much smaller than TTF)
+        // It would be nice to subset the characters and only include what's needed, to save file sizes even more
+        String base64Font = Base64.getEncoder().encodeToString(downloadedFont.woff2());
         String fontName = downloadedFont.font().getFontName();
         return """
                   @font-face {
                     font-family: '%s';
                     src:
-                      url('data:font/ttf;base64,%s') format('truetype'),
+                      url('data:font/woff2;base64,%s') format('woff2'),
                       local(%s),
                       local(%s);
                     unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
