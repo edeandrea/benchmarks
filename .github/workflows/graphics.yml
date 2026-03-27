@@ -16,7 +16,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: git-operations
+  group: ${{ github.event_name == 'pull_request' && format('github-operations-pr-{0}', github.event.number) || 'github-operations' }}
   cancel-in-progress: false
 
 env:
