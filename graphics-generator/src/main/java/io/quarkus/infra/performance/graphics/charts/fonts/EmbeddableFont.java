@@ -12,6 +12,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
 import java.util.Map;
@@ -30,49 +31,41 @@ public class EmbeddableFont {
 
     public static final EmbeddableFont OPENSANS = new EmbeddableFont("Open Sans", List.of("Segoe UI", "Roboto", "Arial", "Noto Sans", "sans-serif"),
             Map.of(
-                PLAIN, new FontUrls("https://github.com/googlefonts/opensans/raw/refs/heads/main/fonts/ttf/OpenSans-Light.ttf",
-                    "https://fonts.gstatic.com/s/opensans/v44/memSYaGs126MiZpBA-UvWbX2vVnXBbObj2OVZyOOSr4dVJWUgsiH0B4gaVI.woff2"),
-                BOLD, new FontUrls("https://github.com/googlefonts/opensans/raw/refs/heads/main/fonts/ttf/OpenSans-SemiBold.ttf",
-                    "https://fonts.gstatic.com/s/opensans/v44/memSYaGs126MiZpBA-UvWbX2vVnXBbObj2OVZyOOSr4dVJWUgsgH1x4gaVI.woff2"),
-                ITALIC, new FontUrls("https://github.com/googlefonts/opensans/raw/refs/heads/main/fonts/ttf/OpenSans-LightItalic.ttf",
-                    "https://fonts.gstatic.com/s/opensans/v44/memQYaGs126MiZpBA-UFUIcVXSCEkx2cmqvXlWq8tWZ0Pw86hd0Rk5hkWVAewA.woff2")
+                PLAIN, "https://github.com/googlefonts/opensans/raw/refs/heads/main/fonts/ttf/OpenSans-Light.ttf",
+                BOLD, "https://github.com/googlefonts/opensans/raw/refs/heads/main/fonts/ttf/OpenSans-SemiBold.ttf",
+                ITALIC, "https://github.com/googlefonts/opensans/raw/refs/heads/main/fonts/ttf/OpenSans-LightItalic.ttf"
             ));
-    private final String css;
+    private String css;
     private final String familyDeclaration;
     private final String fontName;
     private final Map<FontStyle, Font> fonts;
+    private final List<DownloadedFont> downloadedFonts;
+    private boolean isSubsetted = false;
 
-    private record FontUrls(String ttf, String woff2) {
+    private record DownloadedFont(Font font, byte[] raw, FontStyle style) {
     }
 
-    private record DownloadedFont(Font font, byte[] raw, byte[] woff2, FontStyle style) {
-    }
-
-    private EmbeddableFont(String fontName, List<String> fallbacks, Map<FontStyle, FontUrls> fontUrls) {
+    private EmbeddableFont(String fontName, List<String> fallbacks, Map<FontStyle, String> fontUrls) {
 
         this.fontName = fontName;
 
-        List<DownloadedFont> dfonts = fontUrls.entrySet().stream().map(entry -> loadAndRegisterFont(entry.getValue(), entry.getKey()))
+        this.downloadedFonts = fontUrls.entrySet().stream().map(entry -> loadAndRegisterFont(entry.getValue(), entry.getKey()))
                 .sorted((a, b) -> a.font.getFontName().compareTo(b.font.getFontName()))
                 .collect(Collectors.toList());
 
-        css = dfonts.stream().map(EmbeddableFont::generateFontFaceCSS).collect(Collectors.joining(" "));
-        fonts = dfonts.stream().collect(Collectors.toMap(d -> d.style, DownloadedFont::font));
+        fonts = downloadedFonts.stream().collect(Collectors.toMap(d -> d.style, DownloadedFont::font));
 
         familyDeclaration = "'" + fontName + " Light', '" + fontName + "', " + fallbacks.stream().map(s -> "'" + s + "'").collect(Collectors.joining(", ")).replaceAll("'sans-serif'", "sans-serif");
 
     }
 
-    private DownloadedFont loadAndRegisterFont(FontUrls fontUrls, FontStyle style) {
+    private DownloadedFont loadAndRegisterFont(String fontUrl, FontStyle style) {
         try {
-            // Download the TTF font file for Java
-            byte[] ttfBytes = downloadFont(fontUrls.ttf());
-
-            // Download the WOFF2 font file for embedding in SVG
-            byte[] woff2Bytes = downloadFont(fontUrls.woff2());
+            // Download the full TTF font file
+            byte[] fullTtfBytes = downloadFont(fontUrl);
 
             Font font;
-            try (InputStream stream = new ByteArrayInputStream(ttfBytes)) {
+            try (InputStream stream = new ByteArrayInputStream(fullTtfBytes)) {
                 font = Font.createFont(Font.TRUETYPE_FONT, stream);
                 if (style == ITALIC) {
                     // Just for italics, we also need to add the metadata saying the font is italic; if we do it for bold, width calculations are based on an artificially fat width and everything is misaligned
@@ -85,10 +78,10 @@ public class EmbeddableFont {
                     .getLocalGraphicsEnvironment()
                     .registerFont(font);
 
-
-            return new DownloadedFont(font, ttfBytes, woff2Bytes, style);
+            // Don't subset yet - wait until we know which characters are actually used
+            return new DownloadedFont(font, fullTtfBytes, style);
         } catch (URISyntaxException | IOException | FontFormatException e) {
-            throw new RuntimeException("Failed to load font from " + fontUrls.ttf() + " / " + fontUrls.woff2(), e);
+            throw new RuntimeException("Failed to load font from " + fontUrl, e);
         }
     }
 
@@ -108,7 +101,38 @@ public class EmbeddableFont {
     }
 
     public String getCss() {
+        // Lazy subsetting - only do it when CSS is actually needed
+        if (!isSubsetted) {
+            performSubsetting();
+            isSubsetted = true;
+            // Reset the collector after subsetting so it's ready for the next chart
+            CharacterCollector.reset();
+        }
         return css;
+    }
+
+    private void performSubsetting() {
+        try {
+            List<SubsettedFont> subsettedFonts = new ArrayList<>();
+            for (DownloadedFont dfont : downloadedFonts) {
+                // Get characters used with this specific font style
+                Set<Character> usedCharacters = CharacterCollector.getCharacters(dfont.style);
+
+                // Subset the TTF to only include characters used with this style
+                byte[] subsettedTtfBytes = FontSubsetter.subsetToCharacters(dfont.raw, usedCharacters);
+
+                subsettedFonts.add(new SubsettedFont(dfont.font, subsettedTtfBytes));
+            }
+
+            css = subsettedFonts.stream()
+                    .map(EmbeddableFont::generateFontFaceCSS)
+                    .collect(Collectors.joining(" "));
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to subset fonts", e);
+        }
+    }
+
+    private record SubsettedFont(Font font, byte[] subsetted) {
     }
 
     public String getName() {
@@ -141,21 +165,18 @@ public class EmbeddableFont {
         return data;
     }
 
-    private static String generateFontFaceCSS(DownloadedFont downloadedFont) {
-        // To try out the fallback visually, just mangle what goes into the url: line
-
-        // Base64 encode the WOFF2 font bytes (much smaller than TTF)
-        // It would be nice to subset the characters and only include what's needed, to save file sizes even more
-        String base64Font = Base64.getEncoder().encodeToString(downloadedFont.woff2());
-        String fontName = downloadedFont.font().getFontName();
+    private static String generateFontFaceCSS(SubsettedFont subsettedFont) {
+        // Base64 encode the subsetted TTF font bytes
+        String base64Font = Base64.getEncoder().encodeToString(subsettedFont.subsetted());
+        String fontName = subsettedFont.font().getFontName();
         return """
                   @font-face {
                     font-family: '%s';
                     src:
-                      url('data:font/woff2;base64,%s') format('woff2'),
+                      url('data:font/truetype;base64,%s') format('truetype'),
                       local(%s),
                       local(%s);
-                    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+                    unicode-range: U+0020-007E, U+00A0-00FF;
                     font-style: normal;
                   }
                 """.formatted(fontName, base64Font, fontName, fontName.replaceAll(" ", ""));

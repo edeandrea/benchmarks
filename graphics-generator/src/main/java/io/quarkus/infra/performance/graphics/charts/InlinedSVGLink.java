@@ -1,6 +1,7 @@
 package io.quarkus.infra.performance.graphics.charts;
 
 import io.quarkus.infra.performance.graphics.Theme;
+import io.quarkus.infra.performance.graphics.charts.fonts.CharacterCollector;
 import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.util.SVGConstants;
 import org.w3c.dom.Document;
@@ -14,6 +15,9 @@ public class InlinedSVGLink extends InlinedSVG {
         super(x, y);
         this.url = url;
         this.text = s;
+
+        // Register characters for font subsetting
+        CharacterCollector.registerText(s);
     }
 
     public void draw(SAXSVGDocumentFactory factory, Element root, Document doc, Theme theme) {
