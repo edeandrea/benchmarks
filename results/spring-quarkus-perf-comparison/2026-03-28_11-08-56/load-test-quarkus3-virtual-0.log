@@ -1,0 +1,31 @@
+[0.020s][warning][os] NUMA support disabled: The process memory and cpu node configuration does not match
+__  ____  __  _____   ___  __ ____  ______ 
+ --/ __ \/ / / / _ | / _ \/ //_/ / / / __/ 
+ -/ /_/ / /_/ / __ |/ , _/ ,< / /_/ /\ \   
+--\___\_\____/_/ |_/_/|_/_/|_|\____/___/   
+2026-03-27 23:35:54,931 WARN  [io.quarkus.config] (main) Unrecognized configuration key "quarkus.otel.traces."sampler.arg"" was provided; it will be ignored; verify that the dependency extension for this configuration is set or that you did not make a typo
+2026-03-27 23:35:56,250 WARN  [io.micrometer.core.instrument.MeterRegistry] (main) This Gauge has been already registered (MeterId{name='netty.eventexecutor.workers', tags=[]}), the registration will be ignored. Note that subsequent logs will be logged at debug level.
+2026-03-27 23:35:56,353 INFO  [io.quarkus] (main) quarkus3-virtual 1.0 on JVM (powered by Quarkus 3.34.1) started in 3.224s. Listening on: http://0.0.0.0:8080
+2026-03-27 23:35:56,354 INFO  [io.quarkus] (main) Profile prod activated. 
+2026-03-27 23:35:56,354 INFO  [io.quarkus] (main) Installed features: [agroal, cdi, config-yaml, hibernate-orm, hibernate-orm-panache, hibernate-validator, jdbc-postgresql, micrometer, narayana-jta, opentelemetry, rest, rest-jackson, smallrye-context-propagation, smallrye-health, vertx]
+2026-03-27 23:37:20,923 WARNING [io.quarkus.opentelemetry.runtime.exporter.otlp.sender.VertxGrpcSender] (vert.x-eventloop-thread-1) Failed to export TraceRequestMarshalers. The request could not be executed after 1 attempts. Full error message: Connection was closed
+2026-03-27 23:37:21,709 WARNING [io.quarkus.opentelemetry.runtime.exporter.otlp.sender.VertxGrpcSender] (vert.x-eventloop-thread-1) Failed to export TraceRequestMarshaler. The request could not be executed. Full error message: Connection was closed
+2026-03-27 23:37:22,234 WARNING [io.quarkus.opentelemetry.runtime.exporter.otlp.sender.VertxGrpcSender] (vert.x-eventloop-thread-0) Failed to export LogsRequestMarshaler. The request could not be executed. Full error message: Connection was closed
+2026-03-27 23:37:22,383 WARNING [io.quarkus.opentelemetry.runtime.exporter.otlp.sender.VertxGrpcSender] (vert.x-eventloop-thread-1) Failed to export TraceRequestMarshaler. The request could not be executed. Full error message: Connection was closed
+2026-03-27 23:37:23,180 WARNING [io.quarkus.opentelemetry.runtime.exporter.otlp.sender.VertxGrpcSender] (vert.x-eventloop-thread-1) Failed to export TraceRequestMarshaler. The request could not be executed. Full error message: Connection was closed
+2026-03-27 23:37:23,801 WARNING [io.quarkus.opentelemetry.runtime.exporter.otlp.sender.VertxGrpcSender] (vert.x-eventloop-thread-0) Failed to export LogsRequestMarshaler. The request could not be executed. Full error message: Connection was closed
+2026-03-27 23:37:23,973 WARNING [io.quarkus.opentelemetry.runtime.exporter.otlp.sender.VertxGrpcSender] (vert.x-eventloop-thread-1) Failed to export TraceRequestMarshaler. The request could not be executed. Full error message: Connection was closed
+2026-03-27 23:37:24,877 WARNING [io.quarkus.opentelemetry.runtime.exporter.otlp.sender.VertxGrpcSender] (vert.x-eventloop-thread-1) Too many log messages detected. Will only log 1 time(s) per minute from now on.
+2026-03-27 23:37:24,878 WARNING [io.quarkus.opentelemetry.runtime.exporter.otlp.sender.VertxGrpcSender] (vert.x-eventloop-thread-1) Failed to export TraceRequestMarshaler. The request could not be executed. Full error message: Connection was closed
+2026-03-27 23:37:25,735 WARNING [io.quarkus.opentelemetry.runtime.exporter.otlp.sender.VertxGrpcSender] (vert.x-eventloop-thread-0) Failed to export LogsRequestMarshaler. The request could not be executed. Full error message: Connection was closed
+2026-03-27 23:37:27,595 WARNING [io.quarkus.opentelemetry.runtime.exporter.otlp.sender.VertxGrpcSender] (vert.x-eventloop-thread-0) Failed to export LogsRequestMarshaler. The request could not be executed. Full error message: Connection was closed
+2026-03-27 23:37:29,275 WARNING [io.quarkus.opentelemetry.runtime.exporter.otlp.sender.VertxGrpcSender] (vert.x-eventloop-thread-0) Failed to export LogsRequestMarshaler. The request could not be executed. Full error message: Connection was closed
+2026-03-27 23:37:31,226 WARNING [io.quarkus.opentelemetry.runtime.exporter.otlp.sender.VertxGrpcSender] (vert.x-eventloop-thread-0) Too many log messages detected. Will only log 1 time(s) per minute from now on.
+2026-03-27 23:37:31,227 WARNING [io.quarkus.opentelemetry.runtime.exporter.otlp.sender.VertxGrpcSender] (vert.x-eventloop-thread-0) Failed to export LogsRequestMarshaler. The request could not be executed. Full error message: Connection was closed
+2026-03-27 23:37:55,878 WARNING [io.quarkus.opentelemetry.runtime.exporter.otlp.sender.VertxGrpcSender] (vert.x-eventloop-thread-0) Failed to export MetricsRequestMarshaler. The request could not be executed. Full error message: Connection was closed
+2026-03-27 23:38:45,558 WARNING [io.quarkus.opentelemetry.runtime.exporter.otlp.sender.VertxGrpcSender] (vert.x-eventloop-thread-1) Failed to export TraceRequestMarshaler. The request could not be executed. Full error message: Connection was closed
+2026-03-27 23:38:46,490 WARNING [io.quarkus.opentelemetry.runtime.exporter.otlp.sender.VertxGrpcSender] (vert.x-eventloop-thread-0) Failed to export LogsRequestMarshaler. The request could not be executed. Full error message: Connection was closed
+2026-03-27 23:38:56,242 WARNING [io.quarkus.opentelemetry.runtime.exporter.otlp.sender.VertxGrpcSender] (vert.x-eventloop-thread-2) Failed to export MetricsRequestMarshaler. The request could not be executed. Full error message: Connection was closed
+2026-03-27 23:39:26,791 WARNING [io.quarkus.opentelemetry.runtime.exporter.otlp.sender.VertxGrpcSender] (vert.x-eventloop-thread-3) Failed to export MetricsRequestMarshaler. The request could not be executed. Full error message: Connection was closed
+2026-03-27 23:39:32,205 WARNING [io.quarkus.opentelemetry.runtime.exporter.otlp.sender.VertxGrpcSender] (vert.x-eventloop-thread-3) Failed to export MetricsRequestMarshaler. The request could not be executed. Full error message: Connection was closed
+2026-03-27 23:39:32,717 INFO  [io.quarkus] (Shutdown thread) quarkus3-virtual stopped in 6.605s

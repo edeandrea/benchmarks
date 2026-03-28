@@ -1,0 +1,9 @@
+[0.001s][warning][os] NUMA support disabled: The process memory and cpu node configuration does not match
+Running 30s test @ http://localhost:8080/fruits
+  2 threads and 100 connections
+  Thread Stats   Avg      Stdev     Max   +/- Stdev
+    Latency    24.99ms   42.07ms 708.84ms   93.09%
+    Req/Sec   3871.39    883.67  5278.00     87.10
+  120013 requests in 30.028s,  96.76MB read
+Requests/sec: 3996.70
+Transfer/sec:   3.22MB
