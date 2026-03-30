@@ -1,18 +1,18 @@
 package io.quarkus.infra.performance.graphics;
 
+import static io.quarkus.infra.performance.graphics.SvgAdjuster.adjustSvg;
+
 import java.awt.Dimension;
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collection;
 import java.util.function.BiFunction;
-import jakarta.enterprise.context.ApplicationScoped;
 
-import io.quarkus.infra.performance.graphics.charts.Chart;
-import io.quarkus.infra.performance.graphics.charts.InlinedSVG;
-import io.quarkus.infra.performance.graphics.charts.Subcanvas;
-import io.quarkus.infra.performance.graphics.model.BenchmarkData;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+
 import org.apache.batik.anim.dom.SAXSVGDocumentFactory;
 import org.apache.batik.anim.dom.SVGDOMImplementation;
 import org.apache.batik.svggen.SVGGraphics2D;
@@ -21,21 +21,26 @@ import org.w3c.dom.DOMImplementation;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
-import static io.quarkus.infra.performance.graphics.SvgAdjuster.adjustSvg;
+import io.quarkus.infra.performance.graphics.charts.Chart;
+import io.quarkus.infra.performance.graphics.charts.InlinedSVG;
+import io.quarkus.infra.performance.graphics.charts.Subcanvas;
+import io.quarkus.infra.performance.graphics.model.BenchmarkData;
 
 @ApplicationScoped
 public class ImageGenerator {
     private static final String svgNS = SVGDOMImplementation.SVG_NAMESPACE_URI;
 
+    @Inject
+    PngExporter pngExporter;
+
     public void generate(BiFunction<PlotDefinition, BenchmarkData, Chart> chartConstructor, BenchmarkData data,
-                         PlotDefinition plotDefinition, File outFile, Theme theme)
+                         PlotDefinition plotDefinition, Path outFile, Theme theme)
             throws IOException {
         if (data != null && data.results() != null) {
             DOMImplementation impl = SVGDOMImplementation.getDOMImplementation();
             Document doc = impl.createDocument(svgNS, "svg", null);
 
-            Chart chart = chartConstructor.apply(plotDefinition,
-                    data);
+            Chart chart = chartConstructor.apply(plotDefinition, data);
 
             SVGGraphics2D svgGenerator = new SVGGraphics2D(doc);
             svgGenerator.setSVGCanvasSize(
@@ -47,20 +52,18 @@ public class ImageGenerator {
             initialiseFonts(doc, root);
             inlineGraphics(doc, root, chart.getInlinedSVGs(), theme);
 
-            outFile.getParentFile().mkdirs();
+            Files.createDirectories(outFile.getParent());
 
-            StringWriter buffer = new StringWriter();
-            svgGenerator.stream(root, buffer, true, false);
-            String svg = buffer.toString();
-
-            String adjusted = adjustSvg(svg);
-
-            try (FileWriter writer = new FileWriter(outFile)) {
-                writer.write(adjusted);
+            try (var buffer = new StringWriter()) {
+              svgGenerator.stream(root, buffer, true, false);
+              var svg = buffer.toString();
+              var adjusted = adjustSvg(svg);
+              Files.writeString(outFile, adjusted);
             }
 
+            this.pngExporter.exportAsPng(outFile);
         } else {
-            System.out.printf("\uD83D\uDDD1️ Not generating image for %s (no data)\n", outFile.getAbsolutePath());
+            System.out.printf("\uD83D\uDDD1️ Not generating image for %s (no data)\n", outFile.toAbsolutePath());
 
         }
     }

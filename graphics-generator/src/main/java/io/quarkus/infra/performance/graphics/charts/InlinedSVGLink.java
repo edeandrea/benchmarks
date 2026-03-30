@@ -37,7 +37,8 @@ public class InlinedSVGLink extends InlinedSVG {
 
         textElement.setAttributeNS(null, "x", String.valueOf(x));
         textElement.setAttributeNS(null, "y", String.valueOf(y));
-        textElement.setAttributeNS(null, "fill", "rgba(0, 0, 0, 0)"); // make the text invisible, but still accessible to text readers
+        textElement.setAttributeNS(null, "fill", "#000000"); // make the text invisible, but still accessible to text readers
+        textElement.setAttributeNS(null, "fill-opacity", "0");
         textElement.setAttributeNS(null, "stroke", "none"); // without this, the colours and other styling has no effect
         textElement.setAttributeNS("http://www.w3.org/XML/1998/namespace", "xml:space", "preserve"); // otherwise spaces are collapsed and the hot area is too small
 

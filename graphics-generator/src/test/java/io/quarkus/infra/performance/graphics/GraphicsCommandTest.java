@@ -1,5 +1,8 @@
 package io.quarkus.infra.performance.graphics;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -10,17 +13,15 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Comparator;
 
-import io.quarkus.test.junit.main.Launch;
-import io.quarkus.test.junit.main.LaunchResult;
-import io.quarkus.test.junit.main.QuarkusMainLauncher;
-import io.quarkus.test.junit.main.QuarkusMainTest;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import io.quarkus.test.junit.main.Launch;
+import io.quarkus.test.junit.main.LaunchResult;
+import io.quarkus.test.junit.main.QuarkusMainLauncher;
+import io.quarkus.test.junit.main.QuarkusMainTest;
 
 @QuarkusMainTest
 public class GraphicsCommandTest {
@@ -114,19 +115,21 @@ public class GraphicsCommandTest {
 
         File image = new File("target/test-output/filename/data-tuned-throughput-for-all-light.svg");
         assertTrue(image.exists());
+        assertTrue(new File("target/test-output/filename/data-tuned-throughput-for-all-light.png").exists());
 
         // Check groups
         image = new File("target/test-output/filename/data-tuned-throughput-for-quarkus-dark.svg");
         assertTrue(image.exists());
+        assertTrue(new File("target/test-output/filename/data-tuned-throughput-for-quarkus-dark.png").exists());
 
         image = new File("target/test-output/filename/data-tuned-throughput-for-main-comparison-light.svg");
         assertTrue(image.exists());
+        assertTrue(new File("target/test-output/filename/data-tuned-throughput-for-main-comparison-light.png").exists());
 
         // Check composite
-
         image = new File("target/test-output/filename/data-tuned-composite-for-main-comparison-light.svg");
         assertTrue(image.exists());
-
+        assertTrue(new File("target/test-output/filename/data-tuned-composite-for-main-comparison-light.png").exists());
     }
 
     @Test
@@ -137,6 +140,7 @@ public class GraphicsCommandTest {
 
         File image = new File("target/test-output/filename/tempfile-tuned-throughput-for-all-light.svg");
         assertTrue(image.exists());
+        assertTrue(new File("target/test-output/filename/tempfile-tuned-throughput-for-all-light.png").exists());
     }
 
     @Test
@@ -147,6 +151,7 @@ public class GraphicsCommandTest {
 
         File image = new File("target/test-output/filename/data-tuned-throughput-for-all-light.svg");
         assertTrue(image.exists());
+        assertTrue(new File("target/test-output/filename/data-tuned-throughput-for-all-light.png").exists());
     }
 
     @Test
@@ -157,10 +162,12 @@ public class GraphicsCommandTest {
 
         File image = new File("target/test-output/filename/data-tuned-throughput-for-all-light.svg");
         assertTrue(image.exists());
+        assertTrue(new File("target/test-output/filename/data-tuned-throughput-for-all-light.png").exists());
 
         // Check parentheseses are stripped
         image = new File("target/test-output/filename/data-tuned-memory-rss-for-all-dark.svg");
         assertTrue(image.exists());
+        assertTrue(new File("target/test-output/filename/data-tuned-memory-rss-for-all-dark.png").exists());
     }
 
     @Test
@@ -173,13 +180,19 @@ public class GraphicsCommandTest {
         File dir = new File("target/test-output/directory/");
         File image1 = new File(dir, "data-tuned-throughput-for-all-light.svg");
         assertTrue(image1.exists());
+        assertTrue(new File(dir, "data-tuned-throughput-for-all-light.png").exists());
+
         File image2 = new File(dir, "eight-framework-tuned-throughput-for-all-light.svg");
         assertTrue(image2.exists());
+        assertTrue(new File(dir, "eight-framework-tuned-throughput-for-all-light.png").exists());
+
 
         File nestedDir = new File("target/test-output/directory/nested/more-nested");
         assertTrue(nestedDir.exists());
+
         File image3 = new File(nestedDir, "data3-ootb-throughput-for-all-light.svg");
         assertTrue(image3.exists());
+        assertTrue(new File(nestedDir, "data3-ootb-throughput-for-all-light.png").exists());
     }
 
     @Test
@@ -190,6 +203,7 @@ public class GraphicsCommandTest {
 
         File image = new File("target/test-output/filename/data-tuned-throughput-for-all-dark.svg");
         assertTrue(image.exists());
+        assertTrue(new File("target/test-output/filename/data-tuned-throughput-for-all-dark.png").exists());
     }
 
     @Test
@@ -201,14 +215,17 @@ public class GraphicsCommandTest {
         // Verify that images are generated successfully even with unknown frameworks
         File image = new File("target/test-output/unknown-framework/data-unknown-framework-throughput-for-all-light.svg");
         assertTrue(image.exists(), "Image should be generated for JSON with unknown framework");
+        assertTrue(new File("target/test-output/unknown-framework/data-unknown-framework-throughput-for-all-light.png").exists(),"Image should be generated for JSON with unknown framework");
 
         // Verify dark mode image is also generated
         File darkImage = new File("target/test-output/unknown-framework/data-unknown-framework-throughput-for-all-dark.svg");
         assertTrue(darkImage.exists(), "Dark mode image should be generated for JSON with unknown framework");
+        assertTrue(new File("target/test-output/unknown-framework/data-unknown-framework-throughput-for-all-dark.png").exists(), "Dark mode image should be generated for JSON with unknown framework");
 
         // Verify composite image is also generated
         File compositeImage = new File("target/test-output/unknown-framework/data-unknown-framework-composite-for-all-light.svg");
         assertTrue(compositeImage.exists(), "Composite image should be generated for JSON with unknown framework");
+        assertTrue(new File("target/test-output/unknown-framework/data-unknown-framework-composite-for-all-light.png").exists(), "Composite image should be generated for JSON with unknown framework");
     }
 
 }
