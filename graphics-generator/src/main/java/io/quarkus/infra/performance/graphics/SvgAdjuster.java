@@ -24,7 +24,18 @@ public class SvgAdjuster {
         Elements elements = svgDoc.select(selector);
         for (String name : Theme.FONT.getNames()) {
             String fontFamilyDeclaration = "font-family:\\s*'" + name + "'";
-            String fallbackString = "font-family: '" + name + "', " + Theme.FONT.getFamilyDeclaration();
+
+            // Avoid duplication: check if the name is already at the start of the family declaration
+            String familyDecl = Theme.FONT.getFamilyDeclaration();
+            String fallbackString;
+            if (familyDecl.startsWith("'" + name + "'")) {
+                // Name is already first in the declaration, don't prepend it
+                fallbackString = "font-family: " + familyDecl;
+            } else {
+                // Name is not in the declaration, prepend it
+                fallbackString = "font-family: '" + name + "', " + familyDecl;
+            }
+
             for (Element g : elements) {
                 String style = g.attr(STYLE);
                 style = style.replaceAll(fontFamilyDeclaration, fallbackString);
