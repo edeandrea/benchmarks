@@ -1,5 +1,9 @@
 package io.quarkus.infra.performance.graphics;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
@@ -7,7 +11,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.function.Function;
+
 import jakarta.inject.Inject;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import io.quarkus.infra.performance.graphics.charts.BarChart;
 import io.quarkus.infra.performance.graphics.model.BenchmarkData;
@@ -24,12 +32,6 @@ import io.quarkus.infra.performance.graphics.model.UnknownFramework;
 import io.quarkus.infra.performance.graphics.model.units.DimensionalNumber;
 import io.quarkus.infra.performance.graphics.model.units.TransactionsPerSecond;
 import io.quarkus.test.junit.QuarkusTest;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 @QuarkusTest
 class ImageGeneratorTest {
@@ -63,7 +65,7 @@ class ImageGeneratorTest {
             addConfig(data);
             Function<Result, ? extends DimensionalNumber> fun = framework -> framework.load().avThroughput();
             PlotDefinition plotDefinition = new SingleSeriesPlotDefinition("test plot", "some subtitle", fun);
-            imageGenerator.generate(BarChart::new, data, plotDefinition, new File("target/images/test1.svg"),
+            imageGenerator.generate(BarChart::new, data, plotDefinition, Path.of("target/images/test1.svg"),
                     Theme.LIGHT);
             image = new File("target/images/test1.svg");
         } else {

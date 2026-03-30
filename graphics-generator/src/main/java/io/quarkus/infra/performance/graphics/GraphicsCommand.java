@@ -9,6 +9,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.List;
 import java.util.Optional;
 import java.util.function.BiFunction;
+
 import jakarta.inject.Inject;
 
 import io.quarkus.infra.performance.graphics.charts.BarChart;
@@ -20,6 +21,7 @@ import io.quarkus.infra.performance.graphics.model.CompositePlotDefinition;
 import io.quarkus.infra.performance.graphics.model.Config;
 import io.quarkus.infra.performance.graphics.model.Group;
 import io.quarkus.infra.performance.graphics.model.Repo;
+
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 
@@ -116,10 +118,10 @@ public class GraphicsCommand implements Runnable {
             BenchmarkData data = allData.subgroup(group);
             if (data.results() != null && data.results().size() > 0) {
                 try {
-                    var lightFile = qualifiedOutputDir.resolve(deriveOutputFilename(file, plotDefinition, data, Theme.LIGHT)).toFile();
+                    var lightFile = qualifiedOutputDir.resolve(deriveOutputFilename(file, plotDefinition, data, Theme.LIGHT));
                     generator.generate(chartConstructor, data, plotDefinition, lightFile, Theme.LIGHT);
 
-                    var darkFile = qualifiedOutputDir.resolve(deriveOutputFilename(file, plotDefinition, data, Theme.DARK)).toFile();
+                    var darkFile = qualifiedOutputDir.resolve(deriveOutputFilename(file, plotDefinition, data, Theme.DARK));
                     generator.generate(chartConstructor, data, plotDefinition, darkFile, Theme.DARK);
                 } catch (IOException e) {
                     throw new RuntimeException(e);
