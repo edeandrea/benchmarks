@@ -29,7 +29,7 @@ public class EmbeddableFont {
     // AWT has poor support for variable fonts. For width calculations other than bold and plain, we need to use the named variant of the fonts
     // (Even with the richer weights in TextAttributes, the graphics engine will fall back to the standard widths)
 
-    public static final EmbeddableFont OPENSANS = new EmbeddableFont("Open Sans", List.of("Segoe UI", "Roboto", "Arial", "Noto Sans", "sans-serif"),
+    public static final EmbeddableFont OPENSANS = new EmbeddableFont("Open Sans", List.of("Arial", "Noto Sans", "sans-serif"),
             Map.of(
                 PLAIN, "https://github.com/googlefonts/opensans/raw/refs/heads/main/fonts/ttf/OpenSans-Light.ttf",
                 BOLD, "https://github.com/googlefonts/opensans/raw/refs/heads/main/fonts/ttf/OpenSans-SemiBold.ttf",
