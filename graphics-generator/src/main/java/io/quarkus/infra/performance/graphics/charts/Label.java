@@ -7,7 +7,6 @@ import java.util.Comparator;
 
 import io.quarkus.infra.performance.graphics.Theme;
 import io.quarkus.infra.performance.graphics.charts.fonts.Alignment;
-import io.quarkus.infra.performance.graphics.charts.fonts.CharacterCollector;
 import io.quarkus.infra.performance.graphics.charts.fonts.FontStyle;
 import io.quarkus.infra.performance.graphics.charts.fonts.Sizer;
 import io.quarkus.infra.performance.graphics.charts.fonts.VAlignment;
@@ -47,58 +46,6 @@ public class Label {
         this.strings = lines;
         this.labelGroup = labelGroup;
         setTargetHeight(DEFAULT_TARGET_HEIGHT);
-
-        // Register characters for font subsetting - will be updated when styles are set
-        registerCharacters();
-    }
-
-    private void registerCharacters() {
-        for (int i = 0; i < strings.length; i++) {
-            String string = strings[i];
-            if (string == null || string.isEmpty()) {
-                continue;
-            }
-
-            String[] segments = splitByStyleDelimiter(string);
-
-            for (int j = 0; j < segments.length; j++) {
-                String segment = segments[j];
-                if (segment.isEmpty()) {
-                    continue; // Skip empty segments from split
-                }
-
-                FontStyle style = getStyleForSegment(i, j);
-
-                // Register this segment's characters with the appropriate font style
-                CharacterCollector.registerText(segment, style);
-
-                // Register delimiter characters (they're rendered but removed by split())
-                if (j < segments.length - 1) {
-                    CharacterCollector.registerText(styles.delimiter(), style);
-                }
-            }
-        }
-    }
-
-    /**
-     * Split text according to the style delimiter, with regex-safe handling.
-     * The delimiter is quoted to treat special regex characters literally.
-     */
-    private String[] splitByStyleDelimiter(String text) {
-        return text.split(java.util.regex.Pattern.quote(styles.delimiter()));
-    }
-
-    /**
-     * Determine which font style applies to a segment based on its position.
-     * If delimiter is LINE_BREAK, each line gets its own style (indexed by lineIndex).
-     * Otherwise, segments within a line get different styles (indexed by segmentIndex).
-     * Falls back to the last style if index exceeds the array length.
-     */
-    private FontStyle getStyleForSegment(int lineIndex, int segmentIndex) {
-        int styleIndex = LINE_BREAK.equals(styles.delimiter()) ? lineIndex : segmentIndex;
-        return styleIndex < styles.styles().length
-            ? styles.styles()[styleIndex]
-            : styles.styles()[styles.styles().length - 1];
     }
 
     public void draw(Subcanvas g) {
@@ -145,7 +92,7 @@ public class Label {
             };
 
             // Now we may need to split further; if the delimiter was a line-break, this will be a no-op
-            String[] segments = splitByStyleDelimiter(string);
+            String[] segments = string.split(styles.delimiter());
             int segmentX = alignedX;
 
             for (int j = 0; j < segments.length; j++) {
@@ -219,9 +166,6 @@ public class Label {
         this.styles = new DelimitedStyles(styles, newDelimiter);
 
         labelGroup.setStyles(this.styles.styles());
-
-        // Re-register characters with updated styles
-        registerCharacters();
 
         return this;
     }
