@@ -1,0 +1,86 @@
+name: Rollback latest benchmark run
+
+on:
+  workflow_dispatch:
+    inputs:
+      benchmark_name:
+        description: 'Benchmark to roll back'
+        required: true
+        type: choice
+        default: spring-quarkus-perf-comparison
+        options:
+          - spring-quarkus-perf-comparison
+      scenario:
+        description: 'Scenario to roll back'
+        required: true
+        type: choice
+        default: tuned
+        options:
+          - tuned
+          - ootb
+
+concurrency:
+  group: git-operations
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  rollback-latest:
+    name: "Rollback latest ${{ inputs.scenario }} run for ${{ inputs.benchmark_name }}"
+    runs-on: ubuntu-latest
+    if: github.repository == 'quarkusio/benchmarks'
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Find latest folder and promote previous
+        id: rollback
+        run: .github/scripts/rollback-latest.sh "${{ inputs.benchmark_name }}" "${{ inputs.scenario }}"
+
+      - name: Create PR and merge
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          BENCHMARK="${{ inputs.benchmark_name }}"
+          SCENARIO="${{ inputs.scenario }}"
+          CURRENT="${{ steps.rollback.outputs.current_folder }}"
+          NEXT="${{ steps.rollback.outputs.next_folder }}"
+
+          # Configure git
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Create branch
+          BRANCH_NAME="remove-latest/${BENCHMARK}-${SCENARIO}-${CURRENT}"
+          git checkout -b "$BRANCH_NAME"
+
+          # Stage the deleted folder
+          git rm -r "results/${BENCHMARK}/${CURRENT}"
+
+          # Stage the updated latest files
+          git add "results/${BENCHMARK}-latest-${SCENARIO}.json" \
+                  "results/${BENCHMARK}/results-latest-${SCENARIO}.json"
+
+          # Commit
+          git commit -m "Remove ${SCENARIO} run ${CURRENT} and promote ${NEXT} (from ${{ github.workflow }} #${{ github.run_number }}) as latest"
+
+          # Push
+          git push origin "$BRANCH_NAME"
+
+          # Create PR
+          BODY="Removed the latest **${SCENARIO}** benchmark run (\`${CURRENT}\`) for \`${BENCHMARK}\` and promoted \`${NEXT}\` as the new latest.
+
+          Triggered by [${{ github.workflow }} run #${{ github.run_number }}](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }})."
+
+          PR_URL=$(gh pr create \
+            --title "Remove latest ${SCENARIO} run ${CURRENT}" \
+            --body "$BODY" \
+            --label "Generated Resources" \
+            --base main)
+
+          # Auto-merge
+          gh pr merge --squash --delete-branch "$PR_URL"
