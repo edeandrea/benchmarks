@@ -10,6 +10,7 @@ import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING3
 import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING3_JVM_AOT;
 import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING4_JVM;
 import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING4_JVM_AOT;
+import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING4_LEYDEN;
 import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING4_NATIVE;
 import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING4_VIRTUAL;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -53,10 +54,11 @@ class GroupTest {
     // A group constructed using a category
     @Test
     public void javaFrameworksExcludesOlderSpringVersions() {
-        Group group = Group.JAVA_AND_NATIVE_AND_AOT_FRAMEWORKS;
+        Group group = Group.JAVA_AND_NATIVE_AND_LEYDEN_FRAMEWORKS;
         assertTrue(group.contains(QUARKUS3_NATIVE));
         assertTrue(group.contains(QUARKUS3_JVM));
         assertTrue(group.contains(SPRING4_JVM));
+        assertTrue(group.contains(SPRING4_LEYDEN));
         assertTrue(group.contains(SPRING4_JVM_AOT));
         assertFalse(group.contains(SPRING4_VIRTUAL));
         assertFalse(group.contains(SPRING3_JVM));
@@ -65,7 +67,7 @@ class GroupTest {
 
     @Test
     public void categoryChecks() {
-        Group group = Group.JAVA_AND_NATIVE_AND_AOT_FRAMEWORKS;
+        Group group = Group.JAVA_AND_NATIVE_AND_LEYDEN_FRAMEWORKS;
         assertTrue(group.containsAny(Category.QUARKUS));
         assertTrue(group.containsAny(Category.JVM));
         assertTrue(group.containsAny(Category.NATIVE));
