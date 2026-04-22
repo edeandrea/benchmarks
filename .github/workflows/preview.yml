@@ -12,6 +12,11 @@ concurrency:
   group: git-operations
   cancel-in-progress: false
 
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
 jobs:
   preview:
     runs-on: ubuntu-latest
