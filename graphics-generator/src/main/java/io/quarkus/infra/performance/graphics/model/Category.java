@@ -6,6 +6,7 @@ public enum Category {
     QUARKUS,
     NATIVE(true),
     AOT(true),
+    LEYDEN(true),
     VIRTUAL_THREADS(true),
     COMPATIBILITY,
     SPRING,

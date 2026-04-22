@@ -7,17 +7,23 @@ import io.quarkus.infra.performance.graphics.charts.fonts.EmbeddableFont;
 import io.quarkus.infra.performance.graphics.model.Framework;
 
 import static io.quarkus.infra.performance.graphics.model.KnownFramework.QUARKUS3_JVM;
+import static io.quarkus.infra.performance.graphics.model.KnownFramework.QUARKUS3_LEYDEN;
 import static io.quarkus.infra.performance.graphics.model.KnownFramework.QUARKUS3_NATIVE;
 import static io.quarkus.infra.performance.graphics.model.KnownFramework.QUARKUS3_SPRING_COMPAT;
 import static io.quarkus.infra.performance.graphics.model.KnownFramework.QUARKUS3_VIRTUAL;
+import static io.quarkus.infra.performance.graphics.model.KnownFramework.QUARKUS3_VIRTUAL_LEYDEN;
 import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING3_JVM;
 import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING3_JVM_AOT;
+import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING3_LEYDEN;
 import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING3_NATIVE;
 import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING3_VIRTUAL;
+import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING3_VIRTUAL_LEYDEN;
 import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING4_JVM;
 import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING4_JVM_AOT;
+import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING4_LEYDEN;
 import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING4_NATIVE;
 import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING4_VIRTUAL;
+import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING4_VIRTUAL_LEYDEN;
 import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING_JVM;
 import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING_JVM_AOT;
 import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING_NATIVE;
@@ -43,18 +49,24 @@ public record Theme(String name, Color background, Color text, Color divider, Co
             Map.entry(QUARKUS3_VIRTUAL, QUARKUS_BLUE),
             Map.entry(QUARKUS3_NATIVE, QUARKUS_BLUE),
             Map.entry(QUARKUS3_SPRING_COMPAT, QUARKUS_BLUE),
+            Map.entry(QUARKUS3_LEYDEN, QUARKUS_BLUE),
+            Map.entry(QUARKUS3_VIRTUAL_LEYDEN, QUARKUS_BLUE),
 
             // Spring 3
             Map.entry(SPRING3_JVM, SPRING_LIGHT_GREEN),
             Map.entry(SPRING3_NATIVE, SPRING_LIGHT_GREEN),
             Map.entry(SPRING3_JVM_AOT, SPRING_LIGHT_GREEN),
             Map.entry(SPRING3_VIRTUAL, SPRING_LIGHT_GREEN),
+            Map.entry(SPRING3_LEYDEN, SPRING_LIGHT_GREEN),
+            Map.entry(SPRING3_VIRTUAL_LEYDEN, SPRING_LIGHT_GREEN),
 
             // Spring 4
             Map.entry(SPRING4_JVM, SPRING_GREEN),
             Map.entry(SPRING4_NATIVE, SPRING_GREEN),
             Map.entry(SPRING4_JVM_AOT, SPRING_GREEN),
             Map.entry(SPRING4_VIRTUAL, SPRING_GREEN),
+            Map.entry(SPRING4_LEYDEN, SPRING_GREEN),
+            Map.entry(SPRING4_VIRTUAL_LEYDEN, SPRING_GREEN),
 
             // Spring
             Map.entry(SPRING_JVM, SPRING_LIGHT_GREEN),

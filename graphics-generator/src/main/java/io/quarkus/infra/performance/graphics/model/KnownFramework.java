@@ -13,6 +13,7 @@ import com.fasterxml.jackson.annotation.JsonValue;
 import static io.quarkus.infra.performance.graphics.model.Category.AOT;
 import static io.quarkus.infra.performance.graphics.model.Category.COMPATIBILITY;
 import static io.quarkus.infra.performance.graphics.model.Category.JVM;
+import static io.quarkus.infra.performance.graphics.model.Category.LEYDEN;
 import static io.quarkus.infra.performance.graphics.model.Category.NATIVE;
 import static io.quarkus.infra.performance.graphics.model.Category.OLD;
 import static io.quarkus.infra.performance.graphics.model.Category.QUARKUS;
@@ -30,10 +31,16 @@ public enum KnownFramework implements Framework {
     SPRING4_JVM_AOT("spring4-jvm-aot", "Spring Boot 4\nAOT (via OpenJDK)", EnumSet.of(SPRING, JVM, AOT)),
     SPRING_JVM_AOT("spring-jvm-aot", "Spring Boot\nAOT (via OpenJDK)", EnumSet.of(SPRING, JVM, AOT)),
     SPRING3_JVM_AOT("spring3-jvm-aot", "Spring Boot 3\nAOT (via OpenJDK)", EnumSet.of(SPRING, JVM, AOT, OLD)),
+    QUARKUS3_LEYDEN("quarkus3-leyden", "Quarkus\nLeyden (via OpenJDK)", EnumSet.of(QUARKUS, JVM, LEYDEN)),
+    SPRING4_LEYDEN("spring4-leyden", "Spring Boot 4\nLeyden (via OpenJDK)", EnumSet.of(SPRING, JVM, LEYDEN)),
+    SPRING3_LEYDEN("spring3-leyden", "Spring Boot 3\nLeyden (via OpenJDK)", EnumSet.of(SPRING, JVM, LEYDEN, OLD)),
     QUARKUS3_VIRTUAL("quarkus3-virtual", "Quarkus w/Virtual Threads\nJIT (via OpenJDK)", EnumSet.of(QUARKUS, JVM, VIRTUAL_THREADS)),
     SPRING4_VIRTUAL("spring4-virtual", "Spring Boot 4 w/Virtual Threads\nJIT (via OpenJDK)", EnumSet.of(SPRING, JVM, VIRTUAL_THREADS)),
     SPRING_VIRTUAL("spring-virtual", "Spring Boot w/Virtual Threads\nJIT (via OpenJDK)", EnumSet.of(SPRING, JVM, VIRTUAL_THREADS)),
     SPRING3_VIRTUAL("spring3-virtual", "Spring Boot 3 w/Virtual Threads\nJIT (via OpenJDK)", EnumSet.of(SPRING, JVM, VIRTUAL_THREADS, OLD)),
+    QUARKUS3_VIRTUAL_LEYDEN("quarkus3-virtual-leyden", "Quarkus w/Virtual Threads\nLeyden (via OpenJDK)", EnumSet.of(QUARKUS, JVM, VIRTUAL_THREADS, LEYDEN)),
+    SPRING4_VIRTUAL_LEYDEN("spring4-virtual-leyden", "Spring Boot 4 w/Virtual Threads\nLeyden (via OpenJDK)", EnumSet.of(SPRING, JVM, VIRTUAL_THREADS, LEYDEN)),
+    SPRING3_VIRTUAL_LEYDEN("spring3-virtual-leyden", "Spring Boot 3 w/Virtual Threads\nLeyden (via OpenJDK)", EnumSet.of(SPRING, JVM, VIRTUAL_THREADS, LEYDEN, OLD)),
     QUARKUS3_NATIVE("quarkus3-native", "Quarkus\nNative (via GraalVM)", EnumSet.of(QUARKUS, NATIVE)),
     SPRING4_NATIVE("spring4-native", "Spring Boot 4\nNative (via GraalVM)", EnumSet.of(SPRING, NATIVE)),
     SPRING_NATIVE("spring-native", "Spring Boot\nNative (via GraalVM)", EnumSet.of(SPRING, NATIVE)),

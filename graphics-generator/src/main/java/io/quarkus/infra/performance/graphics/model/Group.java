@@ -4,11 +4,12 @@ package io.quarkus.infra.performance.graphics.model;
 import java.util.EnumSet;
 import java.util.Set;
 
-import static io.quarkus.infra.performance.graphics.model.Category.AOT;
 import static io.quarkus.infra.performance.graphics.model.Category.COMPATIBILITY;
 import static io.quarkus.infra.performance.graphics.model.Category.JVM;
+import static io.quarkus.infra.performance.graphics.model.Category.LEYDEN;
 import static io.quarkus.infra.performance.graphics.model.Category.NATIVE;
 import static io.quarkus.infra.performance.graphics.model.Category.OLD;
+import static io.quarkus.infra.performance.graphics.model.Category.SPRING;
 import static io.quarkus.infra.performance.graphics.model.KnownFramework.QUARKUS3_JVM;
 import static io.quarkus.infra.performance.graphics.model.KnownFramework.QUARKUS3_NATIVE;
 import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING4_JVM;
@@ -24,7 +25,7 @@ public enum Group {
             QUARKUS3_JVM, SPRING4_JVM, QUARKUS3_NATIVE, SPRING4_NATIVE
     ), null),
 
-    AOT_COMPARISON(EnumSet.noneOf(KnownFramework.class), Set.of(JVM, AOT), EnumSet.of(Category.VIRTUAL_THREADS)),
+    LEYDEN_COMPARISON(EnumSet.noneOf(KnownFramework.class), Set.of(JVM, LEYDEN), EnumSet.of(Category.VIRTUAL_THREADS)),
 
     JAVA_FRAMEWORKS_WITH_COMPATIBILITY(EnumSet.of(JVM, COMPATIBILITY)),
 
@@ -35,19 +36,25 @@ public enum Group {
     VIRTUAL_THREADS(EnumSet.noneOf(KnownFramework.class), EnumSet.of(
             Category.VIRTUAL_THREADS,
             JVM
-    ), EnumSet.of(Category.AOT)),
+    ), EnumSet.of(Category.LEYDEN)),
 
     JAVA_AND_NATIVE_FRAMEWORKS(EnumSet.noneOf(KnownFramework.class), EnumSet.of(
             JVM, NATIVE
-    ), EnumSet.of(AOT, Category.VIRTUAL_THREADS)),
+    ), EnumSet.of(LEYDEN, Category.VIRTUAL_THREADS)),
 
     ALL(EnumSet.allOf(KnownFramework.class), null),
 
-    JAVA_AND_NATIVE_AND_AOT_FRAMEWORKS(EnumSet.noneOf(KnownFramework.class), EnumSet.of(
+    JAVA_AND_NATIVE_AND_LEYDEN_FRAMEWORKS(EnumSet.noneOf(KnownFramework.class), EnumSet.of(
             NATIVE,
-            AOT,
+            LEYDEN,
             JVM
-    ), EnumSet.of(OLD, Category.VIRTUAL_THREADS));
+    ), EnumSet.of(OLD, Category.VIRTUAL_THREADS)),
+
+    QUARKUS_JAVA_AND_NATIVE_AND_LEYDEN_FRAMEWORKS(EnumSet.noneOf(KnownFramework.class), EnumSet.of(
+            NATIVE,
+            LEYDEN,
+            JVM
+    ), EnumSet.of(OLD, Category.VIRTUAL_THREADS, SPRING));
 
     private final Set<KnownFramework> frameworks;
 
