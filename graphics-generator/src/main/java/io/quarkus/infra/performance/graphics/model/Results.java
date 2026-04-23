@@ -52,14 +52,18 @@ public class Results {
         if (hasOnlyOneSpringVersion()) {
             swap(KnownFramework.SPRING3_JVM, KnownFramework.SPRING_JVM);
             swap(KnownFramework.SPRING3_NATIVE, KnownFramework.SPRING_NATIVE);
+            swap(KnownFramework.SPRING3_LEYDEN, KnownFramework.SPRING_LEYDEN);
             swap(KnownFramework.SPRING3_JVM_AOT, KnownFramework.SPRING_JVM_AOT);
             swap(KnownFramework.SPRING3_VIRTUAL, KnownFramework.SPRING_VIRTUAL);
+            swap(KnownFramework.SPRING3_VIRTUAL_LEYDEN, KnownFramework.SPRING_VIRTUAL_LEYDEN);
             swap(KnownFramework.QUARKUS3_SPRING3_COMPAT, KnownFramework.QUARKUS3_SPRING_COMPAT);
 
             swap(KnownFramework.SPRING4_JVM, KnownFramework.SPRING_JVM);
             swap(KnownFramework.SPRING4_NATIVE, KnownFramework.SPRING_NATIVE);
+            swap(KnownFramework.SPRING4_LEYDEN, KnownFramework.SPRING_LEYDEN);
             swap(KnownFramework.SPRING4_JVM_AOT, KnownFramework.SPRING_JVM_AOT);
             swap(KnownFramework.SPRING4_VIRTUAL, KnownFramework.SPRING_VIRTUAL);
+            swap(KnownFramework.SPRING4_VIRTUAL_LEYDEN, KnownFramework.SPRING_VIRTUAL_LEYDEN);
             swap(KnownFramework.QUARKUS3_SPRING4_COMPAT, KnownFramework.QUARKUS3_SPRING_COMPAT);
         }
 

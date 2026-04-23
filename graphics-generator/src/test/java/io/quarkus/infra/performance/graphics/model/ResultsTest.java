@@ -9,8 +9,12 @@ import org.junit.jupiter.api.Test;
 
 import static io.quarkus.infra.performance.graphics.model.KnownFramework.QUARKUS3_JVM;
 import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING3_JVM;
+import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING3_LEYDEN;
+import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING3_VIRTUAL_LEYDEN;
 import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING4_JVM;
 import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING_JVM;
+import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING_LEYDEN;
+import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING_VIRTUAL_LEYDEN;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -36,13 +40,18 @@ class ResultsTest {
         Results results = new Results();
         addDatapoint(results, QUARKUS3_JVM, 589.21);
         addDatapoint(results, SPRING3_JVM, 467.87);
+        addDatapoint(results, SPRING3_LEYDEN, 467.87);
+        addDatapoint(results, SPRING3_VIRTUAL_LEYDEN, 467.87);
 
         List<Datapoint> datapoints = results.getDatasets(f -> f.load().avThroughput());
-        assertEquals(2, datapoints.size());
+        assertEquals(4, datapoints.size());
         assertEquals(589.21, datapoints.get(0).value().getValue());
         // The second framework should be a synthetic one to reflect the fact there's only one Spring version
         assertEquals(SPRING_JVM, datapoints.get(1).framework());
         assertEquals(467.87, datapoints.get(1).value().getValue());
+        assertEquals(SPRING_LEYDEN, datapoints.get(2).framework());
+        assertEquals(SPRING_VIRTUAL_LEYDEN, datapoints.get(3).framework());
+
     }
 
     @Test
