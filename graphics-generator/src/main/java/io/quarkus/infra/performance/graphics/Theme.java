@@ -26,8 +26,10 @@ import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING4
 import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING4_VIRTUAL_LEYDEN;
 import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING_JVM;
 import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING_JVM_AOT;
+import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING_LEYDEN;
 import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING_NATIVE;
 import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING_VIRTUAL;
+import static io.quarkus.infra.performance.graphics.model.KnownFramework.SPRING_VIRTUAL_LEYDEN;
 import static java.awt.Color.decode;
 
 public record Theme(String name, Color background, Color text, Color divider, Color finePrint,
@@ -71,8 +73,10 @@ public record Theme(String name, Color background, Color text, Color divider, Co
             // Spring
             Map.entry(SPRING_JVM, SPRING_LIGHT_GREEN),
             Map.entry(SPRING_NATIVE, SPRING_LIGHT_GREEN),
+            Map.entry(SPRING_LEYDEN, SPRING_LIGHT_GREEN),
             Map.entry(SPRING_JVM_AOT, SPRING_LIGHT_GREEN),
-            Map.entry(SPRING_VIRTUAL, SPRING_LIGHT_GREEN));
+            Map.entry(SPRING_VIRTUAL, SPRING_LIGHT_GREEN),
+            Map.entry(SPRING_VIRTUAL_LEYDEN, SPRING_LIGHT_GREEN));
 
     public static final Theme LIGHT = new Theme("light", Color.WHITE, decode("#121212"), LIGHT_DIVIDER, BARELY_GREY);
     public static final Theme DARK = new Theme("dark", decode("#121212"), decode("#B5B5B5"), DARK_DIVIDER, OFF_BLACK);
