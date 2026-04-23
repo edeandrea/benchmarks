@@ -1,8 +1,5 @@
 package io.quarkus.infra.performance.graphics;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -13,15 +10,19 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.Comparator;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import io.quarkus.test.junit.main.Launch;
 import io.quarkus.test.junit.main.LaunchResult;
 import io.quarkus.test.junit.main.QuarkusMainLauncher;
 import io.quarkus.test.junit.main.QuarkusMainTest;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @QuarkusMainTest
 public class GraphicsCommandTest {
@@ -215,7 +216,7 @@ public class GraphicsCommandTest {
         // Verify that images are generated successfully even with unknown frameworks
         File image = new File("target/test-output/unknown-framework/data-unknown-framework-throughput-for-all-light.svg");
         assertTrue(image.exists(), "Image should be generated for JSON with unknown framework");
-        assertTrue(new File("target/test-output/unknown-framework/data-unknown-framework-throughput-for-all-light.png").exists(),"Image should be generated for JSON with unknown framework");
+        assertTrue(new File("target/test-output/unknown-framework/data-unknown-framework-throughput-for-all-light.png").exists(), "Image should be generated for JSON with unknown framework");
 
         // Verify dark mode image is also generated
         File darkImage = new File("target/test-output/unknown-framework/data-unknown-framework-throughput-for-all-dark.svg");
@@ -228,4 +229,206 @@ public class GraphicsCommandTest {
         assertTrue(new File("target/test-output/unknown-framework/data-unknown-framework-composite-for-all-light.png").exists(), "Composite image should be generated for JSON with unknown framework");
     }
 
+    // The labelling logic is emergent, so some of it needs to be an integration test, not a unit test
+    @Nested
+    class LabellingTest {
+        /**
+         * Test that charts with both Spring 3 and Spring 4 frameworks show explicit version numbers.
+         * This uses data.json which contains both spring3-* and spring4-* frameworks.
+         */
+        @Test
+        @Launch({"src/test/resources/data.json", "target/test-output/spring-labeling"})
+        public void testMultipleSpringVersionsShowExplicitVersions(LaunchResult result) throws IOException {
+            String output = result.getOutput();
+            assertTrue(output.contains("data.json"), output);
+
+            // Check the "all" group which contains both Spring 3 and Spring 4
+            File svgFile = new File("target/test-output/spring-labeling/data-tuned-throughput-for-all-light.svg");
+            assertTrue(svgFile.exists(), "SVG file should exist");
+
+            String svgContent = Files.readString(svgFile.toPath());
+
+            // When both Spring 3 and Spring 4 are present, labels should include version numbers
+            assertTrue(svgContent.contains("Spring Boot 3"),
+                    "Chart with multiple Spring versions should show 'Spring Boot 3'");
+            assertTrue(svgContent.contains("Spring Boot 4"),
+                    "Chart with multiple Spring versions should show 'Spring Boot 4'");
+
+            // Verify we don't have generic "Spring Boot" without version when both versions are present
+            // This is a bit tricky because "Spring Boot 3" contains "Spring Boot", so we need to be careful
+            // We'll check that the pattern doesn't appear in isolation
+            assertFalse(svgContent.matches(".*Spring Boot\\s*\\n(?!\\s*[34]).*"),
+                    "Should not have 'Spring Boot' without version number when multiple versions present");
+        }
+
+        /**
+         * Test that charts with only Spring 4 frameworks show just "Spring" without version numbers.
+         * This uses single-spring-version.json which only contains Spring 4 frameworks.
+         */
+        @Test
+        @Launch({"src/test/resources/single-spring-version.json", "target/test-output/spring-labeling-single"})
+        public void testSingleSpringVersionShowsGenericLabel(LaunchResult result) throws IOException {
+            String output = result.getOutput();
+            assertTrue(output.contains("single-spring-version.json"), output);
+
+            // Check the "all" group which contains only Spring 4 frameworks
+            File svgFile = new File("target/test-output/spring-labeling-single/single-spring-version-tuned-throughput-for-all-light.svg");
+            assertTrue(svgFile.exists(), "SVG file should exist");
+
+            String svgContent = Files.readString(svgFile.toPath());
+
+            // When only one Spring version is present, labels should NOT include version numbers
+            assertFalse(svgContent.contains("Spring Boot 3"),
+                    "Chart with single Spring version should not show 'Spring Boot 3'");
+            assertFalse(svgContent.contains("Spring Boot 4"),
+                    "Chart with single Spring version should not show 'Spring Boot 4'");
+
+            // Should have generic "Spring Boot" label instead
+            assertTrue(svgContent.contains("Spring Boot"),
+                    "Chart with single Spring version should show generic 'Spring Boot'");
+        }
+
+        /**
+         * Test the main comparison group which only has Spring 4 (one version).
+         * Since it only has one Spring version, it should show generic "Spring" labels.
+         */
+        @Test
+        @Launch({"src/test/resources/data.json", "target/test-output/spring-labeling-main"})
+        public void testMainComparisonGroupShowsGenericLabels(LaunchResult result) throws IOException {
+            String output = result.getOutput();
+            assertTrue(output.contains("data.json"), output);
+
+            File svgFile = new File("target/test-output/spring-labeling-main/data-tuned-throughput-for-main-comparison-light.svg");
+            assertTrue(svgFile.exists(), "SVG file should exist");
+
+            String svgContent = Files.readString(svgFile.toPath());
+
+            // Main comparison only has Spring 4, so should NOT show version numbers
+            assertFalse(svgContent.contains("Spring Boot 3"),
+                    "Main comparison chart should not show 'Spring Boot 3'");
+            assertFalse(svgContent.contains("Spring Boot 4"),
+                    "Main comparison chart should not show 'Spring Boot 4'");
+
+            // Should have generic "Spring Boot" label instead
+            assertTrue(svgContent.contains("Spring Boot"),
+                    "Main comparison chart should show generic 'Spring Boot'");
+        }
+
+        /**
+         * Test composite charts also follow the same labeling rules.
+         */
+        @Test
+        @Launch({"src/test/resources/data.json", "target/test-output/spring-labeling-composite"})
+        public void testCompositeChartsFollowLabelingRules(LaunchResult result) throws IOException {
+            String output = result.getOutput();
+            assertTrue(output.contains("data.json"), output);
+
+            File svgFile = new File("target/test-output/spring-labeling-composite/data-tuned-composite-for-all-light.svg");
+            assertTrue(svgFile.exists(), "SVG file should exist");
+
+            String svgContent = Files.readString(svgFile.toPath());
+
+            // Composite charts with multiple Spring versions should show explicit versions
+            assertTrue(svgContent.contains("Spring Boot 3"),
+                    "Composite chart with multiple Spring versions should show 'Spring Boot 3'");
+            assertTrue(svgContent.contains("Spring Boot 4"),
+                    "Composite chart with multiple Spring versions should show 'Spring Boot 4'");
+        }
+
+        /**
+         * Test memory RSS charts follow the same labeling rules.
+         */
+        @Test
+        @Launch({"src/test/resources/data.json", "target/test-output/spring-labeling-memory"})
+        public void testMemoryChartsFollowLabelingRules(LaunchResult result) throws IOException {
+            String output = result.getOutput();
+            assertTrue(output.contains("data.json"), output);
+
+            File svgFile = new File("target/test-output/spring-labeling-memory/data-tuned-memory-rss-for-all-light.svg");
+            assertTrue(svgFile.exists(), "SVG file should exist");
+
+            String svgContent = Files.readString(svgFile.toPath());
+
+            // Memory charts with multiple Spring versions should show explicit versions
+            assertTrue(svgContent.contains("Spring Boot 3"),
+                    "Memory chart with multiple Spring versions should show 'Spring Boot 3'");
+            assertTrue(svgContent.contains("Spring Boot 4"),
+                    "Memory chart with multiple Spring versions should show 'Spring Boot 4'");
+        }
+
+        /**
+         * Test that dark mode charts also follow the labeling rules.
+         */
+        @Test
+        @Launch({"src/test/resources/data.json", "target/test-output/spring-labeling-dark"})
+        public void testDarkModeChartsFollowLabelingRules(LaunchResult result) throws IOException {
+            String output = result.getOutput();
+            assertTrue(output.contains("data.json"), output);
+
+            File svgFile = new File("target/test-output/spring-labeling-dark/data-tuned-throughput-for-all-dark.svg");
+            assertTrue(svgFile.exists(), "SVG file should exist");
+
+            String svgContent = Files.readString(svgFile.toPath());
+
+            // Dark mode charts should follow the same rules
+            assertTrue(svgContent.contains("Spring Boot 3"),
+                    "Dark mode chart with multiple Spring versions should show 'Spring Boot 3'");
+            assertTrue(svgContent.contains("Spring Boot 4"),
+                    "Dark mode chart with multiple Spring versions should show 'Spring Boot 4'");
+        }
+
+        /**
+         * Test single Spring version in dark mode shows generic label.
+         */
+        @Test
+        @Launch({"src/test/resources/single-spring-version.json", "target/test-output/spring-labeling-single-dark"})
+        public void testSingleSpringVersionInDarkModeShowsGenericLabel(LaunchResult result) throws IOException {
+            String output = result.getOutput();
+            assertTrue(output.contains("single-spring-version.json"), output);
+
+            File svgFile = new File("target/test-output/spring-labeling-single-dark/single-spring-version-tuned-throughput-for-all-dark.svg");
+            assertTrue(svgFile.exists(), "SVG file should exist");
+
+            String svgContent = Files.readString(svgFile.toPath());
+
+            // Dark mode with single Spring version should not show version numbers
+            assertFalse(svgContent.contains("Spring Boot 3"),
+                    "Dark mode chart with single Spring version should not show 'Spring Boot 3'");
+            assertFalse(svgContent.contains("Spring Boot 4"),
+                    "Dark mode chart with single Spring version should not show 'Spring Boot 4'");
+
+            assertTrue(svgContent.contains("Spring Boot"),
+                    "Dark mode chart with single Spring version should show generic 'Spring Boot'");
+        }
+
+        /**
+         * Test the JAVA_AND_NATIVE_AND_LEYDEN_FRAMEWORKS group which excludes OLD category,
+         * so it only has Spring 4 (not Spring 3). Should show generic "Spring" labels.
+         * This corresponds to spring-quarkus-perf-comparison-latest-tuned-throughput-for-java-and-native-and-leyden-frameworks-light.png
+         */
+        @Test
+        @Launch({"src/test/resources/data-leyden.json", "target/test-output/spring-labeling-leyden"})
+        public void testJavaAndNativeAndLeydenFrameworksShowsGenericLabels(LaunchResult result) throws IOException {
+            String output = result.getOutput();
+            assertTrue(output.contains("data-leyden.json"), output);
+
+            File svgFile = new File("target/test-output/spring-labeling-leyden/data-leyden-tuned-throughput-for-java-and-native-and-leyden-frameworks-light.svg");
+            assertTrue(svgFile.exists(), "SVG file should exist");
+
+            String svgContent = Files.readString(svgFile.toPath());
+
+            // JAVA_AND_NATIVE_AND_LEYDEN_FRAMEWORKS group excludes OLD, so only Spring 4 is present
+            // Should NOT show version numbers
+            assertFalse(svgContent.contains("Spring Boot 3"),
+                    "JAVA_AND_NATIVE_AND_LEYDEN_FRAMEWORKS chart should not show 'Spring Boot 3'");
+            assertFalse(svgContent.contains("Spring Boot 4"),
+                    "JAVA_AND_NATIVE_AND_LEYDEN_FRAMEWORKS chart should not show 'Spring Boot 4'");
+
+            // Should have generic "Spring Boot" label instead
+            assertTrue(svgContent.contains("Spring Boot"),
+                    "JAVA_AND_NATIVE_AND_LEYDEN_FRAMEWORKS chart should show generic 'Spring Boot'");
+        }
+    }
+
 }
+
