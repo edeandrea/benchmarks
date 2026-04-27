@@ -28,6 +28,7 @@ public class ScaleDivider extends ScaledElement {
     private final double maxValue;
     private final double[] circleValues;
     private final ValueFormatter formatter;
+    private final boolean isInverted;
 
     /**
      * Creates a scale divider with the specified maximum value and a new ScaleGroup.
@@ -36,7 +37,7 @@ public class ScaleDivider extends ScaledElement {
      * @throws IllegalArgumentException if maxValue is zero or negative
      */
     public ScaleDivider(DimensionalNumber maxValue) {
-        this(maxValue, new ScaleGroup());
+        this(maxValue, new ScaleGroup(), false);
     }
 
     /**
@@ -45,8 +46,9 @@ public class ScaleDivider extends ScaledElement {
      * @param maxValue   the maximum value to display on the scale (must be positive)
      * @param scaleGroup the scale group to use for managing scale
      */
-    public ScaleDivider(DimensionalNumber maxValue, ScaleGroup scaleGroup) {
+    public ScaleDivider(DimensionalNumber maxValue, ScaleGroup scaleGroup, boolean isInverted) {
         super(scaleGroup);
+        this.isInverted = isInverted;
         this.maxValue = maxValue.getValue();
         this.circleValues = calculateRoundTickValues(this.maxValue);
         this.formatter = new ValueFormatter(maxValue);
@@ -90,7 +92,9 @@ public class ScaleDivider extends ScaledElement {
 
     @Override
     public void draw(Subcanvas parent, Theme theme) {
-        Subcanvas g = new Subcanvas(parent, parent.getWidth() - offset, parent.getHeight(), offset, 0);
+        int x = isInverted ? 0:offset;
+
+        Subcanvas g = new Subcanvas(parent, parent.getWidth() - offset, parent.getHeight(), x, 0);
 
         // Draw small tick marks between circles
         // Every other tick should be bigger
@@ -111,7 +115,7 @@ public class ScaleDivider extends ScaledElement {
         // Draw circles with labels at round numbers
         for (double value : circleValues) {
             // Calculate x position based on value
-            int x = (int) (value * scaleGroup.getScale());
+            int x = getX(g, value);
 
             // Drop the first circle
             if (value > 0) {
@@ -147,10 +151,10 @@ public class ScaleDivider extends ScaledElement {
         double currentValue = 0;
         int tickIndex = 0;
         while (currentValue <= maxValue) {
-            int x = (int) (currentValue * scaleGroup.getScale());
+            int x = getX(g, currentValue);
 
             // Skip ticks that are within 2 pixels of any circle boundary
-            if (! isNearCircleBoundary(x)) {
+            if (! isNearCircleBoundary(x, g)) {
                 int tickHeight = TICK_HEIGHT;
                 int smallTickHeight = tickHeight / 2;
 
@@ -167,14 +171,22 @@ public class ScaleDivider extends ScaledElement {
         }
     }
 
-    private boolean isNearCircleBoundary(int tickX) {
+    private int getX(Subcanvas g, double currentValue) {
+        int x = (int) (currentValue * scaleGroup.getScale());
+        if (isInverted) {
+            x = g.getWidth() - x;
+        }
+        return x;
+    }
+
+    private boolean isNearCircleBoundary(int tickX, Subcanvas g) {
         // Check if tick is within 2 pixels of any circle boundary
         // Circle radius is CIRCLE_DIAMETER / 2, so boundary is at radius + 2 pixels from center
         int boundaryDistance = CIRCLE_DIAMETER / 2 + 2;
 
         for (double value : circleValues) {
             if (value > 0) { // Skip the first circle at 0
-                int circleX = (int) (value * scaleGroup.getScale());
+                int circleX = getX(g, value);
                 if (Math.abs(tickX - circleX) <= boundaryDistance) {
                     return true;
                 }

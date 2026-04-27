@@ -1,5 +1,7 @@
 package io.quarkus.infra.performance.graphics.charts;
 
+import java.util.Optional;
+
 import io.quarkus.infra.performance.graphics.Theme;
 import io.quarkus.infra.performance.graphics.charts.fonts.Alignment;
 import io.quarkus.infra.performance.graphics.charts.fonts.FontStyle;
@@ -26,19 +28,35 @@ public class Bar extends ScaledElement {
     private final Datapoint d;
 
     private final String frameworkLabelText;
+    private final boolean showFrameworkLabels;
+    private boolean isInverted;
 
-    public Bar(Datapoint d, LabelGroup frameworkLabelGroup, LabelGroup valueLabelGroup, ScaleGroup scaleGroup) {
+    public Bar(Datapoint d, LabelGroup frameworkLabelGroup, LabelGroup valueLabelGroup, ScaleGroup scaleGroup, Optional<EmbedOptions> embedOptions) {
         super(scaleGroup);
+        isInverted = embedOptions.isPresent() ? embedOptions.get().isInverted():false;
+        showFrameworkLabels = embedOptions.isPresent() ? embedOptions.get().showFrameworkLabels():true;
         this.d = d;
         double val = d.value().getValue();
-        frameworkLabelText = d.framework().getExpandedName();
+
+        frameworkLabelText = showFrameworkLabels ? d.framework().getExpandedName():"";
         frameworkLabel = new Label(frameworkLabelText, frameworkLabelGroup)
-                .setHorizontalAlignment(Alignment.RIGHT)
                 .setVerticalAlignment(VAlignment.MIDDLE)
                 .setStyles(new FontStyle[]{BOLD, PLAIN})
                 .setTargetHeight(BAR_THICKNESS);
+
+        if (embedOptions.isPresent()) {
+            frameworkLabel.setHorizontalAlignment(Alignment.CENTER);
+        } else {
+            frameworkLabel.setHorizontalAlignment(Alignment.RIGHT);
+        }
+
         String valueLabelText = String.format("%d %s", Math.round(val), d.value().getUnits());
         valueLabel = new Label(valueLabelText, valueLabelGroup).setStyle(BOLD).setTargetHeight(VALUE_LABEL_HEIGHT);
+
+        if (isInverted) {
+            valueLabel.setHorizontalAlignment(Alignment.RIGHT);
+        }
+
 
         // This will probably be overridden, but set a value
         offset = Sizer.calculateWidth(frameworkLabelText, LEFT_LABEL_SIZE) + LABEL_PADDING;
@@ -80,21 +98,33 @@ public class Bar extends ScaledElement {
         int labelY = barArea.getHeight() / 2;
 
         barArea.setPaint(theme.text());
-        int leftLabelWidth = offset - LABEL_PADDING;
+        final int frameworkTextWidth = offset - LABEL_PADDING; // Offset includes the label padding,
+        int leftLabelX = switch (frameworkLabel.getHorizontalAligment()) {
+            case Alignment.CENTER ->
+                    (frameworkTextWidth) / 2; // We want half the text width and half of a label paddings
+            case Alignment.RIGHT -> frameworkTextWidth;
+            case Alignment.LEFT -> 0;
+        };
 
-        Subcanvas frameworkSubcanvas = new Subcanvas(barArea, leftLabelWidth, frameworkLabel.getTargetHeight(), 0, 0);
-        frameworkLabel.draw(frameworkSubcanvas, leftLabelWidth, labelY);
-        Subcanvas barSubcanvas = new Subcanvas(barArea, barArea.getWidth() - offset, frameworkLabel.getTargetHeight(), offset, 0);
+        Subcanvas frameworkSubcanvas = new Subcanvas(barArea, frameworkTextWidth, frameworkLabel.getTargetHeight(), 0, 0);
+        frameworkLabel.draw(frameworkSubcanvas, leftLabelX, labelY);
+
+        int barx = isInverted ? 0:offset;
+        Subcanvas barSubcanvas = new Subcanvas(barArea, barArea.getWidth() - offset, frameworkLabel.getTargetHeight(), barx, 0);
 
         // If this framework isn't found, it will just be the text colour, which is fine
         barSubcanvas.setPaint(theme.chartElements().get(d.framework()));
         int length = (int) (val * scaleGroup.getScale());
         int y = (barArea.getHeight() - BAR_THICKNESS) / 2;
-        barSubcanvas.fillRect(0, y, length, BAR_THICKNESS);
+
+        int x = isInverted ? barSubcanvas.getWidth() - length:0;
+        int labelX = isInverted ? (barSubcanvas.getWidth() - length - LABEL_PADDING):length + LABEL_PADDING;
+
+        barSubcanvas.fillRect(x, y, length, BAR_THICKNESS);
 
         barSubcanvas.setPaint(theme.text());
 
-        valueLabel.setTargetHeight(BAR_THICKNESS * 2 / 3).draw(barSubcanvas, length + LABEL_PADDING, labelY);
+        valueLabel.setTargetHeight(BAR_THICKNESS * 2 / 3).draw(barSubcanvas, labelX, labelY);
     }
 
     public int getMaximumBarWidth(Subcanvas barArea) {
