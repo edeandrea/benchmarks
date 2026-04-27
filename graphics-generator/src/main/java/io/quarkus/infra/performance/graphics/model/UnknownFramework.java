@@ -4,6 +4,8 @@ import java.util.EnumSet;
 import java.util.Objects;
 import java.util.Set;
 
+import static io.quarkus.infra.performance.graphics.util.StringHelpers.prettify;
+
 /**
  * Represents a framework that is not known at compile time.
  * Unknown frameworks are created dynamically when parsing JSON data.
@@ -19,21 +21,8 @@ public class UnknownFramework implements Framework {
     }
 
     private static String formatExpandedName(String name) {
-        // Convert kebab-case or snake_case to a more readable format
-        String formatted = name.replace("-", " ").replace("_", " ");
-        // Capitalize first letter of each word
-        String[] words = formatted.split(" ");
-        StringBuilder result = new StringBuilder();
-        for (String word : words) {
-            if (! word.isEmpty()) {
-                result.append(Character.toUpperCase(word.charAt(0)));
-                if (word.length() > 1) {
-                    result.append(word.substring(1).toLowerCase());
-                }
-                result.append(" ");
-            }
-        }
-        return result.toString().trim() + "\n(No details)";
+        String result = prettify(name);
+        return result + "\n(No details)";
     }
 
     @Override
