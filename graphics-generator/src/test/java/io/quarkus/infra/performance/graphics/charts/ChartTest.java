@@ -141,7 +141,6 @@ public abstract class ChartTest extends ElasticElementTest {
     @Test
     public void testCanDrawSoloGroupInPreferredDimensions() {
         BenchmarkData data = mockBenchmarkData(1);
-        System.out.println("Data " + data);
         PlotDefinition plotDefinition = createPlotDefinition();
 
         Chart chart = createChart(plotDefinition, data);

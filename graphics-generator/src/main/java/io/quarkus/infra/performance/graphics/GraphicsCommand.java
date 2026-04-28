@@ -29,9 +29,9 @@ import picocli.CommandLine.Parameters;
 public class GraphicsCommand implements Runnable {
     private static final PlotDefinition THROUGHPUT = new SingleSeriesPlotDefinition("Throughput", "(Higher is better)", framework -> framework.load().avThroughput());
     private static final PlotDefinition RSS = new SingleSeriesPlotDefinition("Memory (RSS after first request)", "memory-rss", "(Smaller is better)", framework -> framework.rss().avFirstRequestRss());
-    private static final PlotDefinition TIME_TO_FIRST_REQUEST = new SingleSeriesPlotDefinition("Boot + First Response Time", "(Lower is better)", framework -> framework.startup().avStartTime());
+    private static final PlotDefinition TIME_TO_FIRST_REQUEST = new SingleSeriesPlotDefinition("Boot + First Response Time", "(Shorter is better)", framework -> framework.startup().avStartTime());
     private static final PlotDefinition BUILD_TIME = new SingleSeriesPlotDefinition("Build Duration", "(Shorter is better)", framework -> framework.build().avBuildTime());
-    private static final PlotDefinition FRONT_PAGE = new CompositePlotDefinition("composite", List.of(THROUGHPUT, TIME_TO_FIRST_REQUEST, RSS));
+    private static final PlotDefinition FRONT_PAGE = new CompositePlotDefinition("composite", List.of(TIME_TO_FIRST_REQUEST, THROUGHPUT, RSS));
 
     @Parameters(paramLabel = "<filename>", defaultValue = "latest.json", description = "A filename of json-formatted data, or a directory. For directories, .json files in the directory will be processed recursively.")
     Path filename;

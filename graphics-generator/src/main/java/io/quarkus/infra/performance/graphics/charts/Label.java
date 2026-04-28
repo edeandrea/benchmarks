@@ -142,6 +142,10 @@ public class Label {
         return this;
     }
 
+    public Alignment getHorizontalAlignment() {
+        return alignment;
+    }
+
     /**
      * Should be one of the constants declared in #Font or their combination
      */
@@ -234,7 +238,6 @@ public class Label {
     public void setLineSpacing(int l) {
         this.lineSpacing = l;
     }
-
 
     private record DelimitedStyles(FontStyle[] styles, String delimiter) {
     }

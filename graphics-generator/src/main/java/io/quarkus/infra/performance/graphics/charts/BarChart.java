@@ -26,11 +26,14 @@ public class BarChart extends SingleSeriesChart {
     private final ScaleGroup scaleGroup = new ScaleGroup();
 
     public BarChart(PlotDefinition plotDefinition, BenchmarkData bmData) {
-        this(plotDefinition, bmData, false);
+        this(plotDefinition, bmData, Optional.empty());
     }
 
-    public BarChart(PlotDefinition plotDefinition, BenchmarkData bmData, boolean isEmbedded) {
-        super(plotDefinition, bmData);
+    public BarChart(PlotDefinition plotDefinition, BenchmarkData bmData, Optional<EmbedOptions> embedOptions) {
+        super(plotDefinition, bmData, embedOptions);
+
+        boolean isInverted = embedOptions.isPresent() ? embedOptions.get().isInverted():false;
+        boolean isEmbedded = embedOptions.isPresent();
 
         if (! isEmbedded) {
             this.fineprint = Optional.of(new FinePrint(bmData));
@@ -49,19 +52,23 @@ public class BarChart extends SingleSeriesChart {
             Category newCategory = d.framework().getPartitionableCategory();
             if (shouldUsePartitions) {
                 if (newCategory != null && previousCategory != null && ! newCategory.equals(previousCategory)) {
-                    ScaleDivider e1 = new ScaleDivider(maxValue, scaleGroup);
+                    ScaleDivider e1 = new ScaleDivider(maxValue, scaleGroup, isInverted);
                     barsAndPartitions.add(e1);
                     children.add(e1);
                 }
             }
 
-            Bar e = new Bar(d, frameworkLabelGroup, valueLabelGroup, scaleGroup);
+            Bar e = new Bar(d, frameworkLabelGroup, valueLabelGroup, scaleGroup, embedOptions);
             bars.add(e);
             barsAndPartitions.add(e);
             children.add(e);
             previousCategory = newCategory;
         }
 
+    }
+
+    public BarChart(PlotDefinition pd, BenchmarkData bmData, EmbedOptions embedOptions) {
+        this(pd, bmData, Optional.of(embedOptions));
     }
 
     private int countPartitions(List<Datapoint> data) {
@@ -100,23 +107,22 @@ public class BarChart extends SingleSeriesChart {
             barHeight = canvasWithMargins.getHeight() - titleHeight - finePrintHeight;
         }
 
-        canvasWithMargins.setPaint(theme.text());
-        Subcanvas titleCanvas = new Subcanvas(canvasWithMargins, canvasWithMargins.getWidth(), titleHeight,
-                0, 0);
-        title.draw(titleCanvas, theme);
-
-
-        Subcanvas barArea = new Subcanvas(canvasWithMargins, canvasWithMargins.getWidth(),
-                barHeight, 0, titleCanvas.getHeight());
-
-        int leftLabelWidth = Sizer.calculateWidth(bars.stream().map(Bar::getLeftLabelText).collect(Collectors.toSet()),
-                frameworkLabelGroup.getFontSize());
+        int leftLabelWidth = getLeftLabelWidth();
 
         // Set a common offset for all bars and partitions before trying to calculate a scale
         int offset = leftLabelWidth + Bar.LABEL_PADDING;
         for (ScaledElement element : barsAndPartitions) {
             element.setOffset(offset);
         }
+
+        canvasWithMargins.setPaint(theme.text());
+        int titleOffset = embedOptions.isPresent() && ! embedOptions.get().isInverted() ? offset:0;
+        Subcanvas titleCanvas = new Subcanvas(canvasWithMargins, canvasWithMargins.getWidth(), titleHeight,
+                titleOffset, 0);
+        title.draw(titleCanvas, theme);
+
+        Subcanvas barArea = new Subcanvas(canvasWithMargins, canvasWithMargins.getWidth(),
+                barHeight, 0, titleCanvas.getHeight());
 
         double scale = bars.stream().mapToDouble(bar -> bar.getMaximumScale(barArea)).min().orElse(1);
 
@@ -137,7 +143,18 @@ public class BarChart extends SingleSeriesChart {
 
         }
 
+        if (embedOptions.isPresent()) {
+            barArea.setPaint(theme.divider());
+            int x = embedOptions.get().isInverted() ? barArea.getWidth() - offset:offset;
+            barArea.drawLine(x, 0, x, barArea.getHeight());
+        }
+
         drawFinePrint(canvasWithMargins, theme, finePrintHeight, barArea.getHeight() + titleCanvas.getHeight(), fineprint);
+    }
+
+    private int getLeftLabelWidth() {
+        return Sizer.calculateWidth(bars.stream().map(Bar::getLeftLabelText).collect(Collectors.toSet()),
+                frameworkLabelGroup.getFontSize());
     }
 
     @Override
@@ -149,4 +166,12 @@ public class BarChart extends SingleSeriesChart {
         }
     }
 
+    @Override
+    public int getCenteringOffset() {
+        if (embedOptions.isPresent() && embedOptions.get().showFrameworkLabels()) {
+            return - 1 * getLeftLabelWidth() / 2;
+        } else {
+            return super.getCenteringOffset();
+        }
+    }
 }

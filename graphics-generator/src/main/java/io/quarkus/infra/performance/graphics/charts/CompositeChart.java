@@ -15,18 +15,14 @@ public class CompositeChart extends Chart {
 
     private final FinePrint fineprint;
     private List<Chart> charts = new ArrayList<>();
+    private boolean inversion;
 
     public CompositeChart(PlotDefinition plotDefinition, BenchmarkData bmData) {
         super(plotDefinition, bmData);
         // The layout is a bit coupled to the chart types, so although arbitrary numbers of definitions can get passed in, only three got plotted, and they look best if they're a certain set
         if (plotDefinition instanceof CompositePlotDefinition compositePlotDefinition) {
             for (PlotDefinition pd : compositePlotDefinition.pds()) {
-                Chart chart;
-                if (pd.title().contains("Memory")) {
-                    chart = new CubeChart(pd, bmData, true);
-                } else {
-                    chart = new BarChart(pd, bmData, true);
-                }
+                Chart chart = getChartForPlotDefinition(bmData, pd);
 
                 charts.add(chart);
             }
@@ -39,6 +35,11 @@ public class CompositeChart extends Chart {
                 }
             }
 
+            if (charts.size() >= 2) {
+                charts.get(0).suppressRightMargin();
+                charts.get(1).suppressLeftMargin();
+            }
+
             this.fineprint = new FinePrint(bmData);
             children.add(fineprint);
         } else {
@@ -46,6 +47,18 @@ public class CompositeChart extends Chart {
         }
         // No title on the composite plots
         children.remove(title);
+    }
+
+    protected Chart getChartForPlotDefinition(BenchmarkData bmData, PlotDefinition pd) {
+        Chart chart;
+        if (pd.title().contains("Memory")) {
+            chart = new CubeChart(pd, bmData, new EmbedOptions(false, true));
+        } else {
+            // Toggle the inversion of bar charts
+            inversion = ! inversion;
+            chart = new BarChart(pd, bmData, new EmbedOptions(inversion, ! inversion));
+        }
+        return chart;
     }
 
     @Override
@@ -117,19 +130,19 @@ public class CompositeChart extends Chart {
 
         Subcanvas topChartArea = new Subcanvas(g, g.getWidth(), topChartsHeight, 0, 0);
 
-        Subcanvas leftArea = new Subcanvas(topChartArea, topChartArea.getWidth() / 2, topChartArea.getHeight(), 0, 0);
+        Chart rightChart = charts.get(1);
+
+        int centeringOffset = leftChart.getCenteringOffset() - rightChart.getCenteringOffset();
+
+        Subcanvas leftArea = new Subcanvas(topChartArea, topChartArea.getWidth() / 2 - centeringOffset, topChartArea.getHeight(), 0, 0);
         leftChart.draw(leftArea, theme);
 
-        Subcanvas rightArea = new Subcanvas(topChartArea, topChartArea.getWidth() / 2, topChartArea.getHeight(), leftArea.getWidth(), 0);
-        Chart rightChart = charts.get(1);
+        Subcanvas rightArea = new Subcanvas(topChartArea, topChartArea.getWidth() / 2 + centeringOffset, topChartArea.getHeight(), leftArea.getWidth(), 0);
         rightChart.draw(rightArea, theme);
 
         topChartArea.setPaint(theme.divider());
-        int x = leftArea.getWidth();
-        topChartArea.drawLine(x, 0, x, topChartArea.getHeight(), DIVIDER_WIDTH);
 
-
-        Subcanvas bottomChartArea = new Subcanvas(g, g.getWidth(), bottomChartsHeight, 0, topChartArea.getHeight() + + DIVIDER_WIDTH);
+        Subcanvas bottomChartArea = new Subcanvas(g, g.getWidth(), bottomChartsHeight, 0, topChartArea.getHeight() + DIVIDER_WIDTH);
         bottomChart.draw(bottomChartArea, theme);
 
         topChartArea.setPaint(theme.divider());

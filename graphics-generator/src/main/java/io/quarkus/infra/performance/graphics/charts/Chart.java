@@ -20,14 +20,24 @@ public abstract class Chart implements ElasticElement {
 
     final int xmargins = 20;
     final int ymargins = 20;
+    protected final Optional<EmbedOptions> embedOptions;
+    int lxmargin = xmargins;
+    int rxmargin = xmargins;
 
-    protected Chart(PlotDefinition plotDefinition, BenchmarkData bmData) {
+    protected Chart(PlotDefinition plotDefinition, BenchmarkData bmData, Optional<EmbedOptions> embedOptions) {
         this.metadata = bmData.config();
+        this.embedOptions = embedOptions;
+
         children = new HashSet<>();
 
-        this.title = new Title(plotDefinition.title(), plotDefinition.subtitle());
+        this.title = new Title(plotDefinition.title(), plotDefinition.subtitle(), embedOptions);
+
         children.add(this.title);
 
+    }
+
+    public Chart(PlotDefinition plotDefinition, BenchmarkData bmData) {
+        this(plotDefinition, bmData, Optional.empty());
     }
 
     public void draw(Subcanvas g, Theme theme) {
@@ -43,10 +53,13 @@ public abstract class Chart implements ElasticElement {
         int canvasHeight = g.getHeight();
         int canvasWidth = g.getWidth();
 
-        g.setPaint(theme.background());
-        g.fill();
+        // Don't fill background on embedded charts, because it's unnecessary, wastes xml space in the svg, and can overwrite other chart elements
+        if (embedOptions.isEmpty()) {
+            g.setPaint(theme.background());
+            g.fill();
+        }
 
-        Subcanvas canvasWithMargins = new Subcanvas(g, canvasWidth - 2 * xmargins, canvasHeight - 2 * ymargins, xmargins,
+        Subcanvas canvasWithMargins = new Subcanvas(g, canvasWidth - lxmargin - rxmargin, canvasHeight - 2 * ymargins, lxmargin,
                 ymargins);
 
         drawNoCheck(canvasWithMargins, theme);
@@ -79,7 +92,7 @@ public abstract class Chart implements ElasticElement {
 
     @Override
     public int getMaximumHorizontalSize() {
-        return children.stream().mapToInt(ElasticElement::getMaximumHorizontalSize).max().orElse(0) + 2 * xmargins;
+        return children.stream().mapToInt(ElasticElement::getMaximumHorizontalSize).max().orElse(0) + lxmargin + rxmargin;
     }
 
     @Override
@@ -89,7 +102,7 @@ public abstract class Chart implements ElasticElement {
 
     @Override
     public int getMinimumHorizontalSize() {
-        return children.stream().mapToInt(ElasticElement::getMinimumHorizontalSize).max().orElse(0) + 2 * xmargins;
+        return children.stream().mapToInt(ElasticElement::getMinimumHorizontalSize).max().orElse(0) + lxmargin + rxmargin;
     }
 
     @Override
@@ -99,10 +112,25 @@ public abstract class Chart implements ElasticElement {
 
     @Override
     public int getPreferredHorizontalSize() {
-        return children.stream().mapToInt(ElasticElement::getPreferredHorizontalSize).max().orElse(0) + 2 * xmargins;
+        return children.stream().mapToInt(ElasticElement::getPreferredHorizontalSize).max().orElse(0) + lxmargin + rxmargin;
     }
 
     protected int getPreferredVerticalSize(int width) {
         return getPreferredVerticalSize();
+    }
+
+    /**
+     * Subclasses can override if they should be aligned differently when embedded.
+     */
+    protected int getCenteringOffset() {
+        return 0;
+    }
+
+    protected void suppressLeftMargin() {
+        lxmargin = 0;
+    }
+
+    protected void suppressRightMargin() {
+        rxmargin = 0;
     }
 }

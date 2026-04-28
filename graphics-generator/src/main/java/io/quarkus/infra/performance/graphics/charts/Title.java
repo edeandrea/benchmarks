@@ -1,6 +1,9 @@
 package io.quarkus.infra.performance.graphics.charts;
 
+import java.util.Optional;
+
 import io.quarkus.infra.performance.graphics.Theme;
+import io.quarkus.infra.performance.graphics.charts.fonts.Alignment;
 import io.quarkus.infra.performance.graphics.charts.fonts.Sizer;
 import io.quarkus.infra.performance.graphics.charts.fonts.VAlignment;
 
@@ -19,15 +22,20 @@ public class Title implements ElasticElement {
     private final Label titleLabel;
     private final Label subtitleLabel;
 
-    public Title(String title) {
-        this(title, "");
+    public Title(String title, Optional<EmbedOptions> embedOptions) {
+        this(title, "", embedOptions);
     }
 
-    public Title(String title, String subtitle) {
+    public Title(String title, String subtitle, Optional<EmbedOptions> embedOptions) {
         this.title = title;
         titleLabel = new Label(title).setStyle(BOLD).setVerticalAlignment(VAlignment.TOP);
         this.subtitle = subtitle;
         subtitleLabel = new Label(subtitle).setStyle(ITALIC).setVerticalAlignment(VAlignment.TOP);
+
+        if (embedOptions.isPresent() && embedOptions.get().isInverted()) {
+            titleLabel.setHorizontalAlignment(Alignment.RIGHT);
+            subtitleLabel.setHorizontalAlignment(Alignment.RIGHT);
+        }
     }
 
     @Override
@@ -63,12 +71,14 @@ public class Title implements ElasticElement {
         int titleHeight = (RATIO * g.getHeight()) / (2 * RATIO + subtitleFactor);
         titleLabel.setTargetHeight(titleHeight);
         int topMargin = titleHeight / 2;
-        titleLabel.draw(g, 0, topMargin);
+
+        int x = titleLabel.getHorizontalAlignment().equals(Alignment.RIGHT) ? g.getWidth():0;
+        titleLabel.draw(g, x, topMargin);
 
         if (hasSubtitle()) {
             int subtitleHeight = titleHeight / RATIO;
             subtitleLabel.setTargetHeight(subtitleHeight);
-            subtitleLabel.draw(g, 0, topMargin + titleHeight);
+            subtitleLabel.draw(g, x, topMargin + titleHeight);
         }
     }
 

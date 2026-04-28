@@ -2,6 +2,7 @@ package io.quarkus.infra.performance.graphics.charts;
 
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import io.quarkus.infra.performance.graphics.PlotDefinition;
 import io.quarkus.infra.performance.graphics.SingleSeriesPlotDefinition;
@@ -12,8 +13,8 @@ public abstract class SingleSeriesChart extends Chart {
     protected final List<Datapoint> data;
     protected final DimensionalNumber maxValue;
 
-    protected SingleSeriesChart(PlotDefinition plotDefinition, BenchmarkData bmData) {
-        super(plotDefinition, bmData);
+    protected SingleSeriesChart(PlotDefinition plotDefinition, BenchmarkData bmData, Optional<EmbedOptions> embedOptions) {
+        super(plotDefinition, bmData, embedOptions);
         if (plotDefinition instanceof SingleSeriesPlotDefinition singleSeriesPlotDefinition) {
             this.data = bmData.results().getDatasets(singleSeriesPlotDefinition.fun());
             // Find max value, or create a default DimensionalNumber with value 1.0 if no data
