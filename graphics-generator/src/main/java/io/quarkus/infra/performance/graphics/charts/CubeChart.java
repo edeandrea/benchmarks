@@ -29,17 +29,13 @@ public class CubeChart extends SingleSeriesChart {
     private final LabelGroup valueLabelGroup = new LabelGroup();
 
     public CubeChart(PlotDefinition plotDefinition, BenchmarkData bmData) {
-        this(plotDefinition, bmData, Optional.empty());
+        this(plotDefinition, bmData, EmbedOptions.DEFAULT);
     }
 
     public CubeChart(PlotDefinition plotDefinition, BenchmarkData bmData, EmbedOptions embedOptions) {
-        this(plotDefinition, bmData, Optional.of(embedOptions));
-    }
-
-    public CubeChart(PlotDefinition plotDefinition, BenchmarkData bmData, Optional<EmbedOptions> embedOptions) {
         super(plotDefinition, bmData, embedOptions);
 
-        if (embedOptions.isEmpty()) {
+        if (!embedOptions.isEmbedded()) {
             this.fineprint = Optional.of(new FinePrint(bmData));
             children.add(fineprint.get());
         } else {

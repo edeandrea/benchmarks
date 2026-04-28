@@ -20,11 +20,11 @@ public abstract class Chart implements ElasticElement {
 
     final int xmargins = 20;
     final int ymargins = 20;
-    protected final Optional<EmbedOptions> embedOptions;
+    protected final EmbedOptions embedOptions;
     int lxmargin = xmargins;
     int rxmargin = xmargins;
 
-    protected Chart(PlotDefinition plotDefinition, BenchmarkData bmData, Optional<EmbedOptions> embedOptions) {
+    protected Chart(PlotDefinition plotDefinition, BenchmarkData bmData, EmbedOptions embedOptions) {
         this.metadata = bmData.config();
         this.embedOptions = embedOptions;
 
@@ -37,7 +37,7 @@ public abstract class Chart implements ElasticElement {
     }
 
     public Chart(PlotDefinition plotDefinition, BenchmarkData bmData) {
-        this(plotDefinition, bmData, Optional.empty());
+        this(plotDefinition, bmData, EmbedOptions.DEFAULT);
     }
 
     public void draw(Subcanvas g, Theme theme) {
@@ -54,7 +54,7 @@ public abstract class Chart implements ElasticElement {
         int canvasWidth = g.getWidth();
 
         // Don't fill background on embedded charts, because it's unnecessary, wastes xml space in the svg, and can overwrite other chart elements
-        if (embedOptions.isEmpty()) {
+        if (!embedOptions.isEmbedded()) {
             g.setPaint(theme.background());
             g.fill();
         }
