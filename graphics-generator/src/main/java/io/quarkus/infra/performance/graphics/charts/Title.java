@@ -72,7 +72,7 @@ public class Title implements ElasticElement {
         titleLabel.setTargetHeight(titleHeight);
         int topMargin = titleHeight / 2;
 
-        int x = titleLabel.getHorizontalAligment().equals(Alignment.RIGHT) ? g.getWidth():0;
+        int x = titleLabel.getHorizontalAlignment().equals(Alignment.RIGHT) ? g.getWidth():0;
         titleLabel.draw(g, x, topMargin);
 
         if (hasSubtitle()) {

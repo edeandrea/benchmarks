@@ -142,7 +142,7 @@ public class Label {
         return this;
     }
 
-    public Alignment getHorizontalAligment() {
+    public Alignment getHorizontalAlignment() {
         return alignment;
     }
 

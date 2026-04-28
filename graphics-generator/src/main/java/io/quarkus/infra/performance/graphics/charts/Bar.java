@@ -57,7 +57,6 @@ public class Bar extends ScaledElement {
             valueLabel.setHorizontalAlignment(Alignment.RIGHT);
         }
 
-
         // This will probably be overridden, but set a value
         offset = Sizer.calculateWidth(frameworkLabelText, LEFT_LABEL_SIZE) + LABEL_PADDING;
     }
@@ -99,7 +98,7 @@ public class Bar extends ScaledElement {
 
         barArea.setPaint(theme.text());
         final int frameworkTextWidth = offset - LABEL_PADDING; // Offset includes the label padding,
-        int leftLabelX = switch (frameworkLabel.getHorizontalAligment()) {
+        int leftLabelX = switch (frameworkLabel.getHorizontalAlignment()) {
             case Alignment.CENTER ->
                     (frameworkTextWidth) / 2; // We want half the text width and half of a label paddings
             case Alignment.RIGHT -> frameworkTextWidth;
