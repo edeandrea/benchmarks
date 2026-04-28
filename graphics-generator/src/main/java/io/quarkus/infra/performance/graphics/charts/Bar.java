@@ -1,7 +1,5 @@
 package io.quarkus.infra.performance.graphics.charts;
 
-import java.util.Optional;
-
 import io.quarkus.infra.performance.graphics.Theme;
 import io.quarkus.infra.performance.graphics.charts.fonts.Alignment;
 import io.quarkus.infra.performance.graphics.charts.fonts.FontStyle;
@@ -31,10 +29,10 @@ public class Bar extends ScaledElement {
     private final boolean showFrameworkLabels;
     private boolean isInverted;
 
-    public Bar(Datapoint d, LabelGroup frameworkLabelGroup, LabelGroup valueLabelGroup, ScaleGroup scaleGroup, Optional<EmbedOptions> embedOptions) {
+    public Bar(Datapoint d, LabelGroup frameworkLabelGroup, LabelGroup valueLabelGroup, ScaleGroup scaleGroup, EmbedOptions embedOptions) {
         super(scaleGroup);
-        isInverted = embedOptions.isPresent() ? embedOptions.get().isInverted():false;
-        showFrameworkLabels = embedOptions.isPresent() ? embedOptions.get().showFrameworkLabels():true;
+        isInverted = embedOptions.isInverted();
+        showFrameworkLabels = embedOptions.showFrameworkLabels();
         this.d = d;
         double val = d.value().getValue();
 
@@ -44,7 +42,7 @@ public class Bar extends ScaledElement {
                 .setStyles(new FontStyle[]{BOLD, PLAIN})
                 .setTargetHeight(BAR_THICKNESS);
 
-        if (embedOptions.isPresent()) {
+        if (embedOptions.isEmbedded()) {
             frameworkLabel.setHorizontalAlignment(Alignment.CENTER);
         } else {
             frameworkLabel.setHorizontalAlignment(Alignment.RIGHT);

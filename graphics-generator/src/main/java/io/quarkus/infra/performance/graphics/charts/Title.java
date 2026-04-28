@@ -1,7 +1,5 @@
 package io.quarkus.infra.performance.graphics.charts;
 
-import java.util.Optional;
-
 import io.quarkus.infra.performance.graphics.Theme;
 import io.quarkus.infra.performance.graphics.charts.fonts.Alignment;
 import io.quarkus.infra.performance.graphics.charts.fonts.Sizer;
@@ -22,17 +20,17 @@ public class Title implements ElasticElement {
     private final Label titleLabel;
     private final Label subtitleLabel;
 
-    public Title(String title, Optional<EmbedOptions> embedOptions) {
+    public Title(String title, EmbedOptions embedOptions) {
         this(title, "", embedOptions);
     }
 
-    public Title(String title, String subtitle, Optional<EmbedOptions> embedOptions) {
+    public Title(String title, String subtitle, EmbedOptions embedOptions) {
         this.title = title;
         titleLabel = new Label(title).setStyle(BOLD).setVerticalAlignment(VAlignment.TOP);
         this.subtitle = subtitle;
         subtitleLabel = new Label(subtitle).setStyle(ITALIC).setVerticalAlignment(VAlignment.TOP);
 
-        if (embedOptions.isPresent() && embedOptions.get().isInverted()) {
+        if (embedOptions.isInverted()) {
             titleLabel.setHorizontalAlignment(Alignment.RIGHT);
             subtitleLabel.setHorizontalAlignment(Alignment.RIGHT);
         }

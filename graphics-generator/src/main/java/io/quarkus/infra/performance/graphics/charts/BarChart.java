@@ -26,14 +26,14 @@ public class BarChart extends SingleSeriesChart {
     private final ScaleGroup scaleGroup = new ScaleGroup();
 
     public BarChart(PlotDefinition plotDefinition, BenchmarkData bmData) {
-        this(plotDefinition, bmData, Optional.empty());
+        this(plotDefinition, bmData, EmbedOptions.DEFAULT);
     }
 
-    public BarChart(PlotDefinition plotDefinition, BenchmarkData bmData, Optional<EmbedOptions> embedOptions) {
+    public BarChart(PlotDefinition plotDefinition, BenchmarkData bmData, EmbedOptions embedOptions) {
         super(plotDefinition, bmData, embedOptions);
 
-        boolean isInverted = embedOptions.isPresent() ? embedOptions.get().isInverted():false;
-        boolean isEmbedded = embedOptions.isPresent();
+        boolean isInverted = embedOptions.isInverted();
+        boolean isEmbedded = embedOptions.isEmbedded();
 
         if (! isEmbedded) {
             this.fineprint = Optional.of(new FinePrint(bmData));
@@ -67,9 +67,6 @@ public class BarChart extends SingleSeriesChart {
 
     }
 
-    public BarChart(PlotDefinition pd, BenchmarkData bmData, EmbedOptions embedOptions) {
-        this(pd, bmData, Optional.of(embedOptions));
-    }
 
     private int countPartitions(List<Datapoint> data) {
         Category previousCategory = null;
@@ -116,7 +113,7 @@ public class BarChart extends SingleSeriesChart {
         }
 
         canvasWithMargins.setPaint(theme.text());
-        int titleOffset = embedOptions.isPresent() && ! embedOptions.get().isInverted() ? offset:0;
+        int titleOffset = embedOptions.isEmbedded() && ! embedOptions.isInverted() ? offset:0;
         Subcanvas titleCanvas = new Subcanvas(canvasWithMargins, canvasWithMargins.getWidth(), titleHeight,
                 titleOffset, 0);
         title.draw(titleCanvas, theme);
@@ -143,9 +140,9 @@ public class BarChart extends SingleSeriesChart {
 
         }
 
-        if (embedOptions.isPresent()) {
+        if (embedOptions.isEmbedded()) {
             barArea.setPaint(theme.divider());
-            int x = embedOptions.get().isInverted() ? barArea.getWidth() - offset:offset;
+            int x = embedOptions.isInverted() ? barArea.getWidth() - offset:offset;
             barArea.drawLine(x, 0, x, barArea.getHeight());
         }
 
@@ -168,7 +165,7 @@ public class BarChart extends SingleSeriesChart {
 
     @Override
     public int getCenteringOffset() {
-        if (embedOptions.isPresent() && embedOptions.get().showFrameworkLabels()) {
+        if (embedOptions.isEmbedded() && embedOptions.showFrameworkLabels()) {
             return - 1 * getLeftLabelWidth() / 2;
         } else {
             return super.getCenteringOffset();
