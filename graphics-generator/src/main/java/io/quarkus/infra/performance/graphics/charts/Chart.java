@@ -1,6 +1,5 @@
 package io.quarkus.infra.performance.graphics.charts;
 
-import java.awt.geom.Rectangle2D;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
@@ -45,7 +44,7 @@ public abstract class Chart implements ElasticElement {
         int canvasWidth = g.getWidth();
 
         g.setPaint(theme.background());
-        g.fill(new Rectangle2D.Double(0, 0, canvasWidth, canvasWidth));
+        g.fill();
 
         Subcanvas canvasWithMargins = new Subcanvas(g, canvasWidth - 2 * xmargins, canvasHeight - 2 * ymargins, xmargins,
                 ymargins);
