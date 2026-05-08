@@ -19,11 +19,13 @@ public class ScaleDivider extends ScaledElement {
     private static final int TICK_HEIGHT = 10;
     private static final int LABEL_FONT_SIZE = 14;
     private static final int LINE_THICKNESS = 1;
-    private static final int LABEL_PADDING = 6;
+    private static final int CIRCLE_VERTICAL_PADDING = 6;
     private static final int CIRCLE_DIAMETER = 24;
-    private static final int MINIMUM_HEIGHT = TICK_HEIGHT + CIRCLE_DIAMETER + LABEL_PADDING + LINE_THICKNESS;
+    // TODO tick height shouldn't be in here, should be a max of circle diameter and tick height
+    private static final int MINIMUM_HEIGHT = TICK_HEIGHT + CIRCLE_DIAMETER + CIRCLE_VERTICAL_PADDING + LINE_THICKNESS;
     private static final int MAXIMUM_HEIGHT = MINIMUM_HEIGHT + 20;
     public static final int NUM_TICKS = 20;
+    private static final int EXTENDER_PADDING = 15;
 
     private final double maxValue;
     private final double[] circleValues;
@@ -92,19 +94,39 @@ public class ScaleDivider extends ScaledElement {
 
     @Override
     public void draw(Subcanvas parent, Theme theme) {
-        int x = isInverted ? 0:offset;
-
-        Subcanvas g = new Subcanvas(parent, parent.getWidth() - offset, parent.getHeight(), x, 0);
+        int scaleWidth = (int) (maxValue * scaleGroup.getScale());
+        int x = isInverted ? parent.getWidth() - scaleWidth - offset:offset;
+        Subcanvas scaleCanvas = new Subcanvas(parent, scaleWidth, parent.getHeight(), x, 0);
 
         // Draw small tick marks between circles
         // Every other tick should be bigger
         // Continue ticks all the way to maxValue
-        g.setPaint(theme.divider());
+        scaleCanvas.setPaint(theme.divider());
         if (circleValues.length > 1) {
             double interval = circleValues[1] - circleValues[0];
-            drawTicks(g, interval);
-            drawCircles(g, theme);
+            drawTicks(scaleCanvas, interval);
+            drawCircles(scaleCanvas, theme);
         }
+
+        int ex = isInverted ? 0:offset + scaleCanvas.getWidth();
+
+        if (parent.getWidth() > (scaleCanvas.getWidth() + offset)) {
+            Subcanvas extenderCanvas = new Subcanvas(parent, parent.getWidth() - scaleCanvas.getWidth() - offset, parent.getHeight(), ex, 0);
+            drawExtender(extenderCanvas, theme);
+        }
+    }
+
+    private void drawExtender(Subcanvas g, Theme theme) {
+        int height = g.getHeight();
+
+        int y = height / 2;
+        g.setPaint(theme.divider());
+        if (isInverted) {
+            g.drawLine(0, y, g.getWidth() - EXTENDER_PADDING, y);
+        } else {
+            g.drawLine(EXTENDER_PADDING, y, g.getWidth(), y);
+        }
+
     }
 
     private void drawCircles(Subcanvas g, Theme theme) {

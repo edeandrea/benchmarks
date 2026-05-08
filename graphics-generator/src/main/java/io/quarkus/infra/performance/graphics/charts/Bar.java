@@ -19,6 +19,7 @@ public class Bar extends ScaledElement {
     public static final int LEFT_LABEL_SIZE = Sizer.calculateFontSize(BAR_THICKNESS / 2);
     public static final int LABEL_PADDING = 12;
 
+    // The vertical padding between bars
     private static final int barSpacing = 12;
 
     private final Label valueLabel;
@@ -95,7 +96,7 @@ public class Bar extends ScaledElement {
         int labelY = barArea.getHeight() / 2;
 
         barArea.setPaint(theme.text());
-        final int frameworkTextWidth = offset - LABEL_PADDING; // Offset includes the label padding,
+        final int frameworkTextWidth = offset - LABEL_PADDING; // Offset includes the label padding
         int leftLabelX = switch (frameworkLabel.getHorizontalAlignment()) {
             case Alignment.CENTER ->
                     (frameworkTextWidth) / 2; // We want half the text width and half of a label paddings
